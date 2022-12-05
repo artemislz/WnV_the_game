@@ -21,6 +21,9 @@
     <ClCompile Include="..\..\..\..\source\repos\WnV_the_game\source\implementations.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\source\repos\WnV_the_game\include\classes.h">

@@ -129,13 +129,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\source\repos\WnV_the_game\main\main.cpp" />
-    <ClCompile Include="..\..\..\..\source\repos\WnV_the_game\source\implementations.cpp" />
+    <ClCompile Include="implementation.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\source\repos\WnV_the_game\include\classes.h" />
-    <ClInclude Include="..\..\..\..\source\repos\WnV_the_game\include\global.h" />
+    <ClInclude Include="class.h" />
+    <ClInclude Include="globals.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\source\repos\WnV_the_game\other\draft.pdf" />

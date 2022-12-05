@@ -104,6 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\Artemis\source\repos\WnV_the_game\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -127,7 +128,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="GAME.cpp" />
+    <ClCompile Include="..\..\..\..\source\repos\WnV_the_game\main\main.cpp" />
+    <ClCompile Include="..\..\..\..\source\repos\WnV_the_game\source\implementations.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\source\repos\WnV_the_game\include\classes.h" />
+    <ClInclude Include="..\..\..\..\source\repos\WnV_the_game\include\global.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\source\repos\WnV_the_game\other\draft.pdf" />
+    <None Include="..\..\..\..\source\repos\WnV_the_game\other\info.pdf" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

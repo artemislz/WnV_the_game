@@ -15,8 +15,23 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GAME.cpp">
+    <ClCompile Include="..\..\..\..\source\repos\WnV_the_game\main\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\source\repos\WnV_the_game\source\implementations.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\source\repos\WnV_the_game\include\classes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\source\repos\WnV_the_game\include\global.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\source\repos\WnV_the_game\other\draft.pdf" />
+    <None Include="..\..\..\..\source\repos\WnV_the_game\other\info.pdf" />
   </ItemGroup>
 </Project>

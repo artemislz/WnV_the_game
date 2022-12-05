@@ -1,5 +1,5 @@
 #include <iostream>
-
+#include <Windows.h>
 #include "class.h"
 #include "globals.h"
 using namespace std;
@@ -21,13 +21,13 @@ int main()
     map.print();
 
     map.update('u');
-    system("clear");
+    system("cls");
     map.update('u');
-    system("clear");
+    system("cls");
     map.update('u');
-    system("clear");
+    system("cls");
     map.update('u');
-    system("clear");
+    system("cls");
 
     map.update('u');
 

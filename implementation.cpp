@@ -3,6 +3,8 @@
 #include <cstdlib>
 #include <time.h>
 #include <vector>
+#include <fcntl.h>
+#include <io.h>
 using namespace std;
 
 int get_random(int a, int b) {
@@ -45,6 +47,9 @@ void Map::create(char team) {
         grid[0][j] = '-';
         grid[x + 1][j] = '-';
     };
+    grid[0][y - 2] = 'D';
+    grid[0][y - 1] = 'A';
+    grid[0][y] = 'Y';
 
     /*Process of putting avatar in the center of the map*/
     grid[x / 2 + 1][y / 2 + 1] = team;      // we first put the avatar in order to avoid the middle specific position being taken by another entity or obstacle
@@ -104,61 +109,81 @@ void Map::print() {
     for (int i = 0; i < x + 2; i++) {
         for (int j = 0; j < y + 2; j++) {
             cout << ' ';
-            if (i == 0 && j == y - 1) {      // position of the sun/moon
-                if (day)
-                    cout << "🌞";
-                else {
-                    cout << "🌚";
-                };
-                continue;
-            }
-            if (grid[i][j] == 'v') {
-                cout << "🧛";
-                continue;
-            }
-            if (grid[i][j] == 'V') {
-                cout << "🟥";
+            //  cout << "DAY - -";
+            //  break;
+      //    }
+          //else {
+            //  cout << "NIGHT -";
+             // break;
+         // };
+
+    //  }
+  //    if (grid[i][j] == 'v') {
+   //       cout << grid[i][j];
+   //       continue;
+   //   }
+           /* if (grid[i][j] == 'V') {
+                cout << "";
                 continue;
             }
             if (grid[i][j] == 'W') {
-                cout << "🔲";
+                cout << "";
                 continue;
             }
-            if (grid[i][j] == 'w') {
-                cout << "🐺";
-                continue;
-            }
-            if (grid[i][j] == '~') {
-                cout << "🌊";
-                continue;
-            }
-            if (grid[i][j] == '*') {
-                cout << "🌲";
-                continue;
-            }
-            if (grid[i][j] == 'm') {
-                cout << "🔮";
-                continue;
-            }
-            if (i == 0 && j == y - 2) {
-                cout << grid[i][j];
-                continue;
-            }
-            if (j != 0) {                    // between outline and the first column's entities/objects only one space
-                cout << grid[i][j] << ' ';
-                continue;
-            }
-
+            /*    if (grid[i][j] == 'w') {
+                    cout << "🐺";
+                    continue;
+                }
+                if (grid[i][j] == '~') {
+                    cout << "🌊";
+                    continue;
+                }
+                if (grid[i][j] == '*') {
+                    cout << "🌲";
+                    continue;
+                }
+                if (grid[i][j] == 'm') {
+                    cout << "🔮";
+                    continue;
+                }
+                if (i == 0 && j == y - 2) {
+                    cout << grid[i][j];
+                    continue;
+                }
+                if (j != 0) {                    // between outline and the first column's entities/objects only one space
+                    cout << grid[i][j] << ' ';
+                    continue;
+                }*/
+     //       cout << "\342\230\272";
             cout << grid[i][j];
-
+            
 
         }
         cout << endl;
     }
 
     //cout << "\u203E ";       // source:https://www.codeproject.com/Questions/877314/how-to-print-an-overline-pls-help
-    cout << endl;
+    //cout << endl;
 }
+
+void Map::change_day() {
+    if (day) {
+        day = false;
+        grid[0][y - 4] = 'N';
+        grid[0][y - 3] = 'I';
+        grid[0][y - 2] = 'G';
+        grid[0][y - 1] = 'H';
+        grid[0][y] = 'T';
+    }
+    else {
+        day = true;
+        grid[0][y - 2] = 'D';
+        grid[0][y - 1] = 'A';
+        grid[0][y] = 'Y';
+        
+    }
+}
+
 void Map::update(char input) {
     static int calls = 0;
     calls++;
@@ -213,3 +238,4 @@ Game::Game(int x, int y, char team) : paused(false), map(x, y, team) {
 Player::Player() {
     input = 'u';
 }
+

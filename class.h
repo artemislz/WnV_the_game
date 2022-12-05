@@ -80,7 +80,7 @@ public:
     inline int get_vampires()const { return vampires; }
     inline int get_werewolves()const { return werewolves; }
     inline bool get_day()const { return day; }
-    inline void change_day() { day = !day; };
+    void change_day();
     //void set_coordinates(Avatar& a,int x,int y);
     Avatar get_avatar() { return avatar; }
     // inline char get_input(Player* player) {return player->input;};

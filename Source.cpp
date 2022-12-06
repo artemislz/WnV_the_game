@@ -20,7 +20,7 @@ int main()
     Game game(x, y, team);
     Map map = game.get_map();
     //game.get_map()
-    map.print();
+   // map.print();
    /* map.update('u');
     Sleep(10);
     system("cls");
@@ -39,7 +39,7 @@ int main()
          cout << "Werewolf " << i + 1 << " has:\n";
          map.werewolf_vector[i].display();
      }*/
-     map.change_day();
+   //  map.change_day();
      /*int a;
      cout << "Waiting for move..." << endl;
      switch (wParam) {
@@ -49,8 +49,8 @@ int main()
      char key = _getch();
      int value = key;
      while (value != KEY_X) {
+         system("cls");
          switch (_getch()){
-
          case KEY_UP:
              map.update(KEY_UP);
              cout << "avatar goes up\n";

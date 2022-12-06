@@ -180,6 +180,8 @@ void Map::change_day() {
         grid[0][y - 2] = 'D';
         grid[0][y - 1] = 'A';
         grid[0][y] = 'Y';
+        grid[0][y - 4] = '-';
+        grid[0][y - 3] = '-';
         
     }
 }

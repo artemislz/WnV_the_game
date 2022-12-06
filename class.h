@@ -74,7 +74,7 @@ public:
     void create(char team);          // create of the first grid
     // void add_avatar(char);
     void print();                       // display map to terminal
-    void update(char input);          // update of tthe grid after player's movement
+    void update(int input);          // update of tthe grid after player's movement
     inline int get_x()const { return x; }
     inline int get_y()const { return y; }
     inline int get_vampires()const { return vampires; }

@@ -184,19 +184,38 @@ void Map::change_day() {
     }
 }
 
-void Map::update(char input) {
+void Map::update(int input) {
     static int calls = 0;
+    int x, y;
     calls++;
-    if (input == 'u' && grid[avatar.get_x() - 1][avatar.get_y()] == ' ') {
-        grid[avatar.get_x()][avatar.get_y()] = ' ';
+    x = avatar.get_x();
+    y = avatar.get_y();
+    cout << x << " " << y << endl;
+    if (input == KEY_UP && grid[x - 1][y] == ' ') {
+        grid[x][y] = ' ';
         avatar.move_up();
-        grid[avatar.get_x()][avatar.get_y()] = avatar.get_team();
     }
-
-    if (calls % 5 == 0)        //change of the weather after 5 movements of the avatar
+    else if (input == KEY_DOWN && grid[x + 1][y] == ' ') {
+        grid[x][y] = ' ';
+        avatar.move_down();
+    }
+    else if (input == KEY_RIGHT && grid[x][y + 1] == ' ') {
+        grid[x][y] = ' ';
+        avatar.move_right();
+    }
+    else if (input == KEY_LEFT && grid[x][y - 1] == ' ') {
+        grid[x][y] = ' ';
+        avatar.move_left();
+    }
+    x = avatar.get_x();
+    y = avatar.get_y();
+    grid[x][y] = avatar.get_team();
+    if (calls % 10 == 0)        //change of the weather after 10 calls of update function
         change_day();
+    cout << x << " " << y << endl;
     print();
 }
+
 /*Entity - Member functions & Constructor*/
 Entity::Entity(int x, int y) {
     this->x = x;

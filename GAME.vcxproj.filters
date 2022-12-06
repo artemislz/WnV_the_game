@@ -21,7 +21,6 @@
     <ClCompile Include="implementation.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
-    <ClCompile Include="info.pdf" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="class.h">
@@ -30,8 +29,5 @@
     <ClInclude Include="globals.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="draft.pdf" />
   </ItemGroup>
 </Project>

@@ -130,15 +130,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="implementation.cpp" />
-    <ClCompile Include="info.pdf" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="class.h" />
     <ClInclude Include="globals.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="draft.pdf" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

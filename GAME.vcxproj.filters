@@ -21,6 +21,7 @@
     <ClCompile Include="implementation.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
+    <ClCompile Include="info.pdf" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="class.h">
@@ -31,7 +32,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\source\repos\WnV_the_game\other\draft.pdf" />
-    <None Include="..\..\..\..\source\repos\WnV_the_game\other\info.pdf" />
+    <None Include="draft.pdf" />
   </ItemGroup>
 </Project>

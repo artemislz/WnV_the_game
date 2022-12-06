@@ -130,6 +130,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="implementation.cpp" />
+    <ClCompile Include="info.pdf" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -137,8 +138,7 @@
     <ClInclude Include="globals.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\source\repos\WnV_the_game\other\draft.pdf" />
-    <None Include="..\..\..\..\source\repos\WnV_the_game\other\info.pdf" />
+    <None Include="draft.pdf" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

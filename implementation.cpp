@@ -347,11 +347,14 @@ void Player::set_input() {
 
 void Game::run() {
 
-    system("cls");
+    //system("cls");
     
     while (active) {
-        if(check_for_end())
-            break;
+        if (check_for_end()) {
+            end();
+            return;
+        }
+            
         while (!_kbhit()) {
             if (check_for_end()) {
                 end();
@@ -425,8 +428,7 @@ bool Game::check_for_end() {
         else {
             winners_team = 'W';
         }
-        system("cls");
-        end();
+       // system("cls");
         return true;
 
     }
@@ -435,6 +437,7 @@ bool Game::check_for_end() {
 void Game::end() {
     cout << "THE  END OF THE GAME...\n";
     cout << "PRESS 'ENTER' TO SEE THE RESULTS...\n";
+    Sleep(200);
     char input = _getch();
     int key = input;
     if (key == KEY_ENTER) {
@@ -443,8 +446,8 @@ void Game::end() {
         else {
             cout << "UNLUCKY...+_+\n";
         }
-      //  cout << "Here are the final results...\n";
-    //    map.display_info();
+        //  cout << "Here are the final results...\n";
+      //    map.display_info();
         cout << "WINNERS TEAM: ";
         if (winners_team == 'V')
             cout << "VAMPIRES!\n";
@@ -455,5 +458,4 @@ void Game::end() {
     else {
         cout << "SO YOU DON'T CARE...\n";
     }
-    cout << "END OF THE GAME\n";
 }

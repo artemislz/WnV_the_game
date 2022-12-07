@@ -4,11 +4,23 @@
 #include <string>
 #include "class.h"
 #include "globals.h"
+
 using namespace std;
 
 
 int main()
 {
+  /*  const int microToSeconds = 1000000;
+    const double delay2 = 2 * microToSeconds;     //2 seconds
+    while (!_kbhit()) {
+    cout << "press sth\n";
+    Sleep(500);
+    }
+    char ch = _getch();
+    int key = ch;
+    if (key == KEY_UP) {
+        cout << "up \n";
+    };*/
     int x, y;
     cout << "Enter the dimensions: " << endl;
     cin >> x >> y;
@@ -18,7 +30,12 @@ int main()
         "Enter V for Vampires and W for Werewolves: \n";
     cin >> team;
     Game game(x, y, team);
-    Map map = game.get_map();
+    game.get_map().print();        // first print of the cosmos
+   
+  //  char k = _getch();
+    game.run();
+   // Map map = game.get_map();
+   // Player player = game.get_player();
     //game.get_map()
    // map.print();
    /* map.update('u');
@@ -45,11 +62,16 @@ int main()
      switch (wParam) {
 
      }*/
+ /*    map.print();
      cout << "waiting for input.. \n";
      char key = _getch();
+     player.set_input(key);
      int value = key;
-     while (value != KEY_X) {
-         system("cls");
+     map.update_avatar(value);*/
+   /*  while (map.get_vampires() != 0 && map.get_werewolves() != 0 && value != KEY_X) {
+         
+     if (value == KEY_X || value == KEY_DOWN || value == ) {
+        
          switch (_getch()){
          case KEY_UP:
              map.update(KEY_UP);

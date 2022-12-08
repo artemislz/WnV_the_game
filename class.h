@@ -9,8 +9,8 @@ protected:
     char type;
 public:
     Entity(int x, int y, char type);
-    inline int get_x() { return x; }
-    inline int get_y() { return y; }
+    inline int get_x() const { return x; }
+    inline int get_y() const { return y; }
     inline void move_up() { x--; }          //-> prosthhkh allagh theshs sto grid
     inline void move_down() { x++; }
     inline void move_right() { y++; }
@@ -106,12 +106,12 @@ private:
 public:
     Player(char team);
     // friend class Game;    // in order to have access to the player's input
-    inline char get_team() { return team; };
+    inline char get_team()const { return team; };
     // friend void Avatar::set_team(Player& p);  
     friend class Map;
     // friend void update(Player* player);          // update of tthe grid after player's movement
     void set_input();
-    inline char get_input() { return input;};
+    inline char get_input()const { return input;};
 };
 
 class Game {
@@ -124,8 +124,8 @@ public:
     Game(int, int, char);
     void end();
     void pause();       //kalei thn display_info
-    inline Map get_map() { return map; }
-    inline Player get_player() { return player; }
+    inline Map get_map()const { return map; }
+    inline Player get_player()const { return player; }
     void run();
     bool check_for_end();       // YES -> END
 };

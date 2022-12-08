@@ -52,16 +52,16 @@ void Map::create(char team) {
     for (int i = 0; i < vampires; i++) {         // same number of vampires and werewolves at the start of the game
         /*fill with vampires*/
         do {
-            xx = get_random(0, x + 1);
-            yy = get_random(0, y + 1);
+            xx = get_random(1, x);
+            yy = get_random(1, y);
         } while (grid[xx][yy] != ' ');
         grid[xx][yy] = 'v';
         Vampire vampire(xx, yy, 'v');
         vampire_vector.push_back(vampire);
         /*fill with werewolves*/
         do {
-            xx = get_random(0, x + 1);
-            yy = get_random(0, y + 1);
+            xx = get_random(1, x);
+            yy = get_random(1, y);
         } while (grid[xx][yy] != ' ');
         grid[xx][yy] = 'w';
         Werewolf werewolf(xx, yy, 'w');
@@ -74,8 +74,8 @@ void Map::create(char team) {
 
         /*fill with lakes(~)*/
         do {
-            xx = get_random(0, x + 1);
-            yy = get_random(0, y + 1);
+            xx = get_random(1, x);
+            yy = get_random(1, y);
         } while (grid[xx][yy] != ' ');
         grid[xx][yy] = '~';
 
@@ -158,53 +158,38 @@ void Map::update_avatar(int input) {       // called when player press a button 
     y = avatar.get_y();
     //  cout << x << " " << y << endl;
     if (input == KEY_UP && (grid[x - 1][y] == ' ' || grid[x - 1][y] == 'm')) {
+        grid[x][y] = ' ';
+        avatar.move_up();
         if (grid[x - 1][y] == 'm') {
             avatar.add_filter();
-            grid[x][y] = ' ';
-            avatar.move_up();
             put_magic_filter();
-        }
-        else {
-            grid[x][y] = ' ';
-            avatar.move_up();
         }
     }
     else if (input == KEY_DOWN && (grid[x + 1][y] == ' ' || grid[x + 1][y] == 'm')) {
+        grid[x][y] = ' ';
+        avatar.move_down();
         if (grid[x + 1][y] == 'm') {
             avatar.add_filter();
-            grid[x][y] = ' ';
-            avatar.move_down();
             put_magic_filter();
-        }
-        else {
-            grid[x][y] = ' ';
-            avatar.move_down();
         }
     }
     else if (input == KEY_RIGHT && (grid[x][y + 1] == ' ' || grid[x][y + 1] == 'm')) {
+        grid[x][y] = ' ';
+        avatar.move_right();
         if (grid[x][y + 1] == 'm') {
-            avatar.add_filter();
-            grid[x][y] = ' ';
-            avatar.move_right();
+            avatar.add_filter(); 
             put_magic_filter();
-            
         }
-        else {
-            grid[x][y] = ' ';
-            avatar.move_right();
-        }
+       
     }
     else if (input == KEY_LEFT && (grid[x][y - 1] == ' ' || grid[x][y - 1] == 'm')) {
+        grid[x][y] = ' ';
+        avatar.move_left();
         if (grid[x][y - 1] == 'm') {
-            avatar.add_filter();
-            grid[x][y] = ' ';
-            avatar.move_left();
+            avatar.add_filter();  
             put_magic_filter();
         }
-        else {
-            grid[x][y] = ' ';
-            avatar.move_left();
-        }
+        
     }
     x = avatar.get_x();
     y = avatar.get_y();
@@ -226,7 +211,8 @@ void Map::move_vampires() {
     for (int i = 0; i < vampires; i++) {
         x = vampire_vector[i].get_x();
         y = vampire_vector[i].get_y();
-        int p = get_random(1, 8);  
+        int p = get_random(1, 8); 
+
         switch (p) {
         case 1:                 //goes_up
             if (grid[x - 1][y] == ' ') {
@@ -332,14 +318,16 @@ void Map::display_info() {
 		cout << " -";
 	cout << endl << vampire_display;
 
-	for (int i = 0; i < 40 - vampire_display.size(); i++)
+    
+	for (int i = 0, size = 40 - vampire_display.size(); i < size; i++)
 		cout << " ";
 	cout << "|\n" << werewolf_display;
-
-	for (int i = 0; i < 40 - werewolf_display.size(); i++)
+    
+	for (int i = 0, size = 40 - werewolf_display.size(); i < size; i++)
 		cout << " ";
 	cout << "|\n" << magic_filter_display;
-	for (int i = 0; i < 40 - magic_filter_display.size(); i++)
+   
+	for (int i = 0, size = 40 - magic_filter_display.size(); i < size; i++)
 		cout << " ";
 	cout << "|\n";
 	for (int i = 0; i < 20; i++)
@@ -406,7 +394,7 @@ void Game::run() {
 			Sleep(100);
 			system("cls");
 		};
-		Sleep(100);
+	//	Sleep(100);
 		player.set_input();
 		// sleep(200);
 		if (player.get_input() == KEY_X)
@@ -417,8 +405,8 @@ void Game::run() {
 		else {
 			map.update_avatar(player.get_input());
 			map.print();
-			Sleep(150);
-			system("cls");
+			Sleep(100);
+			system("cls");  
 		}
 	}
 	end();

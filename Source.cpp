@@ -10,16 +10,17 @@ using namespace std;
 
 int main()
 {
-    int x, y;
-    cout << "Enter the dimensions of the map: " << endl;
-    cin >> x >> y;
+    int x = 3, y = 3;
+  //  cout << "Enter the dimensions of the map: " << endl;
+    //cin >> x >> y;
 
-    char team;
-    cout << "Time to choose your team...\n" 
-         << "Enter V for Vampires and W for Werewolves: \n";
-    cin >> team;
+    char team = 'V';
+ //   cout << "Time to choose your team...\n" 
+ //        << "Enter V for Vampires and W for Werewolves: \n";
+ //   cin >> team;
     Game game(x, y, team);
     game.get_map().print();        // first print of the cosmos
+    system("pause");
     game.run();
   
     return 0;

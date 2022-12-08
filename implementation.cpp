@@ -245,8 +245,169 @@ void Map::update_avatar(int input) {       // called when player press a button 
         change_day();
 }
 
-void Map::move_werewolves() {
-    //Random moves of werewolves (up-down-left-right)
+void Map::update() {        //vampires werewolves 1 random move attacks and defence
+    int x, y;
+    //move_vampires();
+    srand((unsigned)time(NULL));
+    for (int i = 0; i < vampires; i++) {
+        x = vampire_vector[i].get_x();
+        y = vampire_vector[i].get_y();
+        int p = get_random(1, 5);
+        switch (p) {
+        case 1:                 //goes up
+            if (grid[x - 1][y] == ' ') {
+                grid[x][y] = ' ';
+                vampire_vector[i].move_up();
+                //cout << "vampire is: " << grid[vampire_vector[i].get_x()][vampire_vector[i].get_y()];
+                break;
+            };
+        case 2:                 //goes down
+            if (grid[x + 1][y] == ' ') {
+                grid[x][y] = ' ';
+                vampire_vector[i].move_down();
+                break;
+            };
+        case 3:                 //goes left
+            if (grid[x][y - 1] == ' ') {
+                grid[x][y] = ' ';
+                vampire_vector[i].move_left();
+                break;
+            };
+        case 4:                 //goes right
+            if (grid[x][y + 1] == ' ') {
+                grid[x][y] = ' ';
+                vampire_vector[i].move_right();
+                break;
+            };
+        case 5:                 //goes diagonally
+            if (grid[x + 1][y] == '-') {                /*down border*/
+                if (grid[x][y - 1] == '|') {                //case down left corner
+                    if (grid[x - 1][y + 1] == ' ') {            
+                        grid[x][y] = ' ';
+                        vampire_vector[i].move_up_right();
+                    }
+                }
+                else if(grid[x][y + 1] == '|') {            //case down right corner
+                    if (grid[x - 1][y - 1] == ' ') {            
+                        grid[x][y] = ' ';
+                        vampire_vector[i].move_up_left();
+                    }
+                }
+                else {                                      //case last line
+                    int rand = get_random(1, 2);
+                    switch (rand) {
+                    case 1:
+                        if (grid[x - 1][y + 1] == ' ') {            
+                            grid[x][y] = ' ';
+                            vampire_vector[i].move_up_right();
+                        }
+                    case 2:
+                        if (grid[x - 1][y - 1] == ' ') {
+                            grid[x][y] = ' ';
+                            vampire_vector[i].move_up_left();
+                        }
+                    }       
+                }
+            }
+            else if (grid[x - 1][y] == '-'  ) {               //up border
+                if (grid[x][y - 1] == '|') {                //case up left corner
+                    if (grid[x + 1][y + 1] == ' ') {
+                        grid[x][y] = ' ';
+                        vampire_vector[i].move_down_right();
+                    }
+                }
+                else if (grid[x][y + 1] == '|') {               //case up right corner
+                    if (grid[x + 1][y - 1] == ' ') {             
+                        grid[x][y] = ' ';
+                        vampire_vector[i].move_down_left();
+                    }
+                }
+                else {
+                    int rand = get_random(1, 2);
+                    switch (rand) {
+                    case 1:
+                        if (grid[x + 1][y + 1] == ' ') {
+                            grid[x][y] = ' ';
+                            vampire_vector[i].move_down_right();
+                            break;
+                        }
+                    case 2:
+                        if (grid[x + 1][y - 1] == ' ') {
+                            grid[x][y] = ' ';
+                            vampire_vector[i].move_down_left();
+                            break;
+                        }
+                    }
+                }
+            }
+            else if (grid[x][y - 1] == '|') {             //left border
+                int rand = get_random(1, 2);
+                switch (rand) {
+                case 1: 
+                    if (grid[x + 1][y + 1] == ' ') {
+                        grid[x][y] = ' ';
+                        vampire_vector[i].move_down_right();
+                        break;
+                    }
+                case 2:
+                    if (grid[x - 1][y + 1] == ' ') {
+                        grid[x][y] = ' ';
+                        vampire_vector[i].move_up_right();
+                        break;
+                    }
+                }
+            }
+            else if (grid[x][y + 1] == '|') {               // right border
+                int rand = get_random(1, 2);
+                switch (rand) {
+                case 1:
+                    if (grid[x + 1][y - 1] == ' ') {
+                        grid[x][y] = ' ';
+                        vampire_vector[i].move_down_left();
+                        break;
+                    }
+                case 2:
+                    if (grid[x - 1][y - 1] == ' ') {
+                        grid[x][y] = ' ';
+                        vampire_vector[i].move_up_left();
+                        break;
+                    }
+                }
+            }
+            else {                                          //any other case
+                int rand = get_random(1, 4);
+                switch (rand) {
+                case 1:
+                    if (grid[x + 1][y - 1] == ' ') {
+                        grid[x][y] = ' ';
+                        vampire_vector[i].move_down_left();
+                        break;
+                    }
+                case 2:
+                    if (grid[x - 1][y - 1] == ' ') {
+                        grid[x][y] = ' ';
+                        vampire_vector[i].move_up_left();
+                        break;
+                    }
+                case 3:
+                    if (grid[x + 1][y + 1] == ' ') {
+                        grid[x][y] = ' ';
+                        vampire_vector[i].move_down_right();
+                        break;
+                    }
+                case 4:
+                    if (grid[x - 1][y + 1] == ' ') {
+                        grid[x][y] = ' ';
+                        vampire_vector[i].move_up_right();
+                        break;
+                    }
+                }
+            }
+        }
+        x = vampire_vector[i].get_x();
+        y = vampire_vector[i].get_y();
+        grid[x][y] = 'v';
+    }
     for (int i = 0; i < werewolves; i++) {
         x = werewolf_vector[i].get_x();
         y = werewolf_vector[i].get_y();
@@ -277,68 +438,11 @@ void Map::move_werewolves() {
                 break;
             };
         }
+        x = werewolf_vector[i].get_x();
+        y = werewolf_vector[i].get_y();
+        grid[x][y] = 'w';
     }
-}
-
-void Map::update() {        //vampires werewolves 1 random move attacks and defence
-    int x, y;
-    //move_vampires();
-    for (int i = 0; i < vampires; i++) {
-        x = vampire_vector[i].get_x();
-        y = vampire_vector[i].get_y();
-        int p = get_random(1, 8);
-        switch (p) {
-        case 1:                 //goes up
-            if (grid[x - 1][y] == ' ') {
-                grid[x][y] = ' ';
-                vampire_vector[i].move_up();
-                //cout << "vampire is: " << grid[vampire_vector[i].get_x()][vampire_vector[i].get_y()];
-                break;
-            };
-        case 2:                 //goes down
-            if (grid[x + 1][y] == ' ') {
-                grid[x][y] = ' ';
-                vampire_vector[i].move_down();
-                break;
-            };
-        case 3:                 //goes left
-            if (grid[x][y - 1] == ' ') {
-                grid[x][y] = ' ';
-                vampire_vector[i].move_left();
-                break;
-            };
-        case 4:                 //goes right
-            if (grid[x][y + 1] == ' ') {
-                grid[x][y] = ' ';
-                vampire_vector[i].move_right();
-                break;
-            };
-        case 5:                 //goes diagonally 
-            if (grid[x - 1][y + 1] == ' ') {            //moves up-right
-                grid[x][y] = ' ';
-                vampire_vector[i].move_up_right();
-            }
-        case 6:                     
-            if (grid[x - 1][y - 1] == ' ') {             //moves up-left
-                grid[x][y] = ' ';
-                vampire_vector[i].move_up_left();
-            }
-        case 7:            
-            if (grid[x + 1][y - 1] == ' ') {             //moves down-left
-                grid[x][y] = ' ';
-                vampire_vector[i].move_down_left();
-            }
-        case 8:                                          //moves down-right
-            if (grid[x + 1][y + 1] == ' ') {
-                grid[x][y] = ' ';
-                vampire_vector[i].move_down_right();
-            }
-        }
-        x = vampire_vector[i].get_x();
-        y = vampire_vector[i].get_y();
-        grid[x][y] = 'v';
-    }
-    //move_werewolves();
+  
 }
 
 void Map::display_info() {

@@ -22,16 +22,15 @@ int main()
         cout << "up \n";
     };*/
     int x, y;
-    cout << "Enter the dimensions: " << endl;
+    cout << "Enter the dimensions of the map: " << endl;
     cin >> x >> y;
 
     char team;
-    cout << "Time to choose your team...\n" <<
-        "Enter V for Vampires and W for Werewolves: \n";
+    cout << "Time to choose your team...\n" 
+         << "Enter V for Vampires and W for Werewolves: \n";
     cin >> team;
     Game game(x, y, team);
     game.get_map().print();        // first print of the cosmos
-   
   //  char k = _getch();
     game.run();
    // Map map = game.get_map();

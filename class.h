@@ -15,7 +15,6 @@ public:
     inline void move_down() { x++; }
     inline void move_right() { y++; }
     inline void move_left() { y--; }
-    //virtual void move() = 0;    // pure virtual function beacuse every entity moves diffrently 
 };
 
 class Fighter : public Entity {
@@ -25,7 +24,7 @@ protected:
     int defence;        // random [1,2]
     int heal;           // random [0,2]
 public:
-    void set_values();
+    //void set_values();
     //virtual void attack() = 0;       //?????
     Fighter(int x, int y, char type);
     void display();
@@ -35,14 +34,13 @@ class Werewolf : public Fighter {
 public:
     //     void attack(Vampires& enemy);
     Werewolf(int x, int y, char type);
-    void move();
 };
 
 class Vampire : public Fighter {
 public:
     Vampire(int x, int y, char type);
+    void move_diagonally(int);
     //void attack(WereWolves& ememy);
-    void move();
 };
 
 class Player;
@@ -54,8 +52,9 @@ public:
     // Player* pointer_to_player;
     //;Avatar();        /*default constructor*/
     Avatar(int x, int y, char team);
-    inline int get_filters() { return magic_filters; }
-    inline char get_team() { return team; }
+    inline void add_filter() { magic_filters++; }
+    inline int get_filters()const { return magic_filters; }
+    inline char get_team()const { return team; }
     //void move();
 };
 
@@ -81,17 +80,19 @@ public:
     inline int get_y()const { return y; }
     inline int get_vampires()const { return vampires; }
     inline int get_werewolves()const { return werewolves; }
+    inline Avatar get_avatar() { return avatar; }
     inline bool get_day()const { return day; }
     void change_day();
     void set_outline();
     void display_info();
-  //  inline char** get_grid() { return grid; }
-    //void set_coordinates(Avatar& a,int x,int y);
-    Avatar get_avatar() { return avatar; }
-    // inline char get_input(Player* player) {return player->input;};
-    // friend class Avatar;        //in order to have access to the grid and the dimensions
+    void move_vampires();
+    void move_werewolves();
     std::vector<Werewolf> werewolf_vector;
     std::vector<Vampire> vampire_vector;
+    //inline char** get_grid() { return grid; }
+    //void set_coordinates(Avatar& a,int x,int y);
+    // inline char get_input(Player* player) {return player->input;};
+    // friend class Avatar;        //in order to have access to the grid and the dimensions
     //void reposition(int sx, int sy, int fx, int fy);
 };
 

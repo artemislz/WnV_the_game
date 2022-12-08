@@ -10,7 +10,7 @@
 #include <string>
 using namespace std;
 
-int get_random(int a, int b) {
+int get_random(int a, int b) {                   //returns a random number between a and b
     return a + rand() % (b - a + 1);
 }
 
@@ -25,28 +25,26 @@ Entity::Entity(int x, int y, char type) {
     this->y = y;
     this->type = type;
 }
-/*Map - Member functions & Constructor*/
 
+/*Map - Member functions & Constructor*/
 Map::Map(int x, int y, char team) : x(x), y(y), day(true), avatar(x / 2 + 1, y / 2 + 1, team) {
-    grid = new char* [x + 2];    // 2 extra lines for the outline
+    grid = new char* [x + 2];                   // 2 extra lines for the outline
     for (int i = 0; i < x + 2; i++)
         grid[i] = new char[y + 2];
     vampires = (x * y) / 30;
-    werewolves = vampires;      // same number of vampires and werewolves at first
-    create(team);               // takes team as input for the avatar
-
-
+    werewolves = vampires;                      // same number of vampires and werewolves at first
+    create(team);                               // takes team as input for the avatar
 }
 
 void Map::create(char team) {
-    int xx, yy;         // for outputs of function get_random in while loops
+    int xx, yy;                                 // for outputs of function get_random in while loops
     srand((unsigned)time(NULL));
 
     /*Process of creating the outline of the map*/
     set_outline();
     
     /*Process of putting avatar in the center of the map*/
-    grid[x / 2 + 1][y / 2 + 1] = team;      // we first put the avatar in order to avoid the middle specific position being taken by another entity or obstacle
+    grid[x / 2 + 1][y / 2 + 1] = team;          // we first put the avatar in order to avoid the middle specific position being taken by another entity or obstacle
 
     /*Process of creating and putting in random places vampires and werewolves*/
     for (int i = 0; i < vampires; i++) {         // same number of vampires and werewolves at the start of the game
@@ -69,7 +67,7 @@ void Map::create(char team) {
     };
 
     /*Process of putting in random places lakes and trees*/
-    int num = 0.04 * (x * y);        //4% of the positions of the grid
+    int num = 0.04 * (x * y);                   //4% of the positions of the grid
     for (int i = 0; i < num; i++) {
 
         /*fill with lakes(~)*/
@@ -87,7 +85,6 @@ void Map::create(char team) {
         grid[xx][yy] = '*';
 
     }
-
     /*Process of putting randomly the magic filter*/
     do {
         xx = get_random(0, x + 1);
@@ -165,8 +162,6 @@ void Map::print() {
                 }*/
      //       cout << "\342\230\272";
             cout << grid[i][j];
-            
-
         }
         cout << endl;
     }
@@ -201,76 +196,101 @@ void Map::update_avatar(int input) {       // called when player press a button 
     calls++;
     x = avatar.get_x();
     y = avatar.get_y();
-  //  cout << x << " " << y << endl;
-    if (input == KEY_UP && grid[x - 1][y] == ' ') {
-        grid[x][y] = ' ';
-        avatar.move_up();
-    }
-    else if (input == KEY_DOWN && grid[x + 1][y] == ' ') {
-        grid[x][y] = ' ';
-        avatar.move_down();
-    }
-    else if (input == KEY_RIGHT && grid[x][y + 1] == ' ') {
-        grid[x][y] = ' ';
-        avatar.move_right();
-    }
-    else if (input == KEY_LEFT && grid[x][y - 1] == ' ') {
-        grid[x][y] = ' ';
-        avatar.move_left();
+    switch (input) {
+    case KEY_UP:
+        if (grid[x - 1][y] == ' ') {
+            grid[x][y] = ' ';
+            avatar.move_up();
+        }
+        else if (grid[x - 1][y] = 'm') {        //catch the magic filter
+            grid[x][y] = ' ';
+            avatar.move_up();
+            avatar.add_filter();
+        }
+    case KEY_DOWN:
+        if (grid[x + 1][y] == ' ') {
+            grid[x][y] = ' ';
+            avatar.move_down();
+        }
+        else if (grid[x + 1][y] = 'm') {        
+            grid[x][y] = ' ';
+            avatar.move_down();
+            avatar.add_filter();
+        }
+    case KEY_LEFT:
+        if (grid[x][y - 1] == ' ') {
+            grid[x][y] = ' ';
+            avatar.move_left();
+        }
+        else if (grid[x][y - 1] = 'm') {        //catch the magic filter
+            grid[x][y] = ' ';
+            avatar.move_left();
+            avatar.add_filter();
+        }
+    case KEY_RIGHT:
+        if (grid[x][y + 1] == ' ') {
+            grid[x][y] = ' ';
+            avatar.move_right();
+        }
+        else if (grid[x][y + 1] = 'm') {        //catch the magic filter
+            grid[x][y] = ' ';
+            avatar.move_right();
+            avatar.add_filter();
+        }
     }
     x = avatar.get_x();
     y = avatar.get_y();
     grid[x][y] = avatar.get_team();
     if (calls % 10 == 0)        //change of the weather after 10 avtars moves
         change_day();
-  //  cout << x << " " << y << endl;
-   // print();
 }
 
-void Map::update() {        //vampires werewolves 1 random move attacks and defence
-    int x, y;
+void Map::move_vampires() {
     //Random moves for vampires (up-down-left-right-diagonally)
     for (int i = 0; i < vampires; i++) {
         x = vampire_vector[i].get_x();
         y = vampire_vector[i].get_y();
-        int p = get_random(1, 5);  //fix with diagonally - 5 or 8 cases
+        int p = get_random(1, 5);
         switch (p) {
-        case 1:                 //goes_up
+        case 1:                 //goes up
             if (grid[x - 1][y] == ' ') {
                 grid[x][y] = ' ';
                 vampire_vector[i].move_up();
                 //cout << "vampire is: " << grid[vampire_vector[i].get_x()][vampire_vector[i].get_y()];
                 break;
             };
-        case 2:                 //goes_down
+        case 2:                 //goes down
             if (grid[x + 1][y] == ' ') {
                 grid[x][y] = ' ';
                 vampire_vector[i].move_down();
                 break;
             };
-        case 3:                 //goes_left
+        case 3:                 //goes left
             if (grid[x][y - 1] == ' ') {
                 grid[x][y] = ' ';
                 vampire_vector[i].move_left();
                 break;
             };
-        case 4:                 //goes_right
+        case 4:                 //goes right
             if (grid[x][y + 1] == ' ') {
                 grid[x][y] = ' ';
                 vampire_vector[i].move_right();
                 break;
             };
-        case 5:                 //goes_up_right_diagonally
+        case 5:                 //goes diagonally in a random direction
             if (grid[x - 1][y + 1] == ' ') {
                 grid[x][y] = ' ';
-                vampire_vector[i].move_up();
+                vampire_vector[i].move_diagonally(get_random(1, 4));
             }
         };
         x = vampire_vector[i].get_x();
         y = vampire_vector[i].get_y();
         grid[x][y] = 'v';
-        //Random moves of werewolves (up-down-left-right)
     }
+}
+
+void Map::move_werewolves() {
+    //Random moves of werewolves (up-down-left-right)
     for (int i = 0; i < werewolves; i++) {
         x = werewolf_vector[i].get_x();
         y = werewolf_vector[i].get_y();
@@ -304,83 +324,10 @@ void Map::update() {        //vampires werewolves 1 random move attacks and defe
     }
 }
 
-/*Fighter - Member functions & Constructor*/
-Fighter::Fighter(int x, int y, char type) : Entity(x, y, type), health(10) {
-    power = get_random(1, 3);
-    defence = get_random(1, 2);
-    heal = get_random(0, 2);
-}
-
-void Fighter::display() {
-    cout << "\tpower: " << power << endl;
-    cout << "\tdefence: " << defence << endl;
-    cout << "\theal: " << heal << endl;
-}
-
-/*Vampire - Member functions & Constructor*/
-Vampire::Vampire(int x, int y, char type) : Fighter(x, y, type) {
-
-}
-
-
-/*Werewolf - Member functions & Constructor*/
-Werewolf::Werewolf(int x, int y, char type) : Fighter(x, y, type) {
-
-}
-
-
-/*Game - Member functions & Constructor*/
-Game::Game(int x, int y, char team) : active(true), map(x, y, team), player(team) {
-    cout << "The game is starting..." << endl;
-}
-
-
-/*Player - Member functions & Constructor*/
-Player::Player(char team) {         // IF NO W OR V APOSFALMATWSH
-    this->team = team;
-}
-
-void Player::set_input() {
-    char key = _getch();
-    input = key;
-}
-
-void Game::run() {
-
-    system("cls");
-    
-    while (active) {
-        if(check_for_end())
-            break;
-        while (!_kbhit()) {
-            if (check_for_end()) {
-                end();
-                return;
-            }
-            map.update();
-            map.print();
-            Sleep(100);
-
-            system("cls");
-
-        };
-        Sleep(100);
-        player.set_input();
-        // sleep(200);
-        if (player.get_input() == KEY_X) 
-            active = false;
-        else if (player.get_input() == KEY_SPACE)
-            map.display_info();
-            
-        else{
-            map.update_avatar(player.get_input());
-            map.print();
-            Sleep(150);
-            system("cls");
-        }
-    }
-    end();
-    return;
+void Map::update() {        //vampires werewolves 1 random move attacks and defence
+    int x, y;
+    move_vampires();
+    move_werewolves();
 }
 
 void Map::display_info() {
@@ -414,10 +361,97 @@ void Map::display_info() {
         char input = _getch();
         key = input;
     }
-    
    system("cls");
    return;
 }
+
+/*Fighter - Member functions & Constructor*/
+Fighter::Fighter(int x, int y, char type) : Entity(x, y, type), health(10) {
+    power = get_random(1, 3);
+    defence = get_random(1, 2);
+    heal = get_random(0, 2);
+}
+
+void Fighter::display() {
+    cout << "\tpower: " << power << endl;
+    cout << "\tdefence: " << defence << endl;
+    cout << "\theal: " << heal << endl;
+}
+
+/*Vampire - Member functions & Constructor*/
+Vampire::Vampire(int x, int y, char type) : Fighter(x, y, type) {
+
+}
+
+void Vampire::move_diagonally(int rand) {
+    switch (rand) {
+    case 1:             //moves up-right
+        x--;
+        y++;
+    case 2:             //moves up-left
+        x--;
+        y--;
+    case 3:             //moves down-right
+        x++;
+        y++;
+    case 4:             //moves down-left
+        x++;
+        y--;
+    }
+}
+
+/*Werewolf - Member functions & Constructor*/
+Werewolf::Werewolf(int x, int y, char type) : Fighter(x, y, type) {
+
+}
+
+/*Game - Member functions & Constructor*/
+Game::Game(int x, int y, char team) : active(true), map(x, y, team), player(team) {
+    system("cls");
+    cout << "The game is starting..." << endl
+        << "You are able to move in the map using arrow keys ..." << endl
+        << "Press space to pause game and X to exit..." << endl
+        << "Enjoy!\n\n";
+        system("pause");
+}
+
+void Game::run() {
+
+    system("cls");
+
+    while (active) {
+        if (check_for_end())
+            break;
+        while (!_kbhit()) {
+            if (check_for_end()) {
+                end();
+                return;
+            }
+            map.update();
+            map.print();
+            Sleep(70);
+
+            system("cls");
+
+        };
+        Sleep(100);
+        player.set_input();
+        // sleep(200);
+        if (player.get_input() == KEY_X)
+            active = false;
+        else if (player.get_input() == KEY_SPACE)
+            map.display_info();
+        else {
+            map.update_avatar(player.get_input());
+            map.print();
+            Sleep(150);
+            system("cls");
+        }
+    }
+    end();
+    return;
+}
+
 bool Game::check_for_end() {
     if (map.get_vampires() == 0 || map.get_werewolves() == 0) {
         if (!map.get_vampires())
@@ -428,10 +462,10 @@ bool Game::check_for_end() {
         system("cls");
         end();
         return true;
-
     }
     return false;
 }
+
 void Game::end() {
     cout << "THE  END OF THE GAME...\n";
     cout << "PRESS 'ENTER' TO SEE THE RESULTS...\n";
@@ -443,8 +477,8 @@ void Game::end() {
         else {
             cout << "UNLUCKY...+_+\n";
         }
-      //  cout << "Here are the final results...\n";
-    //    map.display_info();
+        //  cout << "Here are the final results...\n";
+        //    map.display_info();
         cout << "WINNERS TEAM: ";
         if (winners_team == 'V')
             cout << "VAMPIRES!\n";
@@ -456,4 +490,14 @@ void Game::end() {
         cout << "SO YOU DON'T CARE...\n";
     }
     cout << "END OF THE GAME\n";
+}
+
+/*Player - Member functions & Constructor*/
+Player::Player(char team) {         // IF NO W OR V APOSFALMATWSH
+    this->team = team;
+}
+
+void Player::set_input() {
+    char key = _getch();
+    input = key;
 }

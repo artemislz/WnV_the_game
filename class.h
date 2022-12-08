@@ -39,7 +39,10 @@ public:
 class Vampire : public Fighter {
 public:
     Vampire(int x, int y, char type);
-    void move_diagonally(int);
+    inline void move_up_right() { x--; y++; }
+    inline void move_up_left() { x--; y--; }
+    inline void move_down_right() { x++; y++; }
+    inline void move_down_left() { x++; y--; }
     //void attack(WereWolves& ememy);
 };
 

@@ -5,6 +5,7 @@
 #include "class.h"
 #include "globals.h"
 
+
 using namespace std;
 
 
@@ -20,8 +21,8 @@ int main()
  //   cin >> team;
     Game game(x, y, team);
     game.get_map().print();        // first print of the cosmos
-    system("pause");
     game.run();
-  
+   
+    
     return 0;
 }

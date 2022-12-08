@@ -8,22 +8,28 @@
 #include <windows.h>
 #include <conio.h>
 #include <string>
+#include <algorithm>
+#include <execution>
+//#include <bits/stdc++.h>
 using namespace std;
-
+//global functions
 int get_random(int a, int b) {
     return a + rand() % (b - a + 1);
 }
+static bool comparefunc(Fighter& f1, Fighter& f2) {
+    return f1.get_x() < f2.get_x();
+}
 
 /*Avatar - Member functions & Constructor*/
-Avatar::Avatar(int x, int y, char team) : Entity(x, y, team), magic_filters(1) {
+Avatar::Avatar(int x, int y, char team) : Entity(x, y), magic_filters(1) {
     this->team = team;
 }
 
 /*Entity - Member functions & Constructor*/
-Entity::Entity(int x, int y, char type) {
+Entity::Entity(int x, int y) {
     this->x = x;
     this->y = y;
-    this->type = type;
+    
 }
 /*Map - Member functions & Constructor*/
 
@@ -34,8 +40,6 @@ Map::Map(int x, int y, char team) : x(x), y(y), day(true), avatar(x / 2 + 1, y /
     vampires = (x * y) / 30;
     werewolves = vampires;      // same number of vampires and werewolves at first
     create(team);               // takes team as input for the avatar
-
-
 }
 
 void Map::create(char team) {
@@ -50,35 +54,31 @@ void Map::create(char team) {
 
     /*Process of creating and putting in random places vampires and werewolves*/
     for (int i = 0; i < vampires; i++) {         // same number of vampires and werewolves at the start of the game
-        /*fill with vampires*/
+        /*fill with vampires and werewolves*/
         do {
             xx = get_random(1, x);
             yy = get_random(1, y);
         } while (grid[xx][yy] != ' ');
         grid[xx][yy] = 'v';
         Vampire vampire(xx, yy, 'v');
-        vampire_vector.push_back(vampire);
-        /*fill with werewolves*/
+        fighters_vector.push_back(vampire);
         do {
             xx = get_random(1, x);
             yy = get_random(1, y);
         } while (grid[xx][yy] != ' ');
         grid[xx][yy] = 'w';
         Werewolf werewolf(xx, yy, 'w');
-        werewolf_vector.push_back(werewolf);
+        fighters_vector.push_back(werewolf);
     };
-
     /*Process of putting in random places lakes and trees*/
     int num = 0.04 * (x * y);        //4% of the positions of the grid
     for (int i = 0; i < num; i++) {
-
         /*fill with lakes(~)*/
         do {
             xx = get_random(1, x);
             yy = get_random(1, y);
         } while (grid[xx][yy] != ' ');
         grid[xx][yy] = '~';
-
         /*fill with trees(*)*/
         do {
             xx = get_random(1, x);
@@ -92,6 +92,7 @@ void Map::create(char team) {
     put_magic_filter();
     return;
 }
+
 void Map::put_magic_filter() {
     int xx, yy;
     do {
@@ -100,6 +101,7 @@ void Map::put_magic_filter() {
     } while (grid[xx][yy] != ' ');
     grid[xx][yy] = 'm';
 }
+
 void Map::set_outline() {
     for (int i = 1; i < x + 1; i++) {
         grid[i][0] = '|';
@@ -121,13 +123,14 @@ void Map::print() {
     for (int i = 0; i < x + 2; i++) {
         for (int j = 0; j < y + 2; j++) {
             cout << ' ';
-            cout << grid[i][j];
+            if(grid[i][j] == 'V' || grid[i][j]=='W'){
+                cout << "A";
+            }else{
+                cout << grid[i][j];
+            }
         }
         cout << endl;
     }
-
-    //cout << "\u203E ";       // source:https://www.codeproject.com/Questions/877314/how-to-print-an-overline-pls-help
-    //cout << endl;
 }
 
 void Map::change_day() {
@@ -206,116 +209,100 @@ void Map::update_avatar(int input) {       // called when player press a button 
     x = avatar.get_x();
     y = avatar.get_y();
     grid[x][y] = avatar.get_team();
-    if (calls % 10 == 0)        //change of the weather after 10 avtars moves
+    if (calls % 10 == 0)        //change of the weather after 10 avatars moves
         change_day();
    
 }
 
 void Map::update() {        //vampires werewolves 1 random move attacks and defence
-    //Random moves for vampires (up-down-left-right-diagonally)
-    move_vampires();
-	//Random moves of werewolves (up-down-left-right)
-    move_werewolves();
-}
-void Map::move_vampires() {
-    int x, y;
-    for (int i = 0; i < vampires; i++) {
-        x = vampire_vector[i].get_x();
-        y = vampire_vector[i].get_y();
-        int p = get_random(1, 8); 
+    move();
+    interactions();
 
+}
+
+void Map::move() {
+    int x, y;
+    char t;
+	vector<Fighter>::iterator ptr;
+    for (ptr = fighters_vector.begin(); ptr < fighters_vector.end(); ptr++) {
+        t = (*ptr).get_type();
+        x = (*ptr).get_x();
+        y = (*ptr).get_y();
+        int p;
+        if (t == 'w')
+            p = get_random(0, 4);
+        else {
+            p = get_random(0, 8);
+        }
         switch (p) {
+        case 0:                 //stay in the same position
+            break;
         case 1:                 //goes_up
             if (grid[x - 1][y] == ' ') {
                 grid[x][y] = ' ';
-                vampire_vector[i].move_up();
+                (*ptr).move_up();
                 break;
             };
         case 2:                 //goes_down
             if (grid[x + 1][y] == ' ') {
                 grid[x][y] = ' ';
-                vampire_vector[i].move_down();
+                (*ptr).move_down();
                 break;
             };
         case 3:                 //goes_left
             if (grid[x][y - 1] == ' ') {
                 grid[x][y] = ' ';
-                vampire_vector[i].move_left();
+				(*ptr).move_left();
                 break;
             };
         case 4:                 //goes_right
             if (grid[x][y + 1] == ' ') {
                 grid[x][y] = ' ';
-                vampire_vector[i].move_right();
+				(*ptr).move_right();
                 break;
             }                 //goes_up_right_diagonally
+           
         case 5:
             if (grid[x - 1][y + 1] == ' ') {            //goes up right
                 grid[x][y] = ' ';
-                vampire_vector[i].move_up_right();
+				(*ptr).move_up();
+                (*ptr).move_right();
                 break;
             };
         case 6:
             if (grid[x - 1][y - 1] == ' ') {
                 grid[x][y] = ' ';
-                vampire_vector[i].move_up_left();       //goes up left
+				(*ptr).move_up();       //goes up left
+                (*ptr).move_left();
                 break;
             };
         case 7:
             if (grid[x + 1][y + 1] == ' ') {
                 grid[x][y] = ' ';
-                vampire_vector[i].move_down_right();    //goes down right
+                (*ptr).move_down();
+                (*ptr).move_right();    //goes down right
                 break;
             };
         case 8:
             if (grid[x + 1][y - 1] == ' ') {            //goes down left
                 grid[x][y] = ' ';
-                vampire_vector[i].move_down_left();
+                (*ptr).move_down();
+                (*ptr).move_left();
                 break;
             };
         };
-        x = vampire_vector[i].get_x();
-        y = vampire_vector[i].get_y();
-        grid[x][y] = 'v';
+        x = (*ptr).get_x();
+        y = (*ptr).get_y();
+        grid[x][y] = (*ptr).get_type();
     }
 }
-void Map::move_werewolves() {
-    int x, y;
-    for (int i = 0; i < werewolves; i++) {
-        x = werewolf_vector[i].get_x();
-        y = werewolf_vector[i].get_y();
-        int p = get_random(1, 4);
-        switch (p) {
-        case 1:                 //goes_up
-            if (grid[x - 1][y] == ' ') {
-                grid[x][y] = ' ';
-                werewolf_vector[i].move_up();
-                break;
-            };
-        case 2:                 //goes_down
-            if (grid[x + 1][y] == ' ') {
-                grid[x][y] = ' ';
-                werewolf_vector[i].move_down();
-                break;
-            };
-        case 3:                 //goes_left
-            if (grid[x][y - 1] == ' ') {
-                grid[x][y] = ' ';
-                werewolf_vector[i].move_left();
-                break;
-            };
-        case 4:                 //goes_right
-            if (grid[x][y + 1] == ' ') {
-                grid[x][y] = ' ';
-                werewolf_vector[i].move_right();
-                break;
-            };
-        }
-        x = werewolf_vector[i].get_x();
-        y = werewolf_vector[i].get_y();
-        grid[x][y] = 'w';
-    }
+
+void Map::interactions() {
+
+    sort(fighters_vector.begin(), fighters_vector.end(), &comparefunc);
+
 }
+
 void Map::display_info() {
 
 	string vampire_display = "| Number of Vampires Alive: ";
@@ -349,16 +336,16 @@ void Map::display_info() {
 		char input = _getch();
 		key = input;
 	}
-
 	system("cls");
 	return;
 }
 
 /*Fighter - Member functions & Constructor*/
-Fighter::Fighter(int x, int y, char type) : Entity(x, y, type), health(10) {
+Fighter::Fighter(int x, int y, char type) : Entity(x, y), health(10) {
     power = get_random(1, 3);
     defence = get_random(1, 2);
     heal = get_random(0, 2);
+    this->type = type;
 }
 
 void Fighter::display() {
@@ -385,7 +372,6 @@ Game::Game(int x, int y, char team) : active(true), map(x, y, team), player(team
 		<< "Enjoy!\n\n";
 	system("pause");
 }
-
 
 void Game::run() {
 

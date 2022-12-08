@@ -2,13 +2,15 @@
 #include "globals.h"
 #include <vector>
 
+
+
+
 class Entity {            //<<Fighters,Avatar
 protected:
     int x;      // position
     int y;
-    char type;
 public:
-    Entity(int x, int y, char type);
+    Entity(int x, int y);
     inline int get_x() const { return x; }
     inline int get_y() const { return y; }
     inline void move_up() { x--; }          //-> prosthhkh allagh theshs sto grid
@@ -23,26 +25,26 @@ protected:
     int power;          // random [1,3]
     int defence;        // random [1,2]
     int heal;           // random [0,2]
+    char type;
+    bool checked;       // true -> checked if he has fighters close to him
 public:
     //void set_values();
     //virtual void attack() = 0;       //?????
     Fighter(int x, int y, char type);
     void display();
+    inline char get_type()const { return type; }
+    friend bool comparefunc(Fighter*, Fighter*);
 };
-
+static bool comparefunc(Fighter& f1, Fighter& f2);
 class Werewolf : public Fighter {
 public:
-    //     void attack(Vampires& enemy);
+    //void attack(Vampires& enemy);
     Werewolf(int x, int y, char type);
 };
 
 class Vampire : public Fighter {
 public:
     Vampire(int x, int y, char type);
-    inline void move_up_right() { x--; y++; }
-    inline void move_up_left() { x--; y--; }
-    inline void move_down_right() { x++; y++; }
-    inline void move_down_left() { x++; y--; }
     //void attack(WereWolves& ememy);
 };
 
@@ -89,10 +91,13 @@ public:
     void change_day();
     void set_outline();
     void display_info();
-    void move_vampires();
-    void move_werewolves();
-    std::vector<Werewolf> werewolf_vector;
-    std::vector<Vampire> vampire_vector;
+    void move();
+    void interactions();
+
+  //  void move_vampires();
+   // void move_werewolves();
+     std::vector<Fighter> fighters_vector;
+     Fighter search();
     //inline char** get_grid() { return grid; }
     //void set_coordinates(Avatar& a,int x,int y);
     // inline char get_input(Player* player) {return player->input;};

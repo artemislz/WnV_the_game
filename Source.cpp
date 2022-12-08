@@ -10,7 +10,7 @@ using namespace std;
 
 int main()
 {
-    int x = 3, y = 3;
+    int x = 25, y = 25;
   //  cout << "Enter the dimensions of the map: " << endl;
     //cin >> x >> y;
 

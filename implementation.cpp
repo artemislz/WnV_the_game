@@ -81,8 +81,8 @@ void Map::create(char team) {
 
         /*fill with trees(*)*/
         do {
-            xx = get_random(0, x + 1);
-            yy = get_random(0, y + 1);
+            xx = get_random(1, x);
+            yy = get_random(1, y);
         } while (grid[xx][yy] != ' ');
         grid[xx][yy] = '*';
 
@@ -157,47 +157,58 @@ void Map::update_avatar(int input) {       // called when player press a button 
     x = avatar.get_x();
     y = avatar.get_y();
     //  cout << x << " " << y << endl;
-    if (input == KEY_UP && (grid[x - 1][y] == ' ' || grid[x - 1][y] == 'm')) {
-        grid[x][y] = ' ';
-        avatar.move_up();
-        if (grid[x - 1][y] == 'm') {
-            avatar.add_filter();
-            put_magic_filter();
+    switch (input) {
+        case KEY_UP:
+            if (grid[x - 1][y] == ' ' || grid[x - 1][y] == 'm') {
+                grid[x][y] = ' ';
+                avatar.move_up();
+                if (grid[x - 1][y] == 'm') {
+                    avatar.add_filter();
+                    put_magic_filter();
+                }
+                break;
+            }
+    case KEY_DOWN:
+        if (grid[x + 1][y] == ' ' || grid[x + 1][y] == 'm') {
+            grid[x][y] = ' ';
+            avatar.move_down();
+            if (grid[x + 1][y] == 'm') {
+                avatar.add_filter();
+                put_magic_filter();
+            }
+            break;
         }
-    }
-    else if (input == KEY_DOWN && (grid[x + 1][y] == ' ' || grid[x + 1][y] == 'm')) {
-        grid[x][y] = ' ';
-        avatar.move_down();
-        if (grid[x + 1][y] == 'm') {
-            avatar.add_filter();
-            put_magic_filter();
+    case KEY_RIGHT:
+        if (grid[x][y + 1] == ' ' || grid[x][y + 1] == 'm') {
+            grid[x][y] = ' ';
+            avatar.move_right();
+            if (grid[x][y + 1] == 'm') {
+                avatar.add_filter();
+                put_magic_filter();
+            }
+            break;
         }
-    }
-    else if (input == KEY_RIGHT && (grid[x][y + 1] == ' ' || grid[x][y + 1] == 'm')) {
-        grid[x][y] = ' ';
-        avatar.move_right();
-        if (grid[x][y + 1] == 'm') {
-            avatar.add_filter(); 
-            put_magic_filter();
+    case KEY_LEFT:
+        if (grid[x][y - 1] == ' ' || grid[x][y - 1] == 'm') {
+            grid[x][y] = ' ';
+            avatar.move_left();
+            if (grid[x][y - 1] == 'm') {
+                avatar.add_filter();
+                put_magic_filter();
+            }
+            break;
         }
-       
+
+    default:
+        break;
     }
-    else if (input == KEY_LEFT && (grid[x][y - 1] == ' ' || grid[x][y - 1] == 'm')) {
-        grid[x][y] = ' ';
-        avatar.move_left();
-        if (grid[x][y - 1] == 'm') {
-            avatar.add_filter();  
-            put_magic_filter();
-        }
-        
-    }
+    
     x = avatar.get_x();
     y = avatar.get_y();
     grid[x][y] = avatar.get_team();
     if (calls % 10 == 0)        //change of the weather after 10 avtars moves
         change_day();
-    //  cout << x << " " << y << endl;
-     // print();
+   
 }
 
 void Map::update() {        //vampires werewolves 1 random move attacks and defence
@@ -397,8 +408,9 @@ void Game::run() {
 	//	Sleep(100);
 		player.set_input();
 		// sleep(200);
-		if (player.get_input() == KEY_X)
-			active = false;
+        if (player.get_input() == KEY_X) 
+            active = false;
+      
 		else if (player.get_input() == KEY_SPACE)
 			map.display_info();
 

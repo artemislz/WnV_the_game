@@ -417,11 +417,14 @@ Game::Game(int x, int y, char team) : active(true), map(x, y, team), player(team
 
 void Game::run() {
 
-    system("cls");
-
+    //system("cls");
+    
     while (active) {
-        if (check_for_end())
-            break;
+        if (check_for_end()) {
+            end();
+            return;
+        }
+            
         while (!_kbhit()) {
             if (check_for_end()) {
                 end();
@@ -459,8 +462,7 @@ bool Game::check_for_end() {
         else {
             winners_team = 'W';
         }
-        system("cls");
-        end();
+       // system("cls");
         return true;
     }
     return false;
@@ -469,6 +471,7 @@ bool Game::check_for_end() {
 void Game::end() {
     cout << "THE  END OF THE GAME...\n";
     cout << "PRESS 'ENTER' TO SEE THE RESULTS...\n";
+    Sleep(200);
     char input = _getch();
     int key = input;
     if (key == KEY_ENTER) {

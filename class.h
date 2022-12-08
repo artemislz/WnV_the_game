@@ -79,6 +79,7 @@ public:
     void print();                      // display map to terminal
     void update_avatar(int input);          // update of the grid after player's movement
     void update();
+    void put_magic_filter();
     inline int get_x()const { return x; }
     inline int get_y()const { return y; }
     inline int get_vampires()const { return vampires; }

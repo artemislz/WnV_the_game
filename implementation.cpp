@@ -89,14 +89,17 @@ void Map::create(char team) {
     }
 
     /*Process of putting randomly the magic filter*/
+    put_magic_filter();
+    return;
+}
+void Map::put_magic_filter() {
+    int xx, yy;
     do {
         xx = get_random(0, x + 1);
         yy = get_random(0, y + 1);
     } while (grid[xx][yy] != ' ');
     grid[xx][yy] = 'm';
-    return;
 }
-
 void Map::set_outline() {
     for (int i = 1; i < x + 1; i++) {
         grid[i][0] = '|';
@@ -154,21 +157,54 @@ void Map::update_avatar(int input) {       // called when player press a button 
     x = avatar.get_x();
     y = avatar.get_y();
     //  cout << x << " " << y << endl;
-    if (input == KEY_UP && grid[x - 1][y] == ' ') {
-        grid[x][y] = ' ';
-        avatar.move_up();
+    if (input == KEY_UP && (grid[x - 1][y] == ' ' || grid[x - 1][y] == 'm')) {
+        if (grid[x - 1][y] == 'm') {
+            avatar.add_filter();
+            grid[x][y] = ' ';
+            avatar.move_up();
+            put_magic_filter();
+        }
+        else {
+            grid[x][y] = ' ';
+            avatar.move_up();
+        }
     }
-    else if (input == KEY_DOWN && grid[x + 1][y] == ' ') {
-        grid[x][y] = ' ';
-        avatar.move_down();
+    else if (input == KEY_DOWN && (grid[x + 1][y] == ' ' || grid[x + 1][y] == 'm')) {
+        if (grid[x + 1][y] == 'm') {
+            avatar.add_filter();
+            grid[x][y] = ' ';
+            avatar.move_down();
+            put_magic_filter();
+        }
+        else {
+            grid[x][y] = ' ';
+            avatar.move_down();
+        }
     }
-    else if (input == KEY_RIGHT && grid[x][y + 1] == ' ') {
-        grid[x][y] = ' ';
-        avatar.move_right();
+    else if (input == KEY_RIGHT && (grid[x][y + 1] == ' ' || grid[x][y + 1] == 'm')) {
+        if (grid[x][y + 1] == 'm') {
+            avatar.add_filter();
+            grid[x][y] = ' ';
+            avatar.move_right();
+            put_magic_filter();
+            
+        }
+        else {
+            grid[x][y] = ' ';
+            avatar.move_right();
+        }
     }
-    else if (input == KEY_LEFT && grid[x][y - 1] == ' ') {
-        grid[x][y] = ' ';
-        avatar.move_left();
+    else if (input == KEY_LEFT && (grid[x][y - 1] == ' ' || grid[x][y - 1] == 'm')) {
+        if (grid[x][y - 1] == 'm') {
+            avatar.add_filter();
+            grid[x][y] = ' ';
+            avatar.move_left();
+            put_magic_filter();
+        }
+        else {
+            grid[x][y] = ' ';
+            avatar.move_left();
+        }
     }
     x = avatar.get_x();
     y = avatar.get_y();
@@ -190,13 +226,12 @@ void Map::move_vampires() {
     for (int i = 0; i < vampires; i++) {
         x = vampire_vector[i].get_x();
         y = vampire_vector[i].get_y();
-        int p = get_random(1, 5);  //fix with diagonally - 5 or 8 cases
+        int p = get_random(1, 8);  
         switch (p) {
         case 1:                 //goes_up
             if (grid[x - 1][y] == ' ') {
                 grid[x][y] = ' ';
                 vampire_vector[i].move_up();
-                //cout << "vampire is: " << grid[vampire_vector[i].get_x()][vampire_vector[i].get_y()];
                 break;
             };
         case 2:                 //goes_down
@@ -355,7 +390,7 @@ Game::Game(int x, int y, char team) : active(true), map(x, y, team), player(team
 
 void Game::run() {
 
-	//system("cls");
+	system("cls");
 	while (active) {
 		if (check_for_end()) {
 			end();

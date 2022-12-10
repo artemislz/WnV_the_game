@@ -14,7 +14,14 @@ public:
     inline char get_type() const { return type; }
     inline void set_i(int i) { }
     inline void set_type(char t) { type = t; }
-}; 
+    virtual bool is_checked() = 0;
+};
+
+class Stable_object : public Map_entity {
+public:
+    Stable_object(int i, int j, char type);
+    bool is_checked() { return 0; }
+};
 
 class Entity : public Map_entity {            //<<Fighters,Avatar
 public:
@@ -23,6 +30,7 @@ public:
     inline void move_down() { i++; }
     inline void move_right() { j++; }
     inline void move_left() { j--; }
+    bool is_checked() { return 0; }
 };
 
 class Fighter : public Entity {
@@ -37,10 +45,12 @@ public:
     //virtual void attack() = 0;       //?????
     Fighter(int i, int j, char type);
     void display();
+    bool is_checked() { return checked; }
+    inline void add_health() { health++;  }
+    inline void lose_health() { health--; }
+    inline int get_health() const { return health; }
     inline char get_type()const { return type; }
 };
-
-static bool comparefunc(Fighter& f1, Fighter& f2);
 
 class Werewolf : public Fighter {
 public:

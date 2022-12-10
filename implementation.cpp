@@ -31,6 +31,10 @@ Map_entity::Map_entity(int i, int j, char type) {
     this->type = type;
 }
 
+/*Stable_objects - Constructor*/
+Stable_object::Stable_object(int i, int j, char type) : Map_entity(i,j,type){
+}
+
 /*Entity - Member functions & constructors*/
 Entity::Entity(int i, int j, char type) : Map_entity(i, j, type) {
 }
@@ -89,27 +93,27 @@ void Map::create() {
             xx = get_random(1, x);
             yy = get_random(1, y);
         } while (grid[xx][yy] != NULL);
-        grid[xx][yy] = new Map_entity(xx,yy,'l');
+        grid[xx][yy] = new Stable_object(xx,yy,'l');
         
         /*fill with trees(*)*/
         do {
             xx = get_random(1, x);
             yy = get_random(1, y);
         } while (grid[xx][yy] != NULL);
-        grid[xx][yy] = new Map_entity(xx,yy,'t');
+        grid[xx][yy] = new Stable_object(xx,yy,'t');
     }
     /*Process of putting randomly the magic filter*/
     do {
         xx = get_random(0, x + 1);
         yy = get_random(0, y + 1);
     } while (grid[xx][yy] != NULL);
-    grid[xx][yy] = new Map_entity(xx, yy, 'm');
+    grid[xx][yy] = new Stable_object(xx, yy, 'm');
 
     /*Process of filling the rest of the grid with earth*/
     for (int i = 1; i < x + 1; i++) {
         for (int j = 1; j < y + 1; j++) {                   //not checking the outline's positions
             if (grid[i][j] == NULL) {
-                grid[i][j] = new Map_entity(i, j, 'e');
+                grid[i][j] = new Stable_object(i, j, 'e');
             }
         }
     }
@@ -118,12 +122,12 @@ void Map::create() {
 
 void Map::set_outline() {
     for (int i = 1; i < x + 1; i++) {
-        grid[i][0] = new Map_entity(i,0,'s');  // |
-        grid[i][y + 1] =  new Map_entity(i,y+1,'s');
+        grid[i][0] = new Stable_object(i,0,'s');  // |
+        grid[i][y + 1] =  new Stable_object(i,y+1,'s');
     }
     for (int j = 0; j < y + 2; j++) {
-        grid[0][j] = new Map_entity(0, j, 'u');
-        grid[x + 1][j] = new Map_entity(x + 1, j, 'u');
+        grid[0][j] = new Stable_object(0, j, 'u');
+        grid[x + 1][j] = new Stable_object(x + 1, j, 'u');
     };
 }
 
@@ -234,6 +238,7 @@ void Map::update_avatar(int input) {       // called when player press a button 
             avatar.move_down();
             if (check_type(i + 1, j, 'm')) {
                 Map_entity* p = grid[i + 1][j];         //old position of magic filter
+                swap(grid[i + 1][j], grid[i][j]);
                 avatar.add_filter();
                 put_magic_filter(p, i, j);
             }
@@ -247,6 +252,7 @@ void Map::update_avatar(int input) {       // called when player press a button 
             avatar.move_right();
             if (check_type(i, j + 1, 'm')) {
                 Map_entity* p = grid[i][j + 1];         //old position of magic filter
+                swap(grid[i][j + 1], grid[i][j]);
                 avatar.add_filter();
                 put_magic_filter(p, i, j);
             }
@@ -260,6 +266,7 @@ void Map::update_avatar(int input) {       // called when player press a button 
             avatar.move_left();
             if (check_type(i, j - 1, 'm')) {
                 Map_entity* p = grid[i][j - 1];         //old position of magic filter
+                swap(grid[i][j - 1], grid[i][j]);
                 avatar.add_filter();
                 put_magic_filter(p, i, j);
             }
@@ -278,7 +285,7 @@ void Map::update_avatar(int input) {       // called when player press a button 
 
 void Map::update() {        //vampires werewolves 1 random move attacks and defence
     move();
-    interactions();
+    //interactions();
 }
 
 
@@ -357,6 +364,38 @@ void Map::move() {
 }
 
 void Map::interactions() {
+    int count;
+    bool up, down, left, right;
+    for (int i = 1; i < x + 1; i++) {
+        for (int j = 1; j < y + 1; j++) {
+            if (!check_type(i, j, 'v') || !check_type(i, j, 'w') || grid[i][j]->is_checked()) { continue; }
+            vector<char> positions;
+            if ((check_type(i - 1, j, 'v') || check_type(i - 1, j, 'w')) && !grid[i - 1][j]->is_checked()){           //up 
+                up = true;
+                positions.push_back('u');
+            }
+            if ((check_type(i + 1, j, 'v') || check_type(i + 1, j, 'w')) && !grid[i + 1][j]->is_checked()) {
+                down = true;
+                positions.push_back('d');
+            }
+            if ((check_type(i, j - 1, 'v') || check_type(i, j - 1, 'w')) && !grid[i][j - 1]->is_checked()) {
+                left = true;
+                positions.push_back('l');
+            }
+            if ((check_type(i, j + 1, 'v') || check_type(i, j + 1, 'w')) && !grid[i][j + 1]->is_checked()) {
+                right = true;
+                positions.push_back('r');
+            }
+            count = up + down + left + right;
+            int num = get_random(1, count);
+            char p = positions.at(num);
+            switch (p) {
+            case 'u':
+                if (grid[i - 1][j]->get_type() == grid[i][j]->get_type()) {
+                }
+            }
+        }
+    }
 }
 
 void Map::display_info() {

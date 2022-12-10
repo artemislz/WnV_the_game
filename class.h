@@ -2,21 +2,27 @@
 #include "globals.h"
 #include <vector>
 
-
-
-
-class Entity {            //<<Fighters,Avatar
+class Map_entity {
 protected:
-    int x;      // position
-    int y;
+    int i;
+    int j;
+    char type;      //a->avatar , v->vampire , w->werewolf , t->trees , l->lakes , f->filter , u->up-down outline , s->side's outline
 public:
-    Entity(int x, int y);
-    inline int get_x() const { return x; }
-    inline int get_y() const { return y; }
-    inline void move_up() { x--; }          //-> prosthhkh allagh theshs sto grid
-    inline void move_down() { x++; }
-    inline void move_right() { y++; }
-    inline void move_left() { y--; }
+    Map_entity(int i, int j, char type);
+    inline int get_i() const { return i; }
+    inline int get_j() const { return j; }
+    inline char get_type() const { return type; }
+    inline void set_i(int i) { }
+    inline void set_type(char t) { type = t; }
+}; 
+
+class Entity : public Map_entity {            //<<Fighters,Avatar
+public:
+    Entity(int i, int j , char type);
+    inline void move_up() { i--; }          //-> prosthhkh allagh theshs sto grid
+    inline void move_down() { i++; }
+    inline void move_right() { j++; }
+    inline void move_left() { j--; }
 };
 
 class Fighter : public Entity {
@@ -25,26 +31,26 @@ protected:
     int power;          // random [1,3]
     int defence;        // random [1,2]
     int heal;           // random [0,2]
-    char type;
-    bool checked;       // true -> checked if he has fighters close to him
+    bool checked;       // true if he attacked or has been attacked
 public:
     //void set_values();
     //virtual void attack() = 0;       //?????
-    Fighter(int x, int y, char type);
+    Fighter(int i, int j, char type);
     void display();
     inline char get_type()const { return type; }
-    friend bool comparefunc(Fighter*, Fighter*);
 };
+
 static bool comparefunc(Fighter& f1, Fighter& f2);
+
 class Werewolf : public Fighter {
 public:
     //void attack(Vampires& enemy);
-    Werewolf(int x, int y, char type);
+    Werewolf(int i, int j, char type = 'w');
 };
 
 class Vampire : public Fighter {
 public:
-    Vampire(int x, int y, char type);
+    Vampire(int i, int j, char type = 'v');
     //void attack(WereWolves& ememy);
 };
 
@@ -56,7 +62,7 @@ private:
 public:
     // Player* pointer_to_player;
     //;Avatar();        /*default constructor*/
-    Avatar(int x, int y, char team);
+    Avatar(int x, int y, char team, char type = 'a');
     inline void add_filter() { magic_filters++; }
     inline int get_filters()const { return magic_filters; }
     inline char get_team()const { return team; }
@@ -72,16 +78,15 @@ private:
     int vampires;   // count of vampires alive
     int werewolves; // count of werewolves alive
     friend int get_random(int, int);
-    char** grid;
-   
+    Map_entity*** grid;
 public:
     Map(int x, int y, char team);    // map constructor
-    void create(char team);          // create of the first grid
+    void create();          // create of the first grid
     // void add_avatar(char);
     void print();                      // display map to terminal
     void update_avatar(int input);          // update of the grid after player's movement
     void update();
-    void put_magic_filter();
+    void put_magic_filter(Map_entity*,int , int );          //takes the old coordinates of avatar
     inline int get_x()const { return x; }
     inline int get_y()const { return y; }
     inline int get_vampires()const { return vampires; }
@@ -93,11 +98,11 @@ public:
     void display_info();
     void move();
     void interactions();
-
-  //  void move_vampires();
-   // void move_werewolves();
-     std::vector<Fighter> fighters_vector;
-     Fighter search();
+    bool check_type(int, int);
+    bool check_type(int, int, char);
+    std::vector<Fighter> vector_fighters;
+    //  void move_vampires();
+    // void move_werewolves();
     //inline char** get_grid() { return grid; }
     //void set_coordinates(Avatar& a,int x,int y);
     // inline char get_input(Player* player) {return player->input;};

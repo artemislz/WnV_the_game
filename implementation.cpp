@@ -10,47 +10,56 @@
 #include <string>
 #include <algorithm>
 #include <execution>
+
 //#include <bits/stdc++.h>
 using namespace std;
+
 //global functions
 int get_random(int a, int b) {
     return a + rand() % (b - a + 1);
 }
-static bool comparefunc(Fighter& f1, Fighter& f2) {
-    return f1.get_x() < f2.get_x();
-}
 
 /*Avatar - Member functions & Constructor*/
-Avatar::Avatar(int x, int y, char team) : Entity(x, y), magic_filters(1) {
+Avatar::Avatar(int i, int j, char team, char type) : Entity(i, j,type), magic_filters(1) {
     this->team = team;
 }
 
-/*Entity - Member functions & Constructor*/
-Entity::Entity(int x, int y) {
-    this->x = x;
-    this->y = y;
-    
+/*Map Entity - Member functions & Constructor*/
+Map_entity::Map_entity(int i, int j, char type) {
+    this->i = i;
+    this->j = j;
+    this->type = type;
 }
-/*Map - Member functions & Constructor*/
 
-Map::Map(int x, int y, char team) : x(x), y(y), day(true), avatar(x / 2 + 1, y / 2 + 1, team) {
-    grid = new char* [x + 2];    // 2 extra lines for the outline
-    for (int i = 0; i < x + 2; i++)
-        grid[i] = new char[y + 2];
+/*Entity - Member functions & constructors*/
+Entity::Entity(int i, int j, char type) : Map_entity(i, j, type) {
+}
+
+/*Map - Member functions & Constructor*/
+Map::Map(int x, int y, char team) : x(x), y(y), day(true), avatar(x / 2 + 1, y / 2 + 1, team ) {
+    
     vampires = (x * y) / 30;
     werewolves = vampires;      // same number of vampires and werewolves at first
-    create(team);               // takes team as input for the avatar
+    create();               // takes team as input for the avatar
 }
 
-void Map::create(char team) {
+void Map::create() {
     int xx, yy;         // for outputs of function get_random in while loops
     srand((unsigned)time(NULL));
 
+    grid = new Map_entity **[x + 2];    // 2 extra lines for the outline
+    for (int i = 0; i < x + 2; i++)
+        grid[i] = new Map_entity *[y + 2];
+    for (int i = 0; i < x + 2; i++) {
+        for (int j = 0; j < y + 2; j++) {
+            grid[i][j] = NULL;
+        }
+    }
     /*Process of creating the outline of the map*/
     set_outline();
 
     /*Process of putting avatar in the center of the map*/
-    grid[x / 2 + 1][y / 2 + 1] = team;      // we first put the avatar in order to avoid the middle specific position being taken by another entity or obstacle
+    grid[x / 2 + 1][y / 2 + 1] = &avatar;      // we first put the avatar in order to avoid the middle specific position being taken by another entity or obstacle
 
     /*Process of creating and putting in random places vampires and werewolves*/
     for (int i = 0; i < vampires; i++) {         // same number of vampires and werewolves at the start of the game
@@ -58,17 +67,19 @@ void Map::create(char team) {
         do {
             xx = get_random(1, x);
             yy = get_random(1, y);
-        } while (grid[xx][yy] != ' ');
-        grid[xx][yy] = 'v';
-        Vampire vampire(xx, yy, 'v');
-        fighters_vector.push_back(vampire);
+        } while (grid[xx][yy] != NULL);
+        Vampire* v = new Vampire(xx, yy);
+        Map_entity* m = v;
+        grid[xx][yy] = m;
+        vector_fighters.push_back(*v);
         do {
             xx = get_random(1, x);
             yy = get_random(1, y);
-        } while (grid[xx][yy] != ' ');
-        grid[xx][yy] = 'w';
-        Werewolf werewolf(xx, yy, 'w');
-        fighters_vector.push_back(werewolf);
+        } while (grid[xx][yy] != NULL);
+        Werewolf* w = new Werewolf(xx, yy);
+        m = w;
+        grid[xx][yy] = m;
+        vector_fighters.push_back(*w);
     };
     /*Process of putting in random places lakes and trees*/
     int num = 0.04 * (x * y);        //4% of the positions of the grid
@@ -77,56 +88,95 @@ void Map::create(char team) {
         do {
             xx = get_random(1, x);
             yy = get_random(1, y);
-        } while (grid[xx][yy] != ' ');
-        grid[xx][yy] = '~';
+        } while (grid[xx][yy] != NULL);
+        grid[xx][yy] = new Map_entity(xx,yy,'l');
+        
         /*fill with trees(*)*/
         do {
             xx = get_random(1, x);
             yy = get_random(1, y);
-        } while (grid[xx][yy] != ' ');
-        grid[xx][yy] = '*';
-
+        } while (grid[xx][yy] != NULL);
+        grid[xx][yy] = new Map_entity(xx,yy,'t');
     }
-
     /*Process of putting randomly the magic filter*/
-    put_magic_filter();
-    return;
-}
-
-void Map::put_magic_filter() {
-    int xx, yy;
     do {
         xx = get_random(0, x + 1);
         yy = get_random(0, y + 1);
-    } while (grid[xx][yy] != ' ');
-    grid[xx][yy] = 'm';
+    } while (grid[xx][yy] != NULL);
+    grid[xx][yy] = new Map_entity(xx, yy, 'm');
+
+    /*Process of filling the rest of the grid with earth*/
+    for (int i = 1; i < x + 1; i++) {
+        for (int j = 1; j < y + 1; j++) {                   //not checking the outline's positions
+            if (grid[i][j] == NULL) {
+                grid[i][j] = new Map_entity(i, j, 'e');
+            }
+        }
+    }
+    return;
 }
 
 void Map::set_outline() {
     for (int i = 1; i < x + 1; i++) {
-        grid[i][0] = '|';
-        grid[i][y + 1] = '|';
-        for (int j = 1; j < y + 1; j++) {
-            grid[i][j] = ' ';
-        }
+        grid[i][0] = new Map_entity(i,0,'s');  // |
+        grid[i][y + 1] =  new Map_entity(i,y+1,'s');
     }
     for (int j = 0; j < y + 2; j++) {
-        grid[0][j] = '-';
-        grid[x + 1][j] = '-';
+        grid[0][j] = new Map_entity(0, j, 'u');
+        grid[x + 1][j] = new Map_entity(x + 1, j, 'u');
     };
-    grid[0][y - 2] = 'D';
-    grid[0][y - 1] = 'A';
-    grid[0][y] = 'Y';
+}
+
+void Map::put_magic_filter(Map_entity *p,int old_i, int old_j) {
+    int xx, yy;
+    do {
+        xx = get_random(0, x + 1);
+        yy = get_random(0, y + 1);
+    }while (!check_type(xx,yy,'e'));
+    swap(grid[xx][yy], grid[old_i][old_j]); //swap the old position of avatar with earth
+    grid[xx][yy] = p;       //object of magic filter
 }
 
 void Map::print() {
+    char type;
+    if (day == true) {
+        cout << "D A Y" << endl;
+    }
+    else {
+        cout << "N I G H T" << endl;
+    }
     for (int i = 0; i < x + 2; i++) {
         for (int j = 0; j < y + 2; j++) {
+            type = (*grid[i][j]).get_type();
             cout << ' ';
-            if(grid[i][j] == 'V' || grid[i][j]=='W'){
-                cout << "A";
-            }else{
-                cout << grid[i][j];
+            switch (type) {
+            case 'u':
+                cout << '-';
+                break;
+            case 's':
+                cout << '|';
+                break;
+            case 'e':
+                cout << ' ';
+                break;
+            case 'a':
+                cout << 'A';
+                break;
+            case 'v':
+                cout << 'v';
+                break;
+            case 'w':
+                cout << 'w';
+                break;
+            case 'l':
+                cout << '~';
+                break;
+            case 't':
+                cout << '*';
+                break;
+            case 'm':
+                cout << 'm';
+                break;
             }
         }
         cout << endl;
@@ -136,79 +186,91 @@ void Map::print() {
 void Map::change_day() {
     if (day) {
         day = false;
-        grid[0][y - 4] = 'N';
-        grid[0][y - 3] = 'I';
-        grid[0][y - 2] = 'G';
-        grid[0][y - 1] = 'H';
-        grid[0][y] = 'T';
     }
     else {
         day = true;
-        grid[0][y - 2] = 'D';
-        grid[0][y - 1] = 'A';
-        grid[0][y] = 'Y';
-        grid[0][y - 4] = '-';
-        grid[0][y - 3] = '-';
-
     }
+}
+
+bool Map::check_type(int i, int j) {
+    if ((*grid[i][j]).get_type() == 'e' || (*grid[i][j]).get_type() == 'm') {           //
+        return true;
+    }
+    return false;
+}
+
+bool Map::check_type(int i, int j, char type) {
+    if ((*grid[i][j]).get_type() == type) {
+        return true;
+    }
+    return false;
 }
 
 void Map::update_avatar(int input) {       // called when player press a button that moves the avatar
     static int calls = 0;
-    int x, y;
+    int i, j;
+    char type;
     calls++;
-    x = avatar.get_x();
-    y = avatar.get_y();
+    i = avatar.get_i();
+    j = avatar.get_j();
     //  cout << x << " " << y << endl;
     switch (input) {
         case KEY_UP:
-            if (grid[x - 1][y] == ' ' || grid[x - 1][y] == 'm') {
-                grid[x][y] = ' ';
+            if (check_type(i - 1, j)) {
                 avatar.move_up();
-                if (grid[x - 1][y] == 'm') {
+                if (check_type(i - 1,  j,'m')) {
+                    Map_entity* p = grid[i - 1][j];         //old position of magic filter
+                    swap(grid[i - 1][j], grid[i][j]);
                     avatar.add_filter();
-                    put_magic_filter();
+                    put_magic_filter(p, i, j);
+                }
+                else {
+                    swap(grid[i][j], grid[i - 1][j]);
                 }
                 break;
             }
     case KEY_DOWN:
-        if (grid[x + 1][y] == ' ' || grid[x + 1][y] == 'm') {
-            grid[x][y] = ' ';
+        if (check_type(i + 1, j)) {
             avatar.move_down();
-            if (grid[x + 1][y] == 'm') {
+            if (check_type(i + 1, j, 'm')) {
+                Map_entity* p = grid[i + 1][j];         //old position of magic filter
                 avatar.add_filter();
-                put_magic_filter();
+                put_magic_filter(p, i, j);
+            }
+            else {
+                swap(grid[i][j], grid[i + 1][j]);
             }
             break;
         }
     case KEY_RIGHT:
-        if (grid[x][y + 1] == ' ' || grid[x][y + 1] == 'm') {
-            grid[x][y] = ' ';
+        if (check_type(i, j + 1)) {
             avatar.move_right();
-            if (grid[x][y + 1] == 'm') {
+            if (check_type(i, j + 1, 'm')) {
+                Map_entity* p = grid[i][j + 1];         //old position of magic filter
                 avatar.add_filter();
-                put_magic_filter();
+                put_magic_filter(p, i, j);
+            }
+            else {
+                swap(grid[i][j], grid[i][j + 1]);
             }
             break;
         }
     case KEY_LEFT:
-        if (grid[x][y - 1] == ' ' || grid[x][y - 1] == 'm') {
-            grid[x][y] = ' ';
+        if (check_type(i, j - 1)) {
             avatar.move_left();
-            if (grid[x][y - 1] == 'm') {
+            if (check_type(i, j - 1, 'm')) {
+                Map_entity* p = grid[i][j - 1];         //old position of magic filter
                 avatar.add_filter();
-                put_magic_filter();
+                put_magic_filter(p, i, j);
+            }
+            else {
+                swap(grid[i][j], grid[i][j - 1]);
             }
             break;
         }
-
     default:
         break;
     }
-    
-    x = avatar.get_x();
-    y = avatar.get_y();
-    grid[x][y] = avatar.get_team();
     if (calls % 10 == 0)        //change of the weather after 10 avatars moves
         change_day();
    
@@ -217,20 +279,21 @@ void Map::update_avatar(int input) {       // called when player press a button 
 void Map::update() {        //vampires werewolves 1 random move attacks and defence
     move();
     interactions();
-
 }
 
+
 void Map::move() {
-    int x, y;
+    int i, j;
     char t;
 	vector<Fighter>::iterator ptr;
-    for (ptr = fighters_vector.begin(); ptr < fighters_vector.end(); ptr++) {
+    for (ptr = vector_fighters.begin(); ptr < vector_fighters.end(); ptr++) {
         t = (*ptr).get_type();
-        x = (*ptr).get_x();
-        y = (*ptr).get_y();
+        i = (*ptr).get_i();
+        j = (*ptr).get_j();
         int p;
-        if (t == 'w')
+        if (check_type(i, j, 'w')) {
             p = get_random(0, 4);
+        }
         else {
             p = get_random(0, 8);
         }
@@ -238,69 +301,62 @@ void Map::move() {
         case 0:                 //stay in the same position
             break;
         case 1:                 //goes_up
-            if (grid[x - 1][y] == ' ') {
-                grid[x][y] = ' ';
+            if (check_type(i - 1, j, 'e')) {
                 (*ptr).move_up();
+                swap(grid[i][j], grid[i - 1][j]);
                 break;
             };
         case 2:                 //goes_down
-            if (grid[x + 1][y] == ' ') {
-                grid[x][y] = ' ';
+            if (check_type(i + 1, j, 'e')) {
                 (*ptr).move_down();
+                swap(grid[i][j], grid[i + 1][j]);
                 break;
             };
         case 3:                 //goes_left
-            if (grid[x][y - 1] == ' ') {
-                grid[x][y] = ' ';
-				(*ptr).move_left();
+            if (check_type(i, j - 1, 'e')) {
+                (*ptr).move_left();
+                swap(grid[i][j], grid[i][j - 1]);
                 break;
             };
         case 4:                 //goes_right
-            if (grid[x][y + 1] == ' ') {
-                grid[x][y] = ' ';
-				(*ptr).move_right();
-                break;
-            }                 //goes_up_right_diagonally
-           
-        case 5:
-            if (grid[x - 1][y + 1] == ' ') {            //goes up right
-                grid[x][y] = ' ';
-				(*ptr).move_up();
+            if (check_type(i, j + 1, 'e')) {
                 (*ptr).move_right();
+                swap(grid[i][j], grid[i][j + 1]);
                 break;
+            }
+        case 5:
+            if (check_type(i - 1, j + 1, 'e')) {           //goes up right
+                (*ptr).move_up();
+                    (*ptr).move_right();
+                    swap(grid[i][j], grid[i - 1][j + 1]);
+                    break;
             };
         case 6:
-            if (grid[x - 1][y - 1] == ' ') {
-                grid[x][y] = ' ';
-				(*ptr).move_up();       //goes up left
-                (*ptr).move_left();
-                break;
+            if (check_type(i - 1, j - 1, 'e')) {
+                (*ptr).move_up();       //goes up left
+                    (*ptr).move_left();
+                    swap(grid[i][j], grid[i - 1][j - 1]);
+                    break;
             };
         case 7:
-            if (grid[x + 1][y + 1] == ' ') {
-                grid[x][y] = ' ';
+            if (check_type(i + 1, j + 1, 'e')) {
                 (*ptr).move_down();
                 (*ptr).move_right();    //goes down right
+                swap(grid[i][j], grid[i + 1][j + 1]);
                 break;
             };
         case 8:
-            if (grid[x + 1][y - 1] == ' ') {            //goes down left
-                grid[x][y] = ' ';
+            if (check_type(i + 1, j - 1, 'e')) {            //goes down left
                 (*ptr).move_down();
                 (*ptr).move_left();
+                swap(grid[i][j], grid[i + 1][j - 1]);
                 break;
             };
         };
-        x = (*ptr).get_x();
-        y = (*ptr).get_y();
-        grid[x][y] = (*ptr).get_type();
     }
 }
 
 void Map::interactions() {
-
-    sort(fighters_vector.begin(), fighters_vector.end(), &comparefunc);
-
 }
 
 void Map::display_info() {
@@ -341,7 +397,7 @@ void Map::display_info() {
 }
 
 /*Fighter - Member functions & Constructor*/
-Fighter::Fighter(int x, int y, char type) : Entity(x, y), health(10) {
+Fighter::Fighter(int x, int y, char type) : Entity(x, y, type), health(10) {
     power = get_random(1, 3);
     defence = get_random(1, 2);
     heal = get_random(0, 2);

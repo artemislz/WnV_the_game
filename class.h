@@ -14,20 +14,17 @@ public:
     inline char get_type() const { return type; }
     inline void set_i(int i) { }
     inline void set_type(char t) { type = t; }
-    virtual bool is_checked() = 0;
 };
 
 class Stable_object : public Map_entity {
 public:
     Stable_object(int i, int j, char type);
-    bool is_checked() { return 0; }
 };
 
 class Entity : public Map_entity {            //<<Fighters,Avatar
 public:
     Entity(int i, int j , char type);
     virtual void move(int n);
-    bool is_checked() { return 0; }
 };
 
 class Fighter : public Entity {

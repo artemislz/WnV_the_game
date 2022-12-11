@@ -39,9 +39,24 @@ Stable_object::Stable_object(int i, int j, char type) : Map_entity(i,j,type){
 Entity::Entity(int i, int j, char type) : Map_entity(i, j, type) {
 }
 
+void Entity::move(int n) {
+    switch (n) {
+    case 1:         //move_up
+        i--;
+        break;
+    case 2:         //move_down
+        i++;
+        break;
+    case 3:         //move_left
+        j--;
+        break;
+    case 4:         //move_right;
+        j++;
+    }
+}
+
 /*Map - Member functions & Constructor*/
 Map::Map(int x, int y, char team) : x(x), y(y), day(true), avatar(x / 2 + 1, y / 2 + 1, team ) {
-    
     vampires = (x * y) / 30;
     werewolves = vampires;      // same number of vampires and werewolves at first
     create();               // takes team as input for the avatar
@@ -75,7 +90,7 @@ void Map::create() {
         Vampire* v = new Vampire(xx, yy);
         Map_entity* m = v;
         grid[xx][yy] = m;
-        vector_fighters.push_back(*v);
+        vector_vampires.push_back(*v);
         do {
             xx = get_random(1, x);
             yy = get_random(1, y);
@@ -83,7 +98,7 @@ void Map::create() {
         Werewolf* w = new Werewolf(xx, yy);
         m = w;
         grid[xx][yy] = m;
-        vector_fighters.push_back(*w);
+        vector_werewolves.push_back(*w);
     };
     /*Process of putting in random places lakes and trees*/
     int num = 0.04 * (x * y);        //4% of the positions of the grid
@@ -221,7 +236,7 @@ void Map::update_avatar(int input) {       // called when player press a button 
     switch (input) {
         case KEY_UP:
             if (check_type(i - 1, j)) {
-                avatar.move_up();
+                avatar.move(1);                             //move up
                 if (check_type(i - 1,  j,'m')) {
                     Map_entity* p = grid[i - 1][j];         //old position of magic filter
                     swap(grid[i - 1][j], grid[i][j]);
@@ -235,7 +250,7 @@ void Map::update_avatar(int input) {       // called when player press a button 
             }
     case KEY_DOWN:
         if (check_type(i + 1, j)) {
-            avatar.move_down();
+            avatar.move(2);                             //move down
             if (check_type(i + 1, j, 'm')) {
                 Map_entity* p = grid[i + 1][j];         //old position of magic filter
                 swap(grid[i + 1][j], grid[i][j]);
@@ -247,23 +262,9 @@ void Map::update_avatar(int input) {       // called when player press a button 
             }
             break;
         }
-    case KEY_RIGHT:
-        if (check_type(i, j + 1)) {
-            avatar.move_right();
-            if (check_type(i, j + 1, 'm')) {
-                Map_entity* p = grid[i][j + 1];         //old position of magic filter
-                swap(grid[i][j + 1], grid[i][j]);
-                avatar.add_filter();
-                put_magic_filter(p, i, j);
-            }
-            else {
-                swap(grid[i][j], grid[i][j + 1]);
-            }
-            break;
-        }
     case KEY_LEFT:
         if (check_type(i, j - 1)) {
-            avatar.move_left();
+            avatar.move(3);                             //move left
             if (check_type(i, j - 1, 'm')) {
                 Map_entity* p = grid[i][j - 1];         //old position of magic filter
                 swap(grid[i][j - 1], grid[i][j]);
@@ -272,6 +273,20 @@ void Map::update_avatar(int input) {       // called when player press a button 
             }
             else {
                 swap(grid[i][j], grid[i][j - 1]);
+            }
+            break;
+        }
+    case KEY_RIGHT:
+        if (check_type(i, j + 1)) {
+            avatar.move(4);                             //move right    
+            if (check_type(i, j + 1, 'm')) {
+                Map_entity* p = grid[i][j + 1];         //old position of magic filter
+                swap(grid[i][j + 1], grid[i][j]);
+                avatar.add_filter();
+                put_magic_filter(p, i, j);
+            }
+            else {
+                swap(grid[i][j], grid[i][j + 1]);
             }
             break;
         }
@@ -284,118 +299,102 @@ void Map::update_avatar(int input) {       // called when player press a button 
 }
 
 void Map::update() {        //vampires werewolves 1 random move attacks and defence
-    move();
-    //interactions();
-}
-
-
-void Map::move() {
-    int i, j;
+    int i, j , p;
     char t;
-	vector<Fighter>::iterator ptr;
-    for (ptr = vector_fighters.begin(); ptr < vector_fighters.end(); ptr++) {
+    vector<Vampire>::iterator ptr;
+    for (ptr = vector_vampires.begin(); ptr < vector_vampires.end(); ptr++) {
         t = (*ptr).get_type();
         i = (*ptr).get_i();
         j = (*ptr).get_j();
-        int p;
-        if (check_type(i, j, 'w')) {
-            p = get_random(0, 4);
-        }
-        else {
-            p = get_random(0, 8);
-        }
+        p = get_random(0, 8);
         switch (p) {
-        case 0:                 //stay in the same position
+        case 0:                                            //stay in the same position
             break;
-        case 1:                 //goes_up
+        case 1:                                            //goes_up
             if (check_type(i - 1, j, 'e')) {
-                (*ptr).move_up();
+                (*ptr).move(1);
                 swap(grid[i][j], grid[i - 1][j]);
                 break;
             };
-        case 2:                 //goes_down
+        case 2:                                             //goes_down
             if (check_type(i + 1, j, 'e')) {
-                (*ptr).move_down();
+                (*ptr).move(2);
                 swap(grid[i][j], grid[i + 1][j]);
                 break;
             };
-        case 3:                 //goes_left
+        case 3:                                             //goes_left
             if (check_type(i, j - 1, 'e')) {
-                (*ptr).move_left();
+                (*ptr).move(3);
                 swap(grid[i][j], grid[i][j - 1]);
                 break;
             };
-        case 4:                 //goes_right
+        case 4:                                             //goes_right
             if (check_type(i, j + 1, 'e')) {
-                (*ptr).move_right();
+                (*ptr).move(4);
                 swap(grid[i][j], grid[i][j + 1]);
                 break;
             }
         case 5:
             if (check_type(i - 1, j + 1, 'e')) {           //goes up right
-                (*ptr).move_up();
-                    (*ptr).move_right();
-                    swap(grid[i][j], grid[i - 1][j + 1]);
-                    break;
+                (*ptr).move(5);
+                swap(grid[i][j], grid[i - 1][j + 1]);
+                break;
             };
         case 6:
             if (check_type(i - 1, j - 1, 'e')) {
-                (*ptr).move_up();       //goes up left
-                    (*ptr).move_left();
-                    swap(grid[i][j], grid[i - 1][j - 1]);
-                    break;
+                (*ptr).move(6);                           //goes up left
+                swap(grid[i][j], grid[i - 1][j - 1]);
+                break;
             };
         case 7:
             if (check_type(i + 1, j + 1, 'e')) {
-                (*ptr).move_down();
-                (*ptr).move_right();    //goes down right
+                (*ptr).move(7);                            //goes down right
                 swap(grid[i][j], grid[i + 1][j + 1]);
                 break;
             };
         case 8:
             if (check_type(i + 1, j - 1, 'e')) {            //goes down left
-                (*ptr).move_down();
-                (*ptr).move_left();
+                (*ptr).move(8);
                 swap(grid[i][j], grid[i + 1][j - 1]);
                 break;
             };
         };
     }
-}
-
-void Map::interactions() {
-    int count;
-    bool up, down, left, right;
-    for (int i = 1; i < x + 1; i++) {
-        for (int j = 1; j < y + 1; j++) {
-            if (!check_type(i, j, 'v') || !check_type(i, j, 'w') || grid[i][j]->is_checked()) { continue; }
-            vector<char> positions;
-            if ((check_type(i - 1, j, 'v') || check_type(i - 1, j, 'w')) && !grid[i - 1][j]->is_checked()){           //up 
-                up = true;
-                positions.push_back('u');
-            }
-            if ((check_type(i + 1, j, 'v') || check_type(i + 1, j, 'w')) && !grid[i + 1][j]->is_checked()) {
-                down = true;
-                positions.push_back('d');
-            }
-            if ((check_type(i, j - 1, 'v') || check_type(i, j - 1, 'w')) && !grid[i][j - 1]->is_checked()) {
-                left = true;
-                positions.push_back('l');
-            }
-            if ((check_type(i, j + 1, 'v') || check_type(i, j + 1, 'w')) && !grid[i][j + 1]->is_checked()) {
-                right = true;
-                positions.push_back('r');
-            }
-            count = up + down + left + right;
-            int num = get_random(1, count);
-            char p = positions.at(num);
-            switch (p) {
-            case 'u':
-                if (grid[i - 1][j]->get_type() == grid[i][j]->get_type()) {
-                }
+    vector<Werewolf>::iterator ptrr;
+    for (ptrr = vector_werewolves.begin(); ptrr < vector_werewolves.end(); ptrr++) {
+        i = (*ptrr).get_i();
+        j = (*ptrr).get_j();
+        p = get_random(0, 4);
+        switch (p) {
+        case 0:                                            //stay in the same position
+            break;
+        case 1:                                            //goes_up
+            if (check_type(i - 1, j, 'e')) {
+                (*ptrr).move(1);
+                swap(grid[i][j], grid[i - 1][j]);
+                break;
+            };
+        case 2:                                             //goes_down
+            if (check_type(i + 1, j, 'e')) {
+                (*ptrr).move(2);
+                swap(grid[i][j], grid[i + 1][j]);
+                break;
+            };
+        case 3:                                             //goes_left
+            if (check_type(i, j - 1, 'e')) {
+                (*ptrr).move(3);
+                swap(grid[i][j], grid[i][j - 1]);
+                break;
+            };
+        case 4:                                             //goes_right
+            if (check_type(i, j + 1, 'e')) {
+                (*ptrr).move(4);
+                swap(grid[i][j], grid[i][j + 1]);
+                break;
             }
         }
     }
+    interactions();
 }
 
 void Map::display_info() {
@@ -435,6 +434,52 @@ void Map::display_info() {
 	return;
 }
 
+void Map::interactions() {
+    int count, num;
+    bool up, down, left, right;
+    for (int i = 1; i < x + 1; i++) {
+        for (int j = 1; j < y + 1; j++) {
+            if (!check_type(i, j, 'v') || !check_type(i, j, 'w') || grid[i][j]->is_checked()) { continue; }
+            vector<char> positions;
+            if ((check_type(i - 1, j, 'v') || check_type(i - 1, j, 'w')) && !grid[i - 1][j]->is_checked()) {           //up 
+                up = true;
+                positions.push_back('u');
+            }
+            if ((check_type(i + 1, j, 'v') || check_type(i + 1, j, 'w')) && !grid[i + 1][j]->is_checked()) {
+                down = true;
+                positions.push_back('d');
+            }
+            if ((check_type(i, j - 1, 'v') || check_type(i, j - 1, 'w')) && !grid[i][j - 1]->is_checked()) {
+                left = true;
+                positions.push_back('l');
+            }
+            if ((check_type(i, j + 1, 'v') || check_type(i, j + 1, 'w')) && !grid[i][j + 1]->is_checked()) {
+                right = true;
+                positions.push_back('r');
+            }
+            count = up + down + left + right;
+            num = get_random(1, count);
+            char p = positions.at(num);
+            /*switch (p) {
+            case 'u':
+                if (grid[i - 1][j]->get_type() == grid[i][j]->get_type()) {
+                    if (check_type(i - 1, j, 'v')) {
+                        Fighter* fptr1 = dynamic_cast<Fighter*>(grid[i - 1][j]);
+                        Fighter* vamptr2 = dynamic_cast<Fighter*>(grid[i][j]);
+                        int health1 = vamptr1->get_health();
+                        int health2 = vamptr2->get_health();
+                        if (health1 == health2 == 10) continue;
+                        else {
+                            int max_health = max(health1, health2);
+                            if()
+                        }
+                       }*/
+            
+        }
+    }
+}
+
+
 /*Fighter - Member functions & Constructor*/
 Fighter::Fighter(int x, int y, char type) : Entity(x, y, type), health(10) {
     power = get_random(1, 3);
@@ -447,15 +492,64 @@ void Fighter::display() {
     cout << "\tpower: " << power << endl;
     cout << "\tdefence: " << defence << endl;
     cout << "\theal: " << heal << endl;
+    cout << "\thealth" << health << endl;
 }
 
-/*Vampire - Member functions & Constructor*/
-Vampire::Vampire(int x, int y, char type) : Fighter(x, y, type) {
+/*template <typename T> void Fighter::give_heal(T& teammate) {
+    
+   
+    else {
+        int max_health = max(health1, health2);
+        if (max_health == health1) {
+            num = get_random(0, 1);
+            if (num) {
+                vamptr1->
+            }
+            else continue;
+        }
+    }
+}*/
 
+/*Vampire - Member functions & Constructor*/
+Vampire::Vampire(int i, int j, char type) : Fighter(i, j, type) {
+
+}
+
+void Vampire::move(int n) {
+    switch (n) {
+    case 1:         //up
+        i--;
+        break;
+    case 2:         //down
+        i++;
+        break;
+    case 3:         //left
+        j--;
+        break;
+    case 4:         //right;
+        j++;
+        break;
+    case 5:         //up_right
+        i--;
+        j++;
+        break;
+    case 6:         //up_left
+        i--;
+        j--;
+        break;
+    case 7:         //down_right
+        i++;
+        j++;
+        break;
+    case 8:         //down_left
+        i++;
+        j--;
+        break;
+    }
 }
 
 /*Werewolf - Member functions & Constructor*/
-Werewolf::Werewolf(int x, int y, char type) : Fighter(x, y, type) {
+Werewolf::Werewolf(int i, int j, char type) : Fighter(i, j, type) {
 
 }
 

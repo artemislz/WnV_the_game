@@ -26,10 +26,7 @@ public:
 class Entity : public Map_entity {            //<<Fighters,Avatar
 public:
     Entity(int i, int j , char type);
-    inline void move_up() { i--; }          //-> prosthhkh allagh theshs sto grid
-    inline void move_down() { i++; }
-    inline void move_right() { j++; }
-    inline void move_left() { j--; }
+    virtual void move(int n);
     bool is_checked() { return 0; }
 };
 
@@ -50,6 +47,8 @@ public:
     inline void lose_health() { health--; }
     inline int get_health() const { return health; }
     inline char get_type()const { return type; }
+    template <typename T> void give_heal(T& teammate);
+    //template <typename T> void attack(T& enemy);
 };
 
 class Werewolf : public Fighter {
@@ -61,6 +60,7 @@ public:
 class Vampire : public Fighter {
 public:
     Vampire(int i, int j, char type = 'v');
+    void move(int n);
     //void attack(WereWolves& ememy);
 };
 
@@ -76,7 +76,6 @@ public:
     inline void add_filter() { magic_filters++; }
     inline int get_filters()const { return magic_filters; }
     inline char get_team()const { return team; }
-    //void move();
 };
 
 class Map {
@@ -106,12 +105,12 @@ public:
     void change_day();
     void set_outline();
     void display_info();
-    void move();
     void interactions();
     bool check_type(int, int);
     bool check_type(int, int, char);
-    std::vector<Fighter> vector_fighters;
-    //  void move_vampires();
+    std::vector<Vampire> vector_vampires;
+    std::vector<Werewolf> vector_werewolves;
+    // void move_vampires();
     // void move_werewolves();
     //inline char** get_grid() { return grid; }
     //void set_coordinates(Avatar& a,int x,int y);

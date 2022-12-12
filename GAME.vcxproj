@@ -129,7 +129,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="implementation.cpp" />
+    <ClCompile Include="avatar.cpp" />
+    <ClCompile Include="game.cpp" />
+    <ClCompile Include="entities.cpp" />
+    <ClCompile Include="map.cpp" />
+    <ClCompile Include="player.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>

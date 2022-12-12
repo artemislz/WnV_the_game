@@ -6,4 +6,20 @@
 #define KEY_X 88			//x
 #define KEY_SPACE 32
 #define KEY_ENTER 13
+
 int get_random(int, int);
+
+#include <iostream>
+#include "class.h"
+#include <cstdlib>
+#include <time.h>
+#include <vector>
+#include <fcntl.h>
+#include <io.h>
+#include <windows.h>
+#include <conio.h>
+#include <string>
+#include <algorithm>
+#include <execution>
+
+using namespace std;

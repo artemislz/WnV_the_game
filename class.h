@@ -13,19 +13,21 @@ public:
     inline int get_j() const { return j; }
     inline char get_type() const { return type; }
     inline void set_type(char t) { type = t; }
+    virtual bool is_checked() = 0;
 };
 
 class Stable_object : public Map_entity {
 public:
     Stable_object(int i, int j, char type);
+    bool is_checked() { return 0; }
 };
 
 class Entity : public Map_entity {            //<<Fighters,Avatar
     bool checked;       // true if he attacked or has been attacked
 public:
     Entity(int i, int j , char type);
-    virtual void move(int n);
-  //  bool is_checked() { return checked; }
+    void move(int n);
+    bool is_checked() { return checked; }
 };
 
 class Fighter : public Entity {
@@ -63,9 +65,10 @@ public:
 class Map;
 class Magic_filter : public Map_entity {
 public:
-	Magic_filter(int x = 0, int y = 0);
+	Magic_filter(int x, int y );
     void setup(int i, int j);
     void change_position(Map_entity* p, int old_i, int old_j, Map& map);
+    bool is_checked() { return 0; }
 };
 
 class Map {
@@ -96,17 +99,18 @@ public:
     bool check_type(int, int, char);
 };
 
-template< typename T>
+template< class T>
 class  Team{
 private:
-	std::vector<T> teammates;
+	std::vector<T*> teammates;
     bool winner;       // true -> won false -> lose
     int start_size;
 public:
 	Team(int x, int y, Map& map);
     void place(int x, int y, Map& map);
     inline int number()const { return teammates.size(); }
-    inline std::vector<T> get_teammates() { return teammates; }
+    inline std::vector<T*> get_teammates() { return teammates; }
+    
 };
 
 class Player {
@@ -141,7 +145,7 @@ private:
     Team<Vampire> team_vampires;
     Team<Werewolf> team_werewolves;
     Magic_filter magic_filter; 
-	string winners_team = "No winners team";
+	char winners_team;
 public:
     Game(int, int, char);
     void end();

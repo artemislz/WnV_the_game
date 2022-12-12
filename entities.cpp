@@ -127,7 +127,7 @@ void Vampire::move(int n) {
 Werewolf::Werewolf(int i, int j, char type) : Fighter(i, j, type) {}
 
 /*Magic Filter - Member Functions & Costructors*/
-Magic_filter::Magic_filter(int x = 0, int y = 0) : Map_entity(x, y ,'m') {};
+Magic_filter::Magic_filter(int x , int y) : Map_entity(x, y ,'m') {};
 
 void Magic_filter::setup(int i, int j){
     this->i = i;

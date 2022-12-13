@@ -8,6 +8,8 @@ Game::Game(int x, int y, char team) : active(true), map(x, y, team), player(team
 		<< "Enjoy!\n\n";
 	Map_entity* p = &avatar;
 	map.place_to_grid(avatar.get_i(), avatar.get_j(), p);
+	//cout << "this should be a: " <<map.get_grid()[x / 2 + 1][y / 2 + 1]->get_type();
+
 	/*Process of putting randomly the magic filter*/
 	int xx, yy;
 	do {
@@ -44,6 +46,7 @@ void Game::update() {			//werewolves & vampires move randomly
 			if (map.check_type(i + 1, j, 'e')) {
 				(**ptr).move(2);
 				swap(grid[i][j], grid[i + 1][j]);
+				//system("pause");
 				break;
 			};
 		case 3:                                             //goes_left
@@ -95,26 +98,26 @@ void Game::update() {			//werewolves & vampires move randomly
 			break;
 		case 1:                                            //goes_up
 			if (map.check_type(i - 1, j, 'e')) {
-				(**ptrr).move(1);
 				swap(grid[i][j], grid[i - 1][j]);
+				(**ptrr).move(1);
 				break;
 			};
 		case 2:                                             //goes_down
 			if (map.check_type(i + 1, j, 'e')) {
-				(**ptrr).move(2);
 				swap(grid[i][j], grid[i + 1][j]);
+				(**ptrr).move(2);
 				break;
 			};
 		case 3:                                             //goes_left
 			if (map.check_type(i, j - 1, 'e')) {
-				(**ptrr).move(3);
 				swap(grid[i][j], grid[i][j - 1]);
+				(**ptrr).move(3);
 				break;
 			};
 		case 4:                                             //goes_right
 			if (map.check_type(i, j + 1, 'e')) {
-				(**ptrr).move(4);
 				swap(grid[i][j], grid[i][j + 1]);
+				(**ptrr).move(4);
 				break;
 			}
 		}
@@ -242,11 +245,13 @@ void Avatar::update_avatar(int input, Map& map, Magic_filter& magic_filter) {   
 	char type;
 	calls++;
 	Map_entity*** grid = map.get_grid();
-	 cout << "before " << i << " " << j << endl;
+//	cout <<"this must be a: " <<  grid[i][j]->get_type();
+	//system("pause");
+	// cout << "before " << i << " " << j << endl;
 	switch (input) {
 		case KEY_UP:
 			if (map.check_type(i - 1, j)) {
-				move(1);
+				
 				if (map.check_type(i - 1, j, 'm')) {
 					Map_entity* p = grid[i - 1][j];         //old position of magic filter
 					swap(grid[i - 1][j], grid[i][j]);
@@ -256,12 +261,16 @@ void Avatar::update_avatar(int input, Map& map, Magic_filter& magic_filter) {   
 				else {
 					//Map_entity* p = this;
 					swap(grid[i][j], grid[i - 1][j]);
+				//	cout << "this must be e: " << grid[i][j]->get_type();
+					//system("pause");
 				}
+				move(1);
 				break;
+			
 			}
 		case KEY_DOWN:
 			if (map.check_type(i + 1, j)) {
-				move(2);                             //move down
+				
 				if (map.check_type(i + 1, j, 'm')) {
 					Map_entity* p = grid[i + 1][j];         //old position of magic filter
 					swap(grid[i + 1][j], grid[i][j]);
@@ -271,11 +280,12 @@ void Avatar::update_avatar(int input, Map& map, Magic_filter& magic_filter) {   
 				else {
 					swap(grid[i][j], grid[i + 1][j]);
 				}
+				move(2);                             //move down
 				break;
 			}
 		case KEY_LEFT:
 			if (map.check_type(i, j - 1)) {
-				move(3);                             //move left
+				
 				if (map.check_type(i, j - 1, 'm')) {
 					Map_entity* p = grid[i][j - 1];         //old position of magic filter
 					swap(grid[i][j - 1], grid[i][j]);
@@ -285,11 +295,12 @@ void Avatar::update_avatar(int input, Map& map, Magic_filter& magic_filter) {   
 				else {
 					swap(grid[i][j], grid[i][j - 1]);
 				}
+				move(3);                             //move left
 				break;
 			}
 		case KEY_RIGHT:
 			if (map.check_type(i, j + 1)) {
-				move(4);                             //move right    
+				
 				if (map.check_type(i, j + 1, 'm')) {
 					Map_entity* p = grid[i][j + 1];         //old position of magic filter
 					swap(grid[i][j + 1], grid[i][j]);
@@ -299,6 +310,7 @@ void Avatar::update_avatar(int input, Map& map, Magic_filter& magic_filter) {   
 				else {
 					swap(grid[i][j], grid[i][j + 1]);
 				}
+				move(4);                             //move right    
 				break;
 			}
 	default:
@@ -428,7 +440,7 @@ void Map::change_day() {
 
 bool Map::check_type(int i, int j) {
 	if ((*grid[i][j]).get_type() == 'e' || (*grid[i][j]).get_type() == 'm') {
-		cout << i << ' ' << j << endl;
+		//cout << i << ' ' << j << endl;
 		return true;
 	}
 	return false;
@@ -536,7 +548,6 @@ void Entity::move(int n) {
 	switch (n) {
 	case 1:         //move_up
 		i--;
-		cout << "miaou";
 		break;
 	case 2:         //move_down
 		i++;

@@ -150,7 +150,10 @@ void Game::run() {
 		else if (player.get_input() == KEY_SPACE)
 			display_info();
 		else {
-			avatar.update_avatar(player.get_input(), map, magic_filter);
+			//Sleep(400);
+			int z = player.get_input();
+			//Sleep(400);
+			avatar.update_avatar(z, map, magic_filter);
 			map.print();
 			Sleep(100);
 			system("cls");
@@ -249,55 +252,60 @@ void Avatar::update_avatar(int input, Map& map, Magic_filter& magic_filter) {   
 	//system("pause");
 	// cout << "before " << i << " " << j << endl;
 	switch (input) {
-		case KEY_UP:
-			if (map.check_type(i - 1, j)) {
-				
-				if (map.check_type(i - 1, j, 'm')) {
-					Map_entity* p = grid[i - 1][j];         //old position of magic filter
-					swap(grid[i - 1][j], grid[i][j]);
-					add_filter();
-					magic_filter.change_position(p, i, j, map);
-				}
-				else {
-					//Map_entity* p = this;
-					swap(grid[i][j], grid[i - 1][j]);
-				//	cout << "this must be e: " << grid[i][j]->get_type();
-					//system("pause");
-				}
-				move(1);
-				break;
+	case KEY_UP:
+		if (map.check_type(i - 1, j)) {
+
+			if (map.check_type(i - 1, j, 'm')) {
+				Map_entity* p = grid[i - 1][j];         //old position of magic filter
+				swap(grid[i - 1][j], grid[i][j]);
+				add_filter();
+				magic_filter.change_position(p, i, j, map);
+			}
+			else {
+				//Map_entity* p = this;
+				swap(grid[i][j], grid[i - 1][j]);
+			}
+			move(1);
+		}
+		break;
+
+	case KEY_DOWN:
+		if (map.check_type(i + 1, j)) {
+
+			if (map.check_type(i + 1, j, 'm')) {
+				Map_entity* p = grid[i + 1][j];         //old position of magic filter
+				swap(grid[i + 1][j], grid[i][j]);
+				add_filter();
+				magic_filter.change_position(p, i, j, map);
+			}
+			else {
+				swap(grid[i][j], grid[i + 1][j]);
+			}
+			move(2);
+			//move down
+		}
+
+		break;
+
+	case KEY_LEFT:
+		if (map.check_type(i, j - 1)) {
+
+			if (map.check_type(i, j - 1, 'm')) {
+				Map_entity* p = grid[i][j - 1];         //old position of magic filter
+				swap(grid[i][j - 1], grid[i][j]);
+				add_filter();
+				magic_filter.change_position(p, i, j, map);
+			}
+			else {
+				swap(grid[i][j], grid[i][j - 1]);
+			}
 			
-			}
-		case KEY_DOWN:
-			if (map.check_type(i + 1, j)) {
-				
-				if (map.check_type(i + 1, j, 'm')) {
-					Map_entity* p = grid[i + 1][j];         //old position of magic filter
-					swap(grid[i + 1][j], grid[i][j]);
-					add_filter();
-					magic_filter.change_position(p, i, j, map);
-				}
-				else {
-					swap(grid[i][j], grid[i + 1][j]);
-				}
-				move(2);                             //move down
-				break;
-			}
-		case KEY_LEFT:
-			if (map.check_type(i, j - 1)) {
-				
-				if (map.check_type(i, j - 1, 'm')) {
-					Map_entity* p = grid[i][j - 1];         //old position of magic filter
-					swap(grid[i][j - 1], grid[i][j]);
-					add_filter();
-					magic_filter.change_position(p, i, j, map);
-				}
-				else {
-					swap(grid[i][j], grid[i][j - 1]);
-				}
-				move(3);                             //move left
-				break;
-			}
+			move(3);                             //move left	
+		}
+		
+		break;
+		
+	
 		case KEY_RIGHT:
 			if (map.check_type(i, j + 1)) {
 				
@@ -310,11 +318,11 @@ void Avatar::update_avatar(int input, Map& map, Magic_filter& magic_filter) {   
 				else {
 					swap(grid[i][j], grid[i][j + 1]);
 				}
-				move(4);                             //move right    
-				break;
+				move(4);                             //move right    		
 			}
-	default:
+
 		break;
+
 	}
 	if (calls % 10 == 0)        //change of the weather after 10 avatars moves
 		map.change_day();

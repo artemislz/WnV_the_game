@@ -37,16 +37,14 @@ protected:
     int defence;        // random [1,2]
     int heal;           // random [0,2]
 public:
-    //void set_values();
-    //virtual void attack() = 0;       //?????
     Fighter(int i, int j, char type);
     void display();
-    
+    inline void lose_heal() { heal--; }
     inline void add_health() { health++;  }
     inline void lose_health() { health--; }
     inline int get_health() const { return health; }
     inline char get_type()const { return type; }
-    template <typename T> void give_heal(T& teammate);
+    void give_heal(Fighter& teammate);
     //template <typename T> void attack(T& enemy);
 };
 
@@ -62,6 +60,7 @@ public:
     void move(int n);       // n-> possible movements
     //void attack(WereWolves& ememy);
 };
+
 class Map;
 class Magic_filter : public Map_entity {
 public:
@@ -77,7 +76,6 @@ private:
     int y;      // (x, y) - > map dimensions
     bool day;   // false -> night  true -> day
    // Avatar avatar;
-   
    int werewolves; // count of werewolves alive
    friend int get_random(int, int);
    Map_entity*** grid;
@@ -93,8 +91,6 @@ public:
     inline void place_to_grid(int i, int j, Map_entity*& value) { grid[i][j] = value; }
     void change_day();
     void set_outline();
-    void display_info();
-    void interactions();
     bool check_type(int, int);      //checks if (i, j) is earth or magic_filter
     bool check_type(int, int, char);
 };
@@ -110,7 +106,6 @@ public:
     void place(int x, int y, Map& map);
     inline int number()const { return teammates.size(); }
     inline std::vector<T*> get_teammates() { return teammates; }
-    
 };
 
 class Player {
@@ -140,12 +135,12 @@ class Game {
 private:
     bool active;  //true -> paused
     Map map;
-	Player player;
-	Avatar avatar;
+    Player player;
+    Avatar avatar;
     Team<Vampire> team_vampires;
     Team<Werewolf> team_werewolves;
-    Magic_filter magic_filter; 
-	char winners_team;
+    Magic_filter magic_filter;
+    char winners_team;
 public:
     Game(int, int, char);
     void end();
@@ -155,5 +150,6 @@ public:
     inline Player get_player()const { return player; }
     void run();
     void update();
+    void interactions();
     bool check_for_winner();       // YES -> END
 };

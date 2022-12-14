@@ -23,6 +23,5 @@ int main()
     game.get_map().print();        // first print of the cosmos
     game.run();
    
-    
     return 0;
 }

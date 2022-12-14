@@ -6,6 +6,7 @@
 #define KEY_X 88			//x
 #define KEY_SPACE 32
 #define KEY_ENTER 13
+#define KEY_F 70
 
 int get_random(int, int);
 

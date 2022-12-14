@@ -1,5 +1,10 @@
 #include "globals.h"
 #include "class.h"
+
+int get_random(int a, int b) {
+	return a + rand() % (b - a + 1);
+}
+
 /*Game - Member functions & Constructor*/
 Game::Game(int x, int y, char team) : active(true), map(x, y, team), player(team), avatar(x / 2 + 1, y / 2 + 1, team), team_vampires(x, y, map), team_werewolves(x, y, map), magic_filter(5,5) {
 	cout << "The game is starting..." << endl
@@ -46,7 +51,6 @@ void Game::update() {			//werewolves & vampires move randomly
 			if (map.check_type(i + 1, j, 'e')) {
 				(**ptr).move(2);
 				swap(grid[i][j], grid[i + 1][j]);
-				//system("pause");
 				break;
 			};
 		case 3:                                             //goes_left
@@ -138,17 +142,22 @@ void Game::run() {
 				return;
 			}
 			update();
+			//interactions();
 			map.print();
 			Sleep(100);
 			system("cls");
 		};
-		//	Sleep(100);
+		//Sleep(100);
 		player.set_input();
-		// sleep(200);
+		//sleep(200);
 		if (player.get_input() == KEY_X)
 			active = false;
 		else if (player.get_input() == KEY_SPACE)
 			display_info();
+		else if (player.get_input() == KEY_F) {			//use magic_filter
+			//cout << "key f pressed";
+			system("pause");
+		}
 		else {
 			//Sleep(400);
 			int z = player.get_input();
@@ -161,6 +170,59 @@ void Game::run() {
 	}
 	end();
 	return;
+}
+
+void Game::interactions() {
+	int count, num;
+	bool up, down, left, right;
+	Map_entity*** grid = map.get_grid();
+	for (int i = 1; i < map.get_x() + 1; i++) {
+		for (int j = 1; j < map.get_y() + 1; j++) {
+			if (!map.check_type(i, j, 'v') || !map.check_type(i, j, 'w') || grid[i][j]->is_checked()) { continue; }
+			vector<char> positions;
+			if ((map.check_type(i - 1, j, 'v') || map.check_type(i - 1, j, 'w')) && !grid[i - 1][j]->is_checked()) {           //up 
+				up = true;
+				positions.push_back('u');
+			}
+			if ((map.check_type(i + 1, j, 'v') || map.check_type(i + 1, j, 'w')) && !grid[i + 1][j]->is_checked()) {
+				down = true;
+				positions.push_back('d');
+			}
+			if ((map.check_type(i, j - 1, 'v') || map.check_type(i, j - 1, 'w')) && !grid[i][j - 1]->is_checked()) {
+				left = true;
+				positions.push_back('l');
+			}
+			if ((map.check_type(i, j + 1, 'v') || map.check_type(i, j + 1, 'w')) && !grid[i][j + 1]->is_checked()) {
+				right = true;
+				positions.push_back('r');
+			}
+			count = up + down + left + right;
+			num = get_random(1, count);
+			char p = positions.at(num);
+			switch (p) {
+			case 'u':
+				if (grid[i - 1][j]->get_type() == grid[i][j]->get_type()) {
+					if (map.check_type(i - 1, j, 'v')) {
+						Fighter* fptr1 = dynamic_cast<Fighter*>(grid[i - 1][j]);
+						Fighter* fptr2 = dynamic_cast<Fighter*>(grid[i][j]);
+						int health1 = fptr1->get_health();
+						int health2 = fptr2->get_health();
+						if (health1 == health2 == 10) continue;
+						else {
+							int max_health = max(health1, health2);
+							if (max_health == health1) {
+								fptr1->give_heal(*fptr2);
+							}
+							else {
+								fptr2->give_heal(*fptr1);
+							}
+						}
+
+					}
+				}
+			}
+		}
+	}
 }
 
 void Game::display_info() {
@@ -302,10 +364,7 @@ void Avatar::update_avatar(int input, Map& map, Magic_filter& magic_filter) {   
 			
 			move(3);                             //move left	
 		}
-		
 		break;
-		
-	
 		case KEY_RIGHT:
 			if (map.check_type(i, j + 1)) {
 				
@@ -320,9 +379,7 @@ void Avatar::update_avatar(int input, Map& map, Magic_filter& magic_filter) {   
 				}
 				move(4);                             //move right    		
 			}
-
 		break;
-
 	}
 	if (calls % 10 == 0)        //change of the weather after 10 avatars moves
 		map.change_day();
@@ -365,8 +422,6 @@ Map::Map(int x, int y, char team) : x(x), y(y), day(true) {
 		} while (grid[xx][yy] != NULL || (xx == x / 2 + 1 && yy == y / 2 + 1));
 		grid[xx][yy] = new Stable_object(xx, yy, 't');
 	}
-
-
 	/*Process of filling the rest of the grid with earth*/
 	for (int i = 1; i < x + 1; i++) {
 		for (int j = 1; j < y + 1; j++) {                   //not checking the outline's positions
@@ -461,59 +516,28 @@ bool Map::check_type(int i, int j, char type) {
 	return false;
 }
 
+/*Fighter - Member functions & Constructor*/
+Fighter::Fighter(int i, int j, char type) : Entity(i, j, type), health(10) {
+	power = get_random(1, 3);
+	defence = get_random(1, 2);
+	heal = get_random(0, 2);
+}
 
-void Map::interactions() {
-	int count, num;
-	bool up, down, left, right;
-	for (int i = 1; i < x + 1; i++) {
-		for (int j = 1; j < y + 1; j++) {
-			if (!check_type(i, j, 'v') || !check_type(i, j, 'w') || grid[i][j]->is_checked()) { continue; }
-			vector<char> positions;
-			if ((check_type(i - 1, j, 'v') || check_type(i - 1, j, 'w')) && !grid[i - 1][j]->is_checked()) {           //up 
-				up = true;
-				positions.push_back('u');
-			}
-			if ((check_type(i + 1, j, 'v') || check_type(i + 1, j, 'w')) && !grid[i + 1][j]->is_checked()) {
-				down = true;
-				positions.push_back('d');
-			}
-			if ((check_type(i, j - 1, 'v') || check_type(i, j - 1, 'w')) && !grid[i][j - 1]->is_checked()) {
-				left = true;
-				positions.push_back('l');
-			}
-			if ((check_type(i, j + 1, 'v') || check_type(i, j + 1, 'w')) && !grid[i][j + 1]->is_checked()) {
-				right = true;
-				positions.push_back('r');
-			}
-			count = up + down + left + right;
-			num = get_random(1, count);
-			char p = positions.at(num);
-			/*switch (p) {
-			case 'u':
-				if (grid[i - 1][j]->get_type() == grid[i][j]->get_type()) {
-					if (check_type(i - 1, j, 'v')) {
-						Fighter* fptr1 = dynamic_cast<Fighter*>(grid[i - 1][j]);
-						Fighter* vamptr2 = dynamic_cast<Fighter*>(grid[i][j]);
-						int health1 = vamptr1->get_health();
-						int health2 = vamptr2->get_health();
-						if (health1 == health2 == 10) continue;
-						else {
-							int max_health = max(health1, health2);
-							if()
-						}
-					   }*/
+void Fighter::display() {
+	cout << "\tpower: " << power << endl;
+	cout << "\tdefence: " << defence << endl;
+	cout << "\theal: " << heal << endl;
+	cout << "\thealth" << health << endl;
+}
 
-		}
+void Fighter::give_heal(Fighter& teammate) {
+	int num = get_random(0, 1);			//give heal or not
+	if (num) {
+		this->lose_heal();
+		teammate.add_health();
 	}
+	else return;
 }
-
-
-
-int get_random(int a, int b) {
-	return a + rand() % (b - a + 1);
-}
-
-
 
 /*Team - Member functions & Constructors*/
 template< typename T> 
@@ -568,34 +592,6 @@ void Entity::move(int n) {
 	}
 }
 
-/*Fighter - Member functions & Constructor*/
-Fighter::Fighter(int x, int y, char type) : Entity(x, y, type), health(10) {
-	power = get_random(1, 3);
-	defence = get_random(1, 2);
-	heal = get_random(0, 2);
-	this->type = type;
-}
-
-void Fighter::display() {
-	cout << "\tpower: " << power << endl;
-	cout << "\tdefence: " << defence << endl;
-	cout << "\theal: " << heal << endl;
-	cout << "\thealth" << health << endl;
-}
-
-/*template <typename T> void Fighter::give_heal(T& teammate) {
-	else {
-		int max_health = max(health1, health2);
-		if (max_health == health1) {
-			num = get_random(0, 1);
-			if (num) {
-				vamptr1->
-			}
-			else continue;
-		}
-	}
-}*/
-
 /*Vampire - Member functions & Constructor*/
 Vampire::Vampire(int i, int j, char type) : Fighter(i, j, type) {}
 
@@ -621,7 +617,7 @@ void Vampire::move(int n) {
 		i--;
 		j--;
 		break;
-	case 7:         //down_right
+	case 7:			//down_right
 		i++;
 		j++;
 		break;
@@ -653,7 +649,6 @@ void Magic_filter::change_position(Map_entity* p, int old_i, int old_j, Map& map
 	swap(grid[xx][yy], grid[old_i][old_j]);     //swap the old position of avatar with earth
 	map.place_to_grid(xx, yy, p);               //object of magic filter
 }
-
 
 /*Player - Member functions & Constructor*/
 Player::Player(char team) {         // IF NO W OR V APOSFALMATWSH

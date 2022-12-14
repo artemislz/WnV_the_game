@@ -13,23 +13,28 @@ public:
     inline int get_j() const { return j; }
     inline char get_type() const { return type; }
     inline void set_type(char t) { type = t; }
-    virtual bool is_checked() = 0;
+     virtual bool is_checked() = 0;
+    //virtual void place(Map& map) = 0;
 };
 
 class Stable_object : public Map_entity {
 public:
     Stable_object(int i, int j, char type);
     bool is_checked() { return 0; }
+   // void place(Map& map);
 };
 
 class Entity : public Map_entity {            //<<Fighters,Avatar
     bool checked;       // true if he attacked or has been attacked
 public:
     Entity(int i, int j , char type);
-    void move(int n);
+    virtual void move(int n);
     bool is_checked() { return checked; }
+
+	//void place(Map& map);
 };
 
+//class Team;
 class Fighter : public Entity {
 protected:
     int health;         // paradoxh: 10
@@ -45,12 +50,14 @@ public:
     inline int get_health() const { return health; }
     inline char get_type()const { return type; }
     void give_heal(Fighter& teammate);
-    //template <typename T> void attack(T& enemy);
+    template <typename T> void attack(T& enemy);
+    template <typename T> void defend(T& teammate);
+  //  void health_decrease() { health--; }
 };
 
 class Werewolf : public Fighter {
 public:
-    //void attack(Vampires& enemy);
+
     Werewolf(int i, int j, char type = 'w');
 };
 
@@ -88,7 +95,7 @@ public:
     inline bool get_day()const { return day; }
     inline Map_entity* get_grid(int i, int j)const { return grid[i][j]; }
     inline Map_entity*** get_grid()const { return grid; }
-    inline void place_to_grid(int i, int j, Map_entity*& value) { grid[i][j] = value; }
+   inline void place_to_grid(int i, int j, Map_entity*& value) { grid[i][j] = value; }
     void change_day();
     void set_outline();
     bool check_type(int, int);      //checks if (i, j) is earth or magic_filter
@@ -106,12 +113,13 @@ public:
     void place(int x, int y, Map& map);
     inline int number()const { return teammates.size(); }
     inline std::vector<T*> get_teammates() { return teammates; }
+   // friend void place(Map& map, Team& team);
 };
 
 class Player {
 private:
     char team;      // W -> Werewolves  V -> Vampires
-    int input;     // number of the charcter-key pressed
+    int input;      // number of the charcter-key pressed
 public:
     Player(char team);
     inline char get_team()const { return team; }
@@ -144,12 +152,12 @@ private:
 public:
     Game(int, int, char);
     void end();
-    void pause();       //kalei thn display_info
+    void pause();                   //kalei thn display_info
     void display_info();
     inline Map get_map()const { return map; }
     inline Player get_player()const { return player; }
     void run();
     void update();
     void interactions();
-    bool check_for_winner();       // YES -> END
+    bool check_for_winner();        // YES -> END
 };

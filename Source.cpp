@@ -11,7 +11,7 @@ using namespace std;
 
 int main()
 {
-    int x = 25, y = 25;
+    int x = 15, y = 15;
   //  cout << "Enter the dimensions of the map: " << endl;
     //cin >> x >> y;
 

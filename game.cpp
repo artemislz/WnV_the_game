@@ -30,6 +30,10 @@ Game::Game(int x, int y, char team) : active(true), map(x, y, team), player(team
 }
 
 void Game::update() {			//werewolves & vampires move randomly
+	static int frame = 0;
+	frame++;
+	if (frame % 40 == 0)
+		map.change_day();
 	int i, j, p;
 	Map_entity*** grid = map.get_grid();
 	vector<Vampire*> vector_vampires = team_vampires.get_teammates(); 
@@ -45,51 +49,53 @@ void Game::update() {			//werewolves & vampires move randomly
 			if (map.check_type(i - 1, j, 'e')) {
 				(**ptr).move(1);
 				swap(grid[i][j], grid[i - 1][j]);
-				break;
 			};
+			break;
 		case 2:                                             //goes_down
 			if (map.check_type(i + 1, j, 'e')) {
 				(**ptr).move(2);
 				swap(grid[i][j], grid[i + 1][j]);
-				break;
 			};
+			break;
 		case 3:                                             //goes_left
 			if (map.check_type(i, j - 1, 'e')) {
 				(**ptr).move(3);
 				swap(grid[i][j], grid[i][j - 1]);
-				break;
 			};
+			break;
 		case 4:                                             //goes_right
 			if (map.check_type(i, j + 1, 'e')) {
 				(**ptr).move(4);
 				swap(grid[i][j], grid[i][j + 1]);
-				break;
 			}
+			break;
 		case 5:
 			if (map.check_type(i - 1, j + 1, 'e')) {           //goes up right
 				(**ptr).move(5);
 				swap(grid[i][j], grid[i - 1][j + 1]);
-				break;
 			};
+			break;
 		case 6:
 			if (map.check_type(i - 1, j - 1, 'e')) {
 				(**ptr).move(6);                           //goes up left
 				swap(grid[i][j], grid[i - 1][j - 1]);
-				break;
 			};
+			break;
 		case 7:
 			if (map.check_type(i + 1, j + 1, 'e')) {
 				(**ptr).move(7);                            //goes down right
 				swap(grid[i][j], grid[i + 1][j + 1]);
-				break;
 			};
+			break;
 		case 8:
 			if (map.check_type(i + 1, j - 1, 'e')) {            //goes down left
 				(**ptr).move(8);
 				swap(grid[i][j], grid[i + 1][j - 1]);
-				break;
 			};
+			break;
 		};
+		
+		
 	}
 	vector<Werewolf*> vector_werewolves = team_werewolves.get_teammates();
 	vector<Werewolf*>::iterator ptrr;
@@ -104,26 +110,26 @@ void Game::update() {			//werewolves & vampires move randomly
 			if (map.check_type(i - 1, j, 'e')) {
 				swap(grid[i][j], grid[i - 1][j]);
 				(**ptrr).move(1);
-				break;
 			};
+			break;
 		case 2:                                             //goes_down
 			if (map.check_type(i + 1, j, 'e')) {
 				swap(grid[i][j], grid[i + 1][j]);
 				(**ptrr).move(2);
-				break;
 			};
+			break;
 		case 3:                                             //goes_left
 			if (map.check_type(i, j - 1, 'e')) {
 				swap(grid[i][j], grid[i][j - 1]);
 				(**ptrr).move(3);
-				break;
 			};
+			break;
 		case 4:                                             //goes_right
 			if (map.check_type(i, j + 1, 'e')) {
 				swap(grid[i][j], grid[i][j + 1]);
 				(**ptrr).move(4);
-				break;
 			}
+			break;
 		}
 	}
 }
@@ -142,7 +148,7 @@ void Game::run() {
 				return;
 			}
 			update();
-			//interactions();
+			interactions();
 			map.print();
 			Sleep(100);
 			system("cls");
@@ -173,51 +179,86 @@ void Game::run() {
 }
 
 void Game::interactions() {
-	int count, num;
+	int count = 0, num = 0;
 	bool up, down, left, right;
+	up = false;
+	down = false;
+	left = false;
+	right = false;
 	Map_entity*** grid = map.get_grid();
+
 	for (int i = 1; i < map.get_x() + 1; i++) {
 		for (int j = 1; j < map.get_y() + 1; j++) {
-			if (!map.check_type(i, j, 'v') || !map.check_type(i, j, 'w') || grid[i][j]->is_checked()) { continue; }
+			if (!map.check_type(i, j, 'v') && !map.check_type(i, j, 'w')) { continue; }
+
+			Fighter* f = dynamic_cast<Fighter*>(grid[i][j]);
+			if (f->is_checked())
+				continue;
 			vector<char> positions;
-			if ((map.check_type(i - 1, j, 'v') || map.check_type(i - 1, j, 'w')) && !grid[i - 1][j]->is_checked()) {           //up 
-				up = true;
-				positions.push_back('u');
+
+			if (map.check_type(i - 1, j, 'v') || map.check_type(i - 1, j, 'w')) {           //up 
+				Fighter* pu = dynamic_cast<Fighter*>(grid[i - 1][j]);
+				if (!pu->is_checked()) {
+					up = true;
+					positions.push_back('u');
+				}
+				cout << "check up :" << up;
+				//system("pause");
 			}
-			if ((map.check_type(i + 1, j, 'v') || map.check_type(i + 1, j, 'w')) && !grid[i + 1][j]->is_checked()) {
-				down = true;
-				positions.push_back('d');
+			if (map.check_type(i + 1, j, 'v') || map.check_type(i + 1, j, 'w')) {
+				Fighter* pd = dynamic_cast<Fighter*>(grid[i + 1][j]);
+				if (!pd->is_checked()) {
+					down = true;
+					positions.push_back('d');
+				}
 			}
-			if ((map.check_type(i, j - 1, 'v') || map.check_type(i, j - 1, 'w')) && !grid[i][j - 1]->is_checked()) {
-				left = true;
-				positions.push_back('l');
+			if (map.check_type(i, j - 1, 'v') || map.check_type(i, j - 1, 'w')) {
+				Fighter* pl = dynamic_cast<Fighter*>(grid[i][j - 1]);
+				if (!pl->is_checked()) {
+					left = true;
+					positions.push_back('l');
+				}
 			}
-			if ((map.check_type(i, j + 1, 'v') || map.check_type(i, j + 1, 'w')) && !grid[i][j + 1]->is_checked()) {
-				right = true;
-				positions.push_back('r');
+			if (map.check_type(i, j + 1, 'v') || map.check_type(i, j + 1, 'w')) {
+				Fighter* pr = dynamic_cast<Fighter*>(grid[i][j + 1]);
+				if (!pr->is_checked()) {
+					right = true;
+					positions.push_back('r');
+				}
 			}
-			count = up + down + left + right;
-			num = get_random(1, count);
-			char p = positions.at(num);
-			switch (p) {
-			case 'u':
-				if (grid[i - 1][j]->get_type() == grid[i][j]->get_type()) {
-					if (map.check_type(i - 1, j, 'v')) {
+			//count = up ;
+			//num = get_random(1, count);
+			if (up) {
+				char p = 'u';
+				switch (p) {
+				case 'u':
+					if (grid[i - 1][j]->get_type() == grid[i][j]->get_type()) {
 						Fighter* fptr1 = dynamic_cast<Fighter*>(grid[i - 1][j]);
 						Fighter* fptr2 = dynamic_cast<Fighter*>(grid[i][j]);
 						int health1 = fptr1->get_health();
 						int health2 = fptr2->get_health();
+						//system("pause");
+						fptr2->lose_health();
 						if (health1 == health2 == 10) continue;
 						else {
+							cout << "fighter 1: ";
+							fptr1->display();
+							cout << "fighter 2: ";
+							fptr2->display();
+							system("pause");
 							int max_health = max(health1, health2);
-							if (max_health == health1) {
+							if ((max_health == health1) || (health1 == health2)) {
 								fptr1->give_heal(*fptr2);
 							}
 							else {
 								fptr2->give_heal(*fptr1);
 							}
-						}
+							cout << "after";
+							fptr1->display();
+							fptr2->display();
+							system("pause");
 
+						}
 					}
 				}
 			}
@@ -227,38 +268,38 @@ void Game::interactions() {
 
 void Game::display_info() {
 
-	string vampire_display = "| Number of Vampires Alive: ";
-	string werewolf_display = "| Number of Werewolves Alive: ";
-	string magic_filter_display = "| Number of Magic Filters you owned: ";
+		string vampire_display = "| Number of Vampires Alive: ";
+		string werewolf_display = "| Number of Werewolves Alive: ";
+		string magic_filter_display = "| Number of Magic Filters you owned: ";
 
-	vampire_display += to_string(team_vampires.number());
-	werewolf_display += to_string(team_werewolves.number());
-	magic_filter_display += to_string(avatar.get_filters());
-	for (int i = 0; i < 20; i++)
-		cout << " -";
-	cout << endl << vampire_display;
+		vampire_display += to_string(team_vampires.number());
+		werewolf_display += to_string(team_werewolves.number());
+		magic_filter_display += to_string(avatar.get_filters());
+		for (int i = 0; i < 20; i++)
+			cout << " -";
+		cout << endl << vampire_display;
 
-	for (int i = 0, size = 40 - vampire_display.size(); i < size; i++)
-		cout << " ";
-	cout << "|\n" << werewolf_display;
+		for (int i = 0, size = 40 - vampire_display.size(); i < size; i++)
+			cout << " ";
+		cout << "|\n" << werewolf_display;
 
-	for (int i = 0, size = 40 - werewolf_display.size(); i < size; i++)
-		cout << " ";
-	cout << "|\n" << magic_filter_display;
+		for (int i = 0, size = 40 - werewolf_display.size(); i < size; i++)
+			cout << " ";
+		cout << "|\n" << magic_filter_display;
 
-	for (int i = 0, size = 40 - magic_filter_display.size(); i < size; i++)
-		cout << " ";
-	cout << "|\n";
-	for (int i = 0; i < 20; i++)
-		cout << " -";
-	char input = _getch();
-	int key = input;
-	while (key != KEY_SPACE) {
+		for (int i = 0, size = 40 - magic_filter_display.size(); i < size; i++)
+			cout << " ";
+		cout << "|\n";
+		for (int i = 0; i < 20; i++)
+			cout << " -";
 		char input = _getch();
-		key = input;
-	}
-	system("cls");
-	return;
+		int key = input;
+		while (key != KEY_SPACE) {
+			char input = _getch();
+			key = input;
+		}
+		system("cls");
+		return;
 }
 
 bool Game::check_for_winner() {
@@ -381,9 +422,7 @@ void Avatar::update_avatar(int input, Map& map, Magic_filter& magic_filter) {   
 			}
 		break;
 	}
-	if (calls % 10 == 0)        //change of the weather after 10 avatars moves
-		map.change_day();
-
+	
 }
 
 
@@ -532,7 +571,7 @@ void Fighter::display() {
 
 void Fighter::give_heal(Fighter& teammate) {
 	int num = get_random(0, 1);			//give heal or not
-	if (num) {
+	if (num && heal) {					//if doesn't have heal return
 		this->lose_heal();
 		teammate.add_health();
 	}
@@ -574,7 +613,8 @@ Map_entity::Map_entity(int i, int j, char type) {
 Stable_object::Stable_object(int i, int j, char type) : Map_entity(i, j, type) {}
 
 /*Entity - Member functions & constructors*/
-Entity::Entity(int i, int j, char type) : Map_entity(i, j, type) {}
+Entity::Entity(int i, int j, char type) : Map_entity(i, j, type) , checked(false) {
+}
 
 void Entity::move(int n) {
 	switch (n) {

@@ -33,7 +33,7 @@ public:
 
 	//void place(Map& map);
 };
-
+class Map;
 //class Team;
 class Fighter : public Entity {
 protected:
@@ -47,11 +47,13 @@ public:
     inline void lose_heal() { heal--; }
     inline void add_health() { health++;  }
     inline void lose_health() { health--; }
+    void lose_health(int enemy_pow);
     inline int get_health() const { return health; }
-    inline char get_type()const { return type; }
+    inline int  get_power()const { return power; }
+    //inline char get_type()const { return type; }
     void give_heal(Fighter& teammate);
-    template <typename T> void attack(T& enemy);
-    template <typename T> void defend(T& teammate);
+    template <typename T> void attack(T& enemy, Map& map);
+    //template <typename T> void defend(T& attacked,Map& map);
   //  void health_decrease() { health--; }
 };
 
@@ -68,7 +70,7 @@ public:
     //void attack(WereWolves& ememy);
 };
 
-class Map;
+
 class Magic_filter : public Map_entity {
 public:
 	Magic_filter(int x, int y );

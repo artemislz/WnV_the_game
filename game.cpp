@@ -94,8 +94,6 @@ void Game::update() {			//werewolves & vampires move randomly
 			};
 			break;
 		};
-		
-		
 	}
 	vector<Werewolf*> vector_werewolves = team_werewolves.get_teammates();
 	vector<Werewolf*>::iterator ptrr;
@@ -186,7 +184,6 @@ void Game::interactions() {
 	left = false;
 	right = false;
 	Map_entity*** grid = map.get_grid();
-
 	for (int i = 1; i < map.get_x() + 1; i++) {
 		for (int j = 1; j < map.get_y() + 1; j++) {
 			if (!map.check_type(i, j, 'v') && !map.check_type(i, j, 'w')) { continue; }
@@ -259,6 +256,46 @@ void Game::interactions() {
 							system("pause");
 
 						}
+					}	
+					else {						//different types
+						Vampire* vptr;
+						Werewolf* wptr;
+						if (grid[i - 1][j]->get_type() == 'v' && grid[i][j]->get_type() == 'w') {
+							vptr = dynamic_cast<Vampire*>(grid[i - 1][j]);
+							wptr = dynamic_cast<Werewolf*>(grid[i][j]);
+						}
+						else if (grid[i - 1][j]->get_type() == 'w' && grid[i][j]->get_type() == 'v') {
+							vptr = dynamic_cast<Vampire*>(grid[i][j]);
+							wptr = dynamic_cast<Werewolf*>(grid[i - 1][j]);
+						}
+						else continue;
+						int v_power = vptr->get_power();
+						int w_power = wptr->get_power();
+						cout << "vampire 1: ";
+						vptr->display();
+						cout << "werewolf 2: ";
+						wptr->display();
+						system("pause");
+						int max_power = max(v_power, w_power);
+						if (max_power == v_power) {
+							vptr->attack(*wptr, map);
+						}
+						else if (max_power == w_power) {
+							wptr->attack(*vptr, map);
+						}
+						else {			//v_power == w_power -> choose randmply who will attack
+							int rand = get_random(1, 2);
+							if (rand) {
+								vptr->attack(*wptr, map);
+							}
+							else {
+								wptr->attack(*vptr, map);
+							}
+						}
+						cout << "after";
+						vptr->display();
+						wptr->display();
+						system("pause");
 					}
 				}
 			}
@@ -387,7 +424,6 @@ void Avatar::update_avatar(int input, Map& map, Magic_filter& magic_filter) {   
 			move(2);
 			//move down
 		}
-
 		break;
 
 	case KEY_LEFT:
@@ -424,8 +460,6 @@ void Avatar::update_avatar(int input, Map& map, Magic_filter& magic_filter) {   
 	}
 	
 }
-
-
 
 /*Map - Member functions & Constructor*/
 Map::Map(int x, int y, char team) : x(x), y(y), day(true) {
@@ -562,6 +596,18 @@ Fighter::Fighter(int i, int j, char type) : Entity(i, j, type), health(10) {
 	heal = get_random(0, 2);
 }
 
+void Fighter::lose_health(int enemy_pow) {
+	int diff;
+	if (enemy_pow >= defence) {
+		diff = enemy_pow - defence;
+		health -= diff;
+	}
+	else return;
+	/*else {
+		diff = defence - enemy_pow;
+	}*/
+}
+
 void Fighter::display() {
 	cout << "\tpower: " << power << endl;
 	cout << "\tdefence: " << defence << endl;
@@ -576,6 +622,28 @@ void Fighter::give_heal(Fighter& teammate) {
 		teammate.add_health();
 	}
 	else return;
+}
+
+/*template <typename T> void Fighter::defend(T& attacked, Map& map) {
+	char t = attacked.get_type();
+	Map_entity*** grid = map.get_grid();
+	int a_i = attacked.get_i();
+	int a_j = attacked.get_j();
+	if(this->i ==  )
+}*/
+
+template <typename T> void Fighter::attack(T& enemy, Map& map) {
+	enemy.lose_health(power);			//power of the attacker
+	Map_entity*** grid = map.get_grid();
+	if (enemy.get_health() == 0) {
+		int i = enemy.get_i();
+		int j = enemy.get_j();
+		delete grid[i][j];
+		grid[i][j] = new Stable_object(i, j, 'e');
+	}
+	/*else {
+		defend(enemy, map);
+	}*/
 }
 
 /*Team - Member functions & Constructors*/

@@ -1,5 +1,6 @@
-#include "entity.h"
-#include "globals.h"
+#pragma once
+#include "global.h"
+class Map_entity;
 
 class Map {
 private:

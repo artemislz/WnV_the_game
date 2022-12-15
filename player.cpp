@@ -1,5 +1,5 @@
-#include "globals.h"
-#include "class.h"
+#include <conio.h>
+#include "player.h"
 
 
 /*Player - Member functions & Constructor*/
@@ -11,3 +11,4 @@ void Player::set_input() {
     char key = _getch();
     input = key;
 }
+

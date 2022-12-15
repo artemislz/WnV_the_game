@@ -1,5 +1,8 @@
-#include "globals.h"
-#include "class.h"
+#include "avatar.h"
+#include "global.h"
+#include "magic_filter.h"
+#include "map.h"
+#include <iostream>
 
 /*Avatar - Member functions & Constructor*/
 Avatar::Avatar(int i, int j, char team, char type) : Entity(i, j, type), magic_filters(1) {
@@ -18,12 +21,12 @@ void Avatar::update_avatar(int input, Map& map, Magic_filter& magic_filter) {   
             move(1);
             if (map.check_type(i - 1, j, 'm')) {
                 Map_entity* p = grid[i - 1][j];         //old position of magic filter
-                swap(grid[i - 1][j], grid[i][j]);
+                std::swap(grid[i - 1][j], grid[i][j]);
                 add_filter();
                 magic_filter.change_position(p, i, j, map);
             }
             else {
-                swap(grid[i][j], grid[i - 1][j]);
+                std::swap(grid[i][j], grid[i - 1][j]);
             }
             break;
         }
@@ -32,12 +35,12 @@ void Avatar::update_avatar(int input, Map& map, Magic_filter& magic_filter) {   
             move(2);                             //move down
             if (map.check_type(i + 1, j, 'm')) {
                 Map_entity* p = grid[i + 1][j];         //old position of magic filter
-                swap(grid[i + 1][j], grid[i][j]);
+                std::swap(grid[i + 1][j], grid[i][j]);
                 add_filter();
                 magic_filter.change_position(p, i, j, map);
             }
             else {
-                swap(grid[i][j], grid[i + 1][j]);
+                std::swap(grid[i][j], grid[i + 1][j]);
             }
             break;
         }
@@ -46,12 +49,12 @@ void Avatar::update_avatar(int input, Map& map, Magic_filter& magic_filter) {   
             move(3);                             //move left
             if (map.check_type(i, j - 1, 'm')) {
                 Map_entity* p = grid[i][j - 1];         //old position of magic filter
-                swap(grid[i][j - 1], grid[i][j]);
+                std::swap(grid[i][j - 1], grid[i][j]);
                 add_filter();
                 magic_filter.change_position(p, i, j, map);
             }
             else {
-                swap(grid[i][j], grid[i][j - 1]);
+                std::swap(grid[i][j], grid[i][j - 1]);
             }
             break;
         }
@@ -60,12 +63,12 @@ void Avatar::update_avatar(int input, Map& map, Magic_filter& magic_filter) {   
             move(4);                             //move right    
             if (map.check_type(i, j + 1, 'm')) {
                 Map_entity* p = grid[i][j + 1];         //old position of magic filter
-                swap(grid[i][j + 1], grid[i][j]);
+                std::swap(grid[i][j + 1], grid[i][j]);
                 add_filter();
                 magic_filter.change_position(p, i, j, map);
             }
             else {
-                swap(grid[i][j], grid[i][j + 1]);
+                std::swap(grid[i][j], grid[i][j + 1]);
             }
             break;
         }

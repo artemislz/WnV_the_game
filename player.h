@@ -1,5 +1,6 @@
 #pragma once
-#include "map.h"
+
+class Map;
 
 class Player {
 private:

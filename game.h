@@ -1,8 +1,13 @@
-#include "team.h"
-#include "avatar.h"
-#include "map.h"
-#include "player.h"
-#include "entity.h"
+#pragma once
+
+
+class Map;
+class Player;
+class Avatar;
+class Werewolf;
+class Vampire;
+class Magic_filter;
+template<class t> class Team;
 
 class Game {
 private:

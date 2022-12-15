@@ -1,7 +1,8 @@
 #pragma once
 #include <vector>
-#include "entity.h"
-#include "map.h"
+
+class Map;
+
 
 template< class T>
 class  Team {

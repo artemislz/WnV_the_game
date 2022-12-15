@@ -11,7 +11,6 @@
 int get_random(int, int);
 
 #include <iostream>
-#include "class.h"
 #include <cstdlib>
 #include <time.h>
 #include <vector>

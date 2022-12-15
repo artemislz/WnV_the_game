@@ -1,6 +1,8 @@
 #pragma once
-#include "map.h"
 #include "entity.h"
+
+class Map;
+class Magic_filter;
 
 class Avatar : public Entity {
 private:

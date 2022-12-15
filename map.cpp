@@ -1,5 +1,7 @@
 #include "globals.h"
-#include "class.h"
+#include "map.h"
+#include "stable_object.h"
+#include <ctime>
 
 /*Map - Member functions & Constructor*/
 Map::Map(int x, int y, char team) : x(x), y(y), day(true) {
@@ -131,47 +133,3 @@ bool Map::check_type(int i, int j, char type) {
 }
 
 
-void Map::interactions() {
-	int count, num;
-	bool up, down, left, right;
-	for (int i = 1; i < x + 1; i++) {
-		for (int j = 1; j < y + 1; j++) {
-			if (!check_type(i, j, 'v') || !check_type(i, j, 'w') || grid[i][j]->is_checked()) { continue; }
-			vector<char> positions;
-			if ((check_type(i - 1, j, 'v') || check_type(i - 1, j, 'w')) && !grid[i - 1][j]->is_checked()) {           //up 
-				up = true;
-				positions.push_back('u');
-			}
-			if ((check_type(i + 1, j, 'v') || check_type(i + 1, j, 'w')) && !grid[i + 1][j]->is_checked()) {
-				down = true;
-				positions.push_back('d');
-			}
-			if ((check_type(i, j - 1, 'v') || check_type(i, j - 1, 'w')) && !grid[i][j - 1]->is_checked()) {
-				left = true;
-				positions.push_back('l');
-			}
-			if ((check_type(i, j + 1, 'v') || check_type(i, j + 1, 'w')) && !grid[i][j + 1]->is_checked()) {
-				right = true;
-				positions.push_back('r');
-			}
-			count = up + down + left + right;
-			num = get_random(1, count);
-			char p = positions.at(num);
-			/*switch (p) {
-			case 'u':
-				if (grid[i - 1][j]->get_type() == grid[i][j]->get_type()) {
-					if (check_type(i - 1, j, 'v')) {
-						Fighter* fptr1 = dynamic_cast<Fighter*>(grid[i - 1][j]);
-						Fighter* vamptr2 = dynamic_cast<Fighter*>(grid[i][j]);
-						int health1 = vamptr1->get_health();
-						int health2 = vamptr2->get_health();
-						if (health1 == health2 == 10) continue;
-						else {
-							int max_health = max(health1, health2);
-							if()
-						}
-					   }*/
-
-		}
-	}
-}

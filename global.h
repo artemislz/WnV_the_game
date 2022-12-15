@@ -10,8 +10,8 @@
 
 int get_random(int, int);
 
-#include <iostream>
-#include "class.h"
+/*#include <iostream>
+
 #include <cstdlib>
 #include <time.h>
 #include <vector>
@@ -23,4 +23,4 @@ int get_random(int, int);
 #include <algorithm>
 #include <execution>
 
-using namespace std;
+using namespace std;*/

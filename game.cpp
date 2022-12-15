@@ -254,7 +254,8 @@ void Game::interactions() {
 							fptr1->display();
 							fptr2->display();
 							system("pause");
-
+							fptr1->set_checked(true);
+							fptr2->set_checked(true);
 						}
 					}	
 					else {						//different types
@@ -296,6 +297,8 @@ void Game::interactions() {
 						vptr->display();
 						wptr->display();
 						system("pause");
+						vptr->set_checked(true);
+						wptr->set_checked(true);
 					}
 				}
 			}
@@ -682,6 +685,10 @@ Stable_object::Stable_object(int i, int j, char type) : Map_entity(i, j, type) {
 
 /*Entity - Member functions & constructors*/
 Entity::Entity(int i, int j, char type) : Map_entity(i, j, type) , checked(false) {
+}
+
+void Entity::set_checked(bool z) {
+	checked = z;
 }
 
 void Entity::move(int n) {

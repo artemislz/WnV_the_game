@@ -133,10 +133,21 @@
   <ItemGroup>
     <ClCompile Include="game.cpp" />
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="map.cpp" />
+    <ClCompile Include="global.cpp" />
+    <ClCompile Include="entity.cpp" />
+    <ClCompile Include="player.cpp" />
+    <ClCompile Include="team.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="avatar.h" />
     <ClInclude Include="class.h" />
-    <ClInclude Include="globals.h" />
+    <ClInclude Include="entity.h" />
+    <ClInclude Include="game.h" />
+    <ClInclude Include="global.h" />
+    <ClInclude Include="map.h" />
+    <ClInclude Include="player.h" />
+    <ClInclude Include="team.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

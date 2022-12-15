@@ -117,30 +117,6 @@ public:
     inline std::vector<T*> get_teammates() { return teammates; }
    // friend void place(Map& map, Team& team);
 };
-
-class Player {
-private:
-    char team;      // W -> Werewolves  V -> Vampires
-    int input;      // number of the charcter-key pressed
-public:
-    Player(char team);
-    inline char get_team()const { return team; }
-    friend class Map;  
-    void set_input();
-    inline char get_input()const { return input;};
-};
-
-class Avatar : public Entity {
-private:
-    int magic_filters;
-    char team;
-public:
-    Avatar(int x, int y, char team, char type = 'a');
-    inline void add_filter() { magic_filters++; }
-    inline int get_filters()const { return magic_filters; }
-    void update_avatar(int input, Map& map, Magic_filter& magic_filter);          // update of the grid after player's movement
-};
-
 class Game {
 private:
     bool active;  //true -> paused

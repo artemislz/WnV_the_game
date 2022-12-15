@@ -1,5 +1,9 @@
+#include "game.h"
 #include "globals.h"
-#include "class.h"
+#include "avatar.h"
+#include "map.h"
+#include "player.h"
+#include "avatar.h"
 
 int get_random(int a, int b) {
 	return a + rand() % (b - a + 1);
@@ -133,7 +137,7 @@ void Game::update() {			//werewolves & vampires move randomly
 }
 
 void Game::run() {
-
+	get_map().print();
 	system("cls");
 	while (active) {
 		if (check_for_winner()) {

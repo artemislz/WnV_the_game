@@ -11,8 +11,3 @@ public:
 	bool is_checked() { return checked; }
 	//void place(Map& map);
 };
-
-
-
-
-

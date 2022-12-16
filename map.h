@@ -8,7 +8,6 @@ private:
 	int x;
 	int y;      // (x, y) - > map dimensions
 	bool day;   // false -> night  true -> day
-	int werewolves; // count of werewolves alive
 	friend int get_random(int, int);
 	Map_entity*** grid;
 public:

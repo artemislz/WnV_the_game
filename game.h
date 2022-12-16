@@ -8,13 +8,6 @@
 #include "vampire.h"
 #include "team.h"
 
-class Map;
-class Player;
-class Avatar;
-class Werewolf;
-class Vampire;
-class Magic_filter;
-
 class Game {
 private:
 	bool active;  //true -> paused

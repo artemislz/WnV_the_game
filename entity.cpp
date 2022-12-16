@@ -4,12 +4,14 @@
 
 
 /*Entity - Member functions & constructors*/
-Entity::Entity(int i, int j, char type) : Map_entity(i, j, type), checked(false) {}
+Entity::Entity(int i, int j, char type) : Map_entity(i, j, type) {
+    if (type == 'a')
+        checked = true;
+    else {
+        checked = false;
+    }
+}
 
-/*inline int Map_entity::get_i() const { return i; }
-inline int Map_entity::get_j() const { return j; }
-inline char Map_entity::get_type() const { return type; }
-inline void Map_entity::set_type(char t) { type = t; }*/
 
 void Entity::move(int n) {
     switch (n) {

@@ -17,7 +17,9 @@
 #include <cstdlib>
 #include <conio.h>
 #include "entity.h"
+
 using namespace std;
+
 class Player;
 /*Game - Member functions & Constructor*/
 Game::Game(int x, int y, char team) : active(true), map(x, y, team), player(team), avatar(x / 2 + 1, y / 2 + 1, team), team_vampires(x, y, map), team_werewolves(x, y, map), magic_filter(5,5) {
@@ -28,7 +30,6 @@ Game::Game(int x, int y, char team) : active(true), map(x, y, team), player(team
 	Map_entity* p = &avatar;
 	map.place_to_grid(avatar.get_i(), avatar.get_j(), p);
 	//std::cout << "this should be a: " <<map.get_grid()[x / 2 + 1][y / 2 + 1]->get_type();
-
 	/*Process of putting randomly the magic filter*/
 	int xx, yy;
 	do {
@@ -160,9 +161,12 @@ void Game::run() {
 				return;
 			}
 			update();
-			
+			//cout << "After update \n";
+			//map.print();
 			interactions();
+			//cout << "After interactions \n";
 			map.print();
+			//system("pause");
 			Sleep(100);
 			system("cls");
 		};
@@ -192,137 +196,73 @@ void Game::run() {
 	return;
 }
 
+
 void Game::interactions() {
-	int count = 0, num = 0;
-	bool up, down, left, right;
-	up = false;
-	down = false;
-	left = false;
-	right = false;
+
+	int count = 0, num = 0, defend_moves = 0, defend_happened = 0;
+	bool up = 0, down = 0, left = 0, right = 0;
+
 	Map_entity*** grid = map.get_grid();
+
 	for (int i = 1; i < map.get_x() + 1; i++) {
 		for (int j = 1; j < map.get_y() + 1; j++) {
-			if (!map.check_type(i, j, 'v') && !map.check_type(i, j, 'w')) { continue; }
-
-			Fighter* f = dynamic_cast<Fighter*>(grid[i][j]);
-			if (f->is_checked()) 
+			if (grid[i][j]->is_checked()) 			// if is stable_object/avatar or fighter who interacted, continue
 				continue;
-			vector<char> positions;
+			
+			vector<char> positions;	
 
-			if (map.check_type(i - 1, j, 'v') || map.check_type(i - 1, j, 'w')) {           //up 
-				Fighter* pu = dynamic_cast<Fighter*>(grid[i - 1][j]);
-				if (!pu->is_checked()) {
-					up = true;
-					positions.push_back('u');
-				}
-				std::cout << "check up :" << up;
-				system("pause");
-				//system("pause");
-			}
-			if (map.check_type(i + 1, j, 'v') || map.check_type(i + 1, j, 'w')) {
-				Fighter* pd = dynamic_cast<Fighter*>(grid[i + 1][j]);
-				if (!pd->is_checked()) {
-					down = true;
-					positions.push_back('d');
-				}
-			}
-			if (map.check_type(i, j - 1, 'v') || map.check_type(i, j - 1, 'w')) {
-				Fighter* pl = dynamic_cast<Fighter*>(grid[i][j - 1]);
-				if (!pl->is_checked()) {
-					left = true;
-					positions.push_back('l');
-				}
-			}
-			if (map.check_type(i, j + 1, 'v') || map.check_type(i, j + 1, 'w')) {
-				Fighter* pr = dynamic_cast<Fighter*>(grid[i][j + 1]);
-				if (!pr->is_checked()) {
-					right = true;
-					positions.push_back('r');
-				}
-			}
-			//count = up ;
-			//num = get_random(1, count);
+			up = !grid[i - 1][j]->is_checked();
 			if (up) {
-				cout << "lalal";
-				system("pause");
-				char p = 'u';
-				switch (p) {
-				case 'u':
-					if (grid[i - 1][j]->get_type() == grid[i][j]->get_type()) {
-						Fighter* fptr1 = dynamic_cast<Fighter*>(grid[i - 1][j]);
-						Fighter* fptr2 = dynamic_cast<Fighter*>(grid[i][j]);
-						int health1 = fptr1->get_health();
-						int health2 = fptr2->get_health();
-						//system("pause");
-						fptr2->lose_health();
-						if (health1 == health2 == 10) continue;
-						else {
-							std::cout << "fighter 1: ";
-							fptr1->display();
-							std::cout << "fighter 2: ";
-							fptr2->display();
-							system("pause");
-							int max_health = max(health1, health2);
-							if ((max_health == health1) || (health1 == health2)) {
-								fptr1->give_heal(*fptr2);
-							}
-							else {
-								fptr2->give_heal(*fptr1);
-							}
-							std::cout << "after";
-							fptr1->display();
-							fptr2->display();
-							system("pause");
-							fptr1->set_checked();
-							fptr2->set_checked();
-						}
-					}
-					else {						//different types
-						Vampire* vptr;
-						Werewolf* wptr;
-						if (grid[i - 1][j]->get_type() == 'v' && grid[i][j]->get_type() == 'w') {
-							vptr = dynamic_cast<Vampire*>(grid[i - 1][j]);
-							wptr = dynamic_cast<Werewolf*>(grid[i][j]);
-						}
-						else if (grid[i - 1][j]->get_type() == 'w' && grid[i][j]->get_type() == 'v') {
-							vptr = dynamic_cast<Vampire*>(grid[i][j]);
-							wptr = dynamic_cast<Werewolf*>(grid[i - 1][j]);
-						}
-						else continue;
-						int v_power = vptr->get_power();
-						int w_power = wptr->get_power();
-						std::cout << "vampire 1: ";
-						vptr->display();
-						std::cout << "werewolf 2: ";
-						wptr->display();
-						system("pause");
-						int max_power = max(v_power, w_power);
-						if (max_power == v_power) {
-							vptr->attack(*wptr, map);
-						}
-						else if (max_power == w_power) {
-							wptr->attack(*vptr, map);
-						}
-						else {			//v_power == w_power -> choose randmply who will attack
-							int rand = get_random(1, 2);
-							if (rand) {
-								vptr->attack(*wptr, map);
-							}
-							else {
-								wptr->attack(*vptr, map);
-							}
-						}
-						std::cout << "after";
-						vptr->display();
-						wptr->display();
-						system("pause");
-						vptr->set_checked();
-						wptr->set_checked();
-					}
-				}
+				positions.push_back('u');
 			}
+
+			down = !grid[i + 1][j]->is_checked();
+			if (down) {
+				positions.push_back('d');
+			}
+
+			right = !grid[i][j + 1]->is_checked();
+			if (right) {
+				positions.push_back('r');
+			}
+
+			left = !grid[i][j - 1]->is_checked();
+			if (left) {
+				positions.push_back('l');
+			}
+			count = up + down + left + right;		// select randomly to interact with one of the close fighters
+			if (!count) 
+				continue;
+			num = get_random(0, count - 1);
+			char p = positions.at(num);
+			Fighter* fptr1 = dynamic_cast<Fighter*>(grid[i][j]);
+			Fighter* fptr2;
+			switch (p) {
+			case 'u':
+				fptr2 = dynamic_cast<Fighter*>(grid[i - 1][j]);
+				defend_moves += fptr1->interact(*fptr2, 'u', map);
+				break;
+			case 'd':
+				fptr2 = dynamic_cast<Fighter*>(grid[i + 1][j]);
+				defend_moves += fptr1->interact(*fptr2, 'd', map);
+				break;
+			case 'l':
+				fptr2 = dynamic_cast<Fighter*>(grid[i][j - 1]);
+				defend_moves += fptr1->interact(*fptr2, 'l', map);
+				break;
+			case 'r':
+				fptr2 = dynamic_cast<Fighter*>(grid[i][j + 1]);
+				cout << fptr2->get_type();
+				defend_moves += fptr1->interact(*fptr2, 'r', map);
+				break;
+					
+			}	
 		}
 	}
+	/*if (defend_moves) {
+		cout << "After a defend that happened\n";
+		map.print();
+	}*/
 }
 
 

@@ -47,8 +47,7 @@ void Avatar::update_avatar(int input, Map& map, Magic_filter& magic_filter) {   
 			else {
 				swap(grid[i][j], grid[i + 1][j]);
 			}
-			move(2);
-			//move down
+			move(2);									//move down
 		}
 		break;
 

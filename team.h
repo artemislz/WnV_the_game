@@ -7,7 +7,6 @@
 
 class Map;
 
-
 template< class T>
 class  Team {
 private:
@@ -40,6 +39,7 @@ void Team<T>::place(int x, int y, Map& map) {
 			yy = get_random(1, y);
 		} while (!map.check_type(xx, yy, 'e'));
 		T* w = new T(xx, yy);
+		//w->set_pointer_to_teammates(teammates);
 		Map_entity* m = w;
 		map.get_grid()[xx][yy] = m;
 		teammates.push_back(w);

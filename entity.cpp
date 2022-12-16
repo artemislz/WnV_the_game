@@ -4,7 +4,7 @@
 
 
 /*Entity - Member functions & constructors*/
-Entity::Entity(int i, int j, char type) : Map_entity(i, j, type) {}
+Entity::Entity(int i, int j, char type) : Map_entity(i, j, type), checked(false) {}
 
 /*inline int Map_entity::get_i() const { return i; }
 inline int Map_entity::get_j() const { return j; }

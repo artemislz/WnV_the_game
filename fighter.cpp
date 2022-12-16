@@ -4,6 +4,7 @@
 #include "map.h"
 #include "map_entity.h"
 #include <iostream>
+#include "entity.h"
 
 /*Fighter - Member functions & Constructor*/
 Fighter::Fighter(int x, int y, char type) : Entity(x, y, type), health(10) {
@@ -20,17 +21,25 @@ void Fighter::display() {
     std::cout << "\thealth" << health << std::endl;
 }
 
-template <typename T> void Fighter::attack(T& enemy, Map& map) {
-	enemy.lose_health(power);			//power of the attacker
-	Map_entity*** grid = map.get_grid();
-	if (enemy.get_health() == 0) {
-		int i = enemy.get_i();
-		int j = enemy.get_j();
-		delete grid[i][j];
-		grid[i][j] = new Stable_object(i, j, 'e');
+
+
+void Fighter::give_heal(Fighter& teammate) {
+	int num = get_random(0, 1);			//give heal or not
+	if (num && heal) {					//if doesn't have heal return
+		this->lose_heal();
+		teammate.add_health();
 	}
-	/*else {
-		defend(enemy, map);
-	}*/
+	else return;
 }
 
+void Fighter::lose_health(int enemy_pow) {
+	int diff;
+	if (enemy_pow >= defence) {
+		diff = enemy_pow - defence;
+		health -= diff;
+	}
+	else return;
+	/*else {
+		diff = defence - enemy_pow;
+	}*/
+}

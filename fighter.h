@@ -1,6 +1,7 @@
 #pragma once
 #include"entity.h"
-
+#include "map.h"
+#include "stable_object.h"
 class Map;
 
 class Fighter : public Entity {
@@ -12,15 +13,29 @@ protected:
 public:
 	Fighter(int i, int j, char type);
 	void display();
-	inline void lose_heal() { heal--; }
-	inline void add_health() { health++; }
-	inline void lose_health() { health--; }
+	void lose_heal() { heal--; }
+	void add_health() { health++; }
+	void lose_health() { health--; }
 	void lose_health(int enemy_pow);
-	inline int get_health() const { return health; }
-	inline int  get_power()const { return power; }
+	int get_health() const { return health; }
+	int  get_power()const { return power; }
 	//inline char get_type()const { return type; }
 	void give_heal(Fighter& teammate);
-	template <typename T> void attack(T& enemy, Map& map);
+	template <class T> void attack(T& enemy, Map& map);
 	//template <typename T> void defend(T& attacked,Map& map);
   //  void health_decrease() { health--; }
 };
+
+template <class T> void Fighter::attack(T& enemy, Map& map) {
+	enemy.lose_health(power);			//power of the attacker
+	Map_entity*** grid = map.get_grid();
+	if (enemy.get_health() == 0) {
+		int i = enemy.get_i();
+		int j = enemy.get_j();
+		delete grid[i][j];
+		grid[i][j] = new Stable_object(i, j, 'e');
+	}
+	/*else {
+		defend(enemy, map);
+	}*/
+}

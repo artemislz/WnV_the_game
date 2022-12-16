@@ -143,7 +143,6 @@
     <ClCompile Include="player.cpp" />
     <ClCompile Include="stable_object.cpp" />
     <ClCompile Include="vampire.cpp" />
-    <ClCompile Include="team.cpp" />
     <ClCompile Include="werewolf.cpp" />
   </ItemGroup>
   <ItemGroup>

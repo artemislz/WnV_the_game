@@ -1,5 +1,12 @@
 #pragma once
-
+#include "map.h"
+#include "player.h"
+#include "avatar.h"
+#include "magic_filter.h"
+#include "map_entity.h"
+#include "werewolf.h"
+#include "vampire.h"
+#include "team.h"
 
 class Map;
 class Player;
@@ -7,7 +14,6 @@ class Avatar;
 class Werewolf;
 class Vampire;
 class Magic_filter;
-template<class t> class Team;
 
 class Game {
 private:

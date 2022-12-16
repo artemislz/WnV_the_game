@@ -1,5 +1,6 @@
 #pragma once
 #include "global.h"
+#include "map_entity.h"
 class Map_entity;
 
 class Map {

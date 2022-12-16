@@ -1,8 +1,10 @@
-#include "globals.h"
+#include "global.h"
 #include "map.h"
 #include "stable_object.h"
 #include <ctime>
-
+#include <cstdlib>
+#include <iostream>
+using namespace std;
 /*Map - Member functions & Constructor*/
 Map::Map(int x, int y, char team) : x(x), y(y), day(true) {
     int xx, yy;         // for outputs of function get_random in while loops

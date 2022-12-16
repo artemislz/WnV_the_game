@@ -1,26 +1,33 @@
 #include "game.h"
-#include "globals.h"
-#include "avatar.h"
-#include "map.h"
-#include "player.h"
-#include "avatar.h"
+#include "global.h"
+#include <iostream>
+#include "map_entity.h"
 #include "werewolf.h"
 #include "vampire.h"
-#include "map_entity.h"
+#include "map.h"
+#include "player.h"
+#include "fighter.h"
+#include "avatar.h"
+#include <Windows.h>
 #include "magic_filter.h"
 #include <string>
 #include "team.h"
-#include "fighter.h"
-
+#include <chrono>
+#include <thread>
+#include <cstdlib>
+#include <conio.h>
+#include "entity.h"
+using namespace std;
+class Player;
 /*Game - Member functions & Constructor*/
 Game::Game(int x, int y, char team) : active(true), map(x, y, team), player(team), avatar(x / 2 + 1, y / 2 + 1, team), team_vampires(x, y, map), team_werewolves(x, y, map), magic_filter(5,5) {
-	cout << "The game is starting..." << endl
+	std::cout << "The game is starting..." << endl
 		<< "You are able to move in the map using arrow keys ..." << endl
 		<< "Press space to pause game and X to exit..." << endl
 		<< "Enjoy!\n\n";
 	Map_entity* p = &avatar;
 	map.place_to_grid(avatar.get_i(), avatar.get_j(), p);
-	//cout << "this should be a: " <<map.get_grid()[x / 2 + 1][y / 2 + 1]->get_type();
+	//std::cout << "this should be a: " <<map.get_grid()[x / 2 + 1][y / 2 + 1]->get_type();
 
 	/*Process of putting randomly the magic filter*/
 	int xx, yy;
@@ -140,7 +147,7 @@ void Game::update() {			//werewolves & vampires move randomly
 }
 
 void Game::run() {
-	get_map().print();
+	map.print();
 	system("cls");
 	while (active) {
 		if (check_for_winner()) {
@@ -153,6 +160,7 @@ void Game::run() {
 				return;
 			}
 			update();
+			
 			interactions();
 			map.print();
 			Sleep(100);
@@ -166,10 +174,11 @@ void Game::run() {
 		else if (player.get_input() == KEY_SPACE)
 			display_info();
 		else if (player.get_input() == KEY_F) {			//use magic_filter
-			//cout << "key f pressed";
+			//std::cout << "key f pressed";
 			system("pause");
 		}
 		else {
+			
 			//Sleep(400);
 			int z = player.get_input();
 			//Sleep(400);
@@ -196,7 +205,7 @@ void Game::interactions() {
 			if (!map.check_type(i, j, 'v') && !map.check_type(i, j, 'w')) { continue; }
 
 			Fighter* f = dynamic_cast<Fighter*>(grid[i][j]);
-			if (f->is_checked())
+			if (f->is_checked()) 
 				continue;
 			vector<char> positions;
 
@@ -206,7 +215,8 @@ void Game::interactions() {
 					up = true;
 					positions.push_back('u');
 				}
-				cout << "check up :" << up;
+				std::cout << "check up :" << up;
+				system("pause");
 				//system("pause");
 			}
 			if (map.check_type(i + 1, j, 'v') || map.check_type(i + 1, j, 'w')) {
@@ -233,6 +243,8 @@ void Game::interactions() {
 			//count = up ;
 			//num = get_random(1, count);
 			if (up) {
+				cout << "lalal";
+				system("pause");
 				char p = 'u';
 				switch (p) {
 				case 'u':
@@ -245,9 +257,9 @@ void Game::interactions() {
 						fptr2->lose_health();
 						if (health1 == health2 == 10) continue;
 						else {
-							cout << "fighter 1: ";
+							std::cout << "fighter 1: ";
 							fptr1->display();
-							cout << "fighter 2: ";
+							std::cout << "fighter 2: ";
 							fptr2->display();
 							system("pause");
 							int max_health = max(health1, health2);
@@ -257,14 +269,14 @@ void Game::interactions() {
 							else {
 								fptr2->give_heal(*fptr1);
 							}
-							cout << "after";
+							std::cout << "after";
 							fptr1->display();
 							fptr2->display();
 							system("pause");
-							fptr1->set_checked(true);
-							fptr2->set_checked(true);
+							fptr1->set_checked();
+							fptr2->set_checked();
 						}
-					}	
+					}
 					else {						//different types
 						Vampire* vptr;
 						Werewolf* wptr;
@@ -279,9 +291,9 @@ void Game::interactions() {
 						else continue;
 						int v_power = vptr->get_power();
 						int w_power = wptr->get_power();
-						cout << "vampire 1: ";
+						std::cout << "vampire 1: ";
 						vptr->display();
-						cout << "werewolf 2: ";
+						std::cout << "werewolf 2: ";
 						wptr->display();
 						system("pause");
 						int max_power = max(v_power, w_power);
@@ -300,18 +312,19 @@ void Game::interactions() {
 								wptr->attack(*vptr, map);
 							}
 						}
-						cout << "after";
+						std::cout << "after";
 						vptr->display();
 						wptr->display();
 						system("pause");
-						vptr->set_checked(true);
-						wptr->set_checked(true);
+						vptr->set_checked();
+						wptr->set_checked();
 					}
 				}
 			}
 		}
 	}
 }
+
 
 void Game::display_info() {
 
@@ -323,22 +336,22 @@ void Game::display_info() {
 		werewolf_display += to_string(team_werewolves.number());
 		magic_filter_display += to_string(avatar.get_filters());
 		for (int i = 0; i < 20; i++)
-			cout << " -";
-		cout << endl << vampire_display;
+			std::cout << " -";
+		std::cout << endl << vampire_display;
 
 		for (int i = 0, size = 40 - vampire_display.size(); i < size; i++)
-			cout << " ";
-		cout << "|\n" << werewolf_display;
+			std::cout << " ";
+		std::cout << "|\n" << werewolf_display;
 
 		for (int i = 0, size = 40 - werewolf_display.size(); i < size; i++)
-			cout << " ";
-		cout << "|\n" << magic_filter_display;
+			std::cout << " ";
+		std::cout << "|\n" << magic_filter_display;
 
 		for (int i = 0, size = 40 - magic_filter_display.size(); i < size; i++)
-			cout << " ";
-		cout << "|\n";
+			std::cout << " ";
+		std::cout << "|\n";
 		for (int i = 0; i < 20; i++)
-			cout << " -";
+			std::cout << " -";
 		char input = _getch();
 		int key = input;
 		while (key != KEY_SPACE) {
@@ -363,19 +376,19 @@ bool Game::check_for_winner() {
 }
 
 void Game::end() {
-	cout << "THE  END OF THE GAME...\n";
+	std::cout << "THE  END OF THE GAME...\n";
 	//if (team_vampires.number() != 0 && team_werewolves.number() != 0) {
-	//	cout << "NO WINNERS TEAM...";
+	//	std::cout << "NO WINNERS TEAM...";
 	//	return;
 	//}
-	//cout << "THE WINNERS TEAM IS: " << winners_team << endl;
+	//std::cout << "THE WINNERS TEAM IS: " << winners_team << endl;
 	if (winners_team == player.get_team())
-		cout << "YOU ARE THE WINNER!^o^\n";
+		std::cout << "YOU ARE THE WINNER!^o^\n";
 	else {
-		cout << "UNLUCKY...+_+\n";
+		std::cout << "UNLUCKY...+_+\n";
 	}
 
-	cout << "PRESS 'ENTER' TO SEE MORE INFO...\n";
+	std::cout << "PRESS 'ENTER' TO SEE MORE INFO...\n";
 	Sleep(200);
 	char input = _getch();
 	int key = input;
@@ -383,7 +396,7 @@ void Game::end() {
 		display_info();
 	}
 	else {
-		cout << "SO YOU DON'T CARE...\n";
+		std::cout << "SO YOU DON'T CARE...\n";
 	}
 }
 

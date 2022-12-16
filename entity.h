@@ -7,7 +7,7 @@ class Entity : public Map_entity {            //<<Fighters,Avatar
 public:
 	Entity(int i, int j, char type);
 	virtual void move(int n);
-	void set_checked(bool f);
+	void set_checked() { checked = !checked; };
 	bool is_checked() { return checked; }
 	//void place(Map& map);
 };

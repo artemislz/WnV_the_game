@@ -22,7 +22,7 @@ using namespace std;
 
 class Player;
 /*Game - Member functions & Constructor*/
-Game::Game(int x, int y, char team) : active(true), map(x, y, team), player(team), avatar(x / 2 + 1, y / 2 + 1, team), team_vampires(x, y, map), team_werewolves(x, y, map), magic_filter(5,5) {
+Game::Game(int x, int y, char team) : active(true), map(x, y, team), player(team), avatar(x / 2 + 1, y / 2 + 1, team), team_vampires(x, y, map), team_werewolves(x, y, map), magic_filter(5,5), winners_team('0') {
 	std::cout << "The game is starting..." << endl
 		<< "You are able to move in the map using arrow keys ..." << endl
 		<< "Press space to pause game and X to exit..." << endl
@@ -56,63 +56,73 @@ void Game::update() {			//werewolves & vampires move randomly
 	for (ptr = vector_vampires.begin(); ptr < vector_vampires.end(); ptr++) {
 		i = (**ptr).get_i();
 		j = (**ptr).get_j();
-		p = get_random(0, 8);
+		p = get_random(1, 8);
 		switch (p) {
 		case 0:                                            //stay in the same position
 			break;
 		case 1:                                            //goes_up
 			if (map.check_type(i - 1, j, 'e')) {
-				(**ptr).move(1);
+				
 				swap(grid[i][j], grid[i - 1][j]);
+				(**ptr).move(1);
 			};
 			break;
 		case 2:                                             //goes_down
 			if (map.check_type(i + 1, j, 'e')) {
-				(**ptr).move(2);
+				
 				swap(grid[i][j], grid[i + 1][j]);
+				(**ptr).move(2);
 			};
 			break;
 		case 3:                                             //goes_left
 			if (map.check_type(i, j - 1, 'e')) {
-				(**ptr).move(3);
+				
 				swap(grid[i][j], grid[i][j - 1]);
+				(**ptr).move(3);
 			};
 			break;
 		case 4:                                             //goes_right
 			if (map.check_type(i, j + 1, 'e')) {
-				(**ptr).move(4);
+				
 				swap(grid[i][j], grid[i][j + 1]);
+				(**ptr).move(4);
 			}
 			break;
 		case 5:
 			if (map.check_type(i - 1, j + 1, 'e')) {           //goes up right
-				(**ptr).move(5);
+				
 				swap(grid[i][j], grid[i - 1][j + 1]);
+				(**ptr).move(5);
 			};
 			break;
 		case 6:
 			if (map.check_type(i - 1, j - 1, 'e')) {
-				(**ptr).move(6);                           //goes up left
+				                         //goes up left
 				swap(grid[i][j], grid[i - 1][j - 1]);
+				(**ptr).move(6);
 			};
 			break;
 		case 7:
 			if (map.check_type(i + 1, j + 1, 'e')) {
-				(**ptr).move(7);                            //goes down right
+			                                              //goes down right
 				swap(grid[i][j], grid[i + 1][j + 1]);
+				(**ptr).move(7);
 			};
 			break;
 		case 8:
 			if (map.check_type(i + 1, j - 1, 'e')) {            //goes down left
-				(**ptr).move(8);
+				
 				swap(grid[i][j], grid[i + 1][j - 1]);
+				(**ptr).move(8);
 			};
 			break;
 		};
 	}
 	vector<Werewolf*> vector_werewolves = team_werewolves.get_teammates();
 	vector<Werewolf*>::iterator ptrr;
+	int count = 0;
 	for (ptrr = vector_werewolves.begin(); ptrr < vector_werewolves.end(); ptrr++) {
+		
 		i = (**ptrr).get_i();
 		j = (**ptrr).get_j();
 		p = get_random(0, 4);
@@ -172,13 +182,18 @@ void Game::run() {
 		};
 		//Sleep(100);
 		player.set_input();
-		//sleep(200);
+		//sleep(
 		if (player.get_input() == KEY_X)
 			active = false;
 		else if (player.get_input() == KEY_SPACE)
 			display_info();
 		else if (player.get_input() == KEY_F) {			//use magic_filter
-			//std::cout << "key f pressed";
+			if (avatar.get_filters() >= 10 ) {
+				if(player.get_team() == 'V' && map.get_day())
+					avatar.use_magic_filter(team_vampires.get_teammates());
+				else if (player.get_team() == 'W' && map.get_day())
+					avatar.use_magic_filter(team_werewolves.get_teammates());
+			}
 			system("pause");
 		}
 		else {
@@ -252,13 +267,15 @@ void Game::interactions() {
 				break;
 			case 'r':
 				fptr2 = dynamic_cast<Fighter*>(grid[i][j + 1]);
-				cout << fptr2->get_type();
 				defend_moves += fptr1->interact(*fptr2, 'r', map);
 				break;
 					
 			}	
 		}
 	}
+
+	team_vampires.set_all_unckecked();
+	team_werewolves.set_all_unckecked();
 	/*if (defend_moves) {
 		cout << "After a defend that happened\n";
 		map.print();
@@ -304,7 +321,7 @@ void Game::display_info() {
 
 bool Game::check_for_winner() {
 	if (team_vampires.number() == 0 || team_werewolves.number() == 0) {
-		if (!team_vampires.number())
+		if (team_vampires.number())
 			winners_team = 'V';
 		else {
 			winners_team = 'W';
@@ -327,7 +344,6 @@ void Game::end() {
 	else {
 		std::cout << "UNLUCKY...+_+\n";
 	}
-
 	std::cout << "PRESS 'ENTER' TO SEE MORE INFO...\n";
 	Sleep(200);
 	char input = _getch();

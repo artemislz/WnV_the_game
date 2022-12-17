@@ -54,6 +54,9 @@
     <ClCompile Include="map_entity.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
+    <ClCompile Include="compare.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="global.h">
@@ -93,6 +96,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="vampire.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="compare.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

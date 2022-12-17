@@ -132,6 +132,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="avatar.cpp" />
+    <ClCompile Include="compare.cpp" />
     <ClCompile Include="fighter.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="magic_filter.cpp" />
@@ -147,6 +148,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="avatar.h" />
+    <ClInclude Include="compare.h" />
     <ClInclude Include="entity.h" />
     <ClInclude Include="fighter.h" />
     <ClInclude Include="game.h" />

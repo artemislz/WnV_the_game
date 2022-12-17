@@ -8,7 +8,7 @@ class Vampire : public Fighter {
 public:
     Vampire(int i, int j, char type = 'v');
     void move(int n);       // n-> possible movements
-    //void attack(WereWolves& ememy);
-  //  void set_pointer_to_teammates(std::vector<Vampire*>& teammates) { ptr = &teammates; };
- //   inline std::vector<Vampire*>* get_pointer_to_teammates()const { return ptr;}
+   // void attack(WereWolves& ememy);
+    void set_pointer_to_teammates(std::vector<Vampire*>& teammates) { ptr = &teammates; };
+    inline std::vector<Vampire*>* get_pointer_to_teammates()const { return ptr;}
 };

@@ -2,7 +2,7 @@
 
 int main()
 {
-    int x = 30, y = 30;
+    int x = 15, y = 15;
   //  cout << "Enter the dimensions of the map: " << endl;
     //cin >> x >> y;
 

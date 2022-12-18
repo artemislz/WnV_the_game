@@ -3,14 +3,16 @@
 #include "werewolf.h"
 
 struct compare_vampires {
-    Vampire* k;
-    compare_vampires(Vampire* const& i) : k(i) {}
-    bool operator()(Vampire* const& i);
+    vampire* k;
+    compare_vampires(vampire* const& i);
+    bool operator()(vampire* const& i);
 };
 
 struct compare_werewolves {
-    Werewolf* k;
-    compare_werewolves(Werewolf* const& i) : k(i) {}
-    bool operator()( Werewolf* const& i);
+    werewolf* k;
+    compare_werewolves(werewolf* const& i);
+
+
+    bool operator()( werewolf* const& i);
 };
 

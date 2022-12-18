@@ -2,11 +2,13 @@
 #include "fighter.h"
 #include <vector>
 
-class Werewolf : public Fighter {
-	std::vector<Werewolf*>* ptr;
+class werewolf : public fighter {
+	std::vector<werewolf*>* ptr;
 public:
-	Werewolf(int i, int j, char type = 'w');
-	void set_pointer_to_teammates(std::vector<Werewolf*>& teammates) { ptr = &teammates; };
-	inline std::vector<Werewolf*>* get_pointer_to_teammates()const { return ptr; }
+	werewolf(const int& i, const int& j, const char& type = 'w');
+	void set_pointer_to_teammates(std::vector<werewolf*>& teammates) { ptr = &teammates; };
+	inline std::vector<werewolf*>* get_pointer_to_teammates()const { return ptr; }
+	virtual ~werewolf() = default;
+	
 };
 

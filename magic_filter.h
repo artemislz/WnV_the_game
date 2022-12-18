@@ -1,12 +1,13 @@
 #pragma once
 #include "map_entity.h"
 
-class Map;
+class map;
 
-class Magic_filter : public Map_entity {
+class magic_filter : public map_entity {
 public:
-	Magic_filter(int x, int y);
+	magic_filter(int x, int y);
 	void setup(int i, int j);
-	void change_position(Map_entity* p, int old_i, int old_j, Map& map);
-	bool is_checked() { return true; }
+	void change_position(int old_i, int old_j, map& Map);
+	bool is_checked() override { return true; }
+	virtual ~magic_filter() = default;
 };

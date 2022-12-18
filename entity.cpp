@@ -4,7 +4,7 @@
 
 
 /*Entity - Member functions & constructors*/
-Entity::Entity(int i, int j, char type) : Map_entity(i, j, type) {
+entity::entity(const int& i, const int& j, const char type) : map_entity(i, j, type) {
     if (type == 'a')
         checked = true;
     else {
@@ -13,7 +13,7 @@ Entity::Entity(int i, int j, char type) : Map_entity(i, j, type) {
 }
 
 
-void Entity::move(int n) {
+void entity::move(const int& n) {
     switch (n) {
     case 1:         //move_up
         i--;

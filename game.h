@@ -8,25 +8,27 @@
 #include "vampire.h"
 #include "team.h"
 
-class Game {
+
+class game {
 private:
 	bool active;  //true -> paused
-	Map map;
-	Player player;
-	Avatar avatar;
-	Team<Vampire> team_vampires;
-	Team<Werewolf> team_werewolves;
-	Magic_filter magic_filter;
+	map Map;
+	player Player;
+	avatar Avatar;
+	team<vampire> team_vampires;
+	team<werewolf> team_werewolves;
+	magic_filter Magic_filter;
 	char winners_team;
 public:
-	Game(int, int, char);
+	game(const int&, const int&, const char&);
 	void end();
 	void pause();                   //kalei thn display_info
 	void display_info();
-	inline Map get_map()const { return map; }
-	inline Player get_player()const { return player; }
+	inline map get_map()const { return Map; }
+	inline player get_player()const { return Player; }
 	void run();
 	void update();
 	void interactions();
 	bool check_for_winner();        // YES -> END
+	~game() {std::cout << "destruct"; };
 };

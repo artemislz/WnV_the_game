@@ -2,15 +2,15 @@
 
 int main()
 {
-    int x = 15, y = 15;
-  //  cout << "Enter the dimensions of the map: " << endl;
-    //cin >> x >> y;
+    int x , y ;
+    std::cout << "Enter the dimensions of the map: " << std::endl;
+    std::cin >> x >> y;
 
-    char team = 'V';
- //   cout << "Time to choose your team...\n" 
- //        << "Enter V for Vampires and W for Werewolves: \n";
- //   cin >> team;
-    Game game(x, y, team);
+    char team ;
+    std::cout << "Time to choose your team...\n" 
+         << "Enter V for Vampires and W for Werewolves: \n";
+    std::cin >> team;
+    game game(x, y, team);
     
     game.run();
    

@@ -4,28 +4,30 @@
 #include "stable_object.h"
 #include<vector>
 #include <iostream>
-class Map;
+class map;
 
-class Fighter : public Entity {
+class fighter : public entity {
 protected:
+	int max_health;
 	int health;         // paradoxh: 10
 	int power;          // random [1,3]
 	int defence;        // random [1,2]
 	int heal;           // random [0,2]
 public:
-	Fighter(int i, int j, char type);
+	fighter(const int&, const int&, char);
 	void display();
 	inline void lose_heal() { heal--; }
 	inline void add_health() { health++; }
 	inline void lose_health() { health--; }
-	void lose_health(int enemy_pow);
+	void lose_health(const int enemy_pow);
 	inline int get_health() const { return health; }
-	inline void set_health(int h) { health = h; }
+	inline void set_health(const int& h) { health = h; }
 	inline int  get_power()const { return power; }
+	inline int get_max_health() const { return max_health; }
 	//inline char get_type()const { return type; }
-	void give_heal(Fighter& teammate);
-	void attack(Fighter& enemy, Map& map);
-	bool defend(char position_of_enemy, Map& map);
-	bool interact(Fighter& close_fighter, const char& p, Map& map);
-	bool compare(Fighter* f);
+	void give_heal(fighter& teammate);
+	void attack(fighter& enemy, map& map);
+	bool defend(const char& position_of_enemy, map& map);
+	bool interact(fighter& close_fighter, const char& p, map& map);
+	bool compare(fighter* f);
 };

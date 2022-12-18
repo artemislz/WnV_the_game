@@ -15,14 +15,14 @@
 using namespace std;
 
 /*Fighter - Member functions & Constructor*/
-Fighter::Fighter(int x, int y, char type) : Entity(x, y, type), health(5) {
+fighter::fighter(const int& i, const int& j, const char type) : entity(i, j, type), max_health(3), health(max_health) {
     power = get_random(1, 3);
     defence = get_random(1, 2);
     heal = get_random(0, 2);
     this->type = type;
 }
 
-void Fighter::display() {
+void fighter::display() {
 	cout << " i : " << i << "j" << j;
     std::cout << "power: " << power ;
     std::cout << " ,defence: " << defence;
@@ -31,7 +31,7 @@ void Fighter::display() {
 	cout << endl;
 }
 
-void Fighter::give_heal(Fighter& teammate) {
+void fighter::give_heal(fighter& teammate) {
 	int num = get_random(0, 1);			//give heal or not
 	if (num && heal) {					//if doesn't have heal return
 		this->lose_heal();
@@ -40,7 +40,7 @@ void Fighter::give_heal(Fighter& teammate) {
 	else return;
 }
 
-void Fighter::lose_health(int enemy_pow) {
+void fighter::lose_health(int enemy_pow) {
 	int diff;
 	if (enemy_pow >= defence) {
 		diff = enemy_pow - defence;
@@ -49,12 +49,12 @@ void Fighter::lose_health(int enemy_pow) {
 	else return;
 }
 
-void Fighter::attack(Fighter& enemy, Map& map) {
+void fighter::attack(fighter& enemy, map& Map) {
 	// wptr;
 //	Vampire* vptr;
 	//std::cout << "attack\n";
 	enemy.lose_health(power);			//power of the attacker
-	Map_entity*** grid = map.get_grid();
+	map_entity*** grid = Map.get_grid();
 	//cout << "health is " << enemy.get_health() << endl;
 	//system("pause");
 	if (enemy.get_health() <= 0) {
@@ -62,60 +62,54 @@ void Fighter::attack(Fighter& enemy, Map& map) {
 		int j = enemy.get_j();
 		//cout << enemy.get_type();
 		if (enemy.get_type() == 'w') {
-			Werewolf*  wptr = dynamic_cast<Werewolf*>(&enemy);
-			std::vector<Werewolf*>* were = (*wptr).get_pointer_to_teammates();
+			werewolf*  wptr = dynamic_cast<werewolf*>(&enemy);
+			std::vector<werewolf*>* were = (*wptr).get_pointer_to_teammates();
 			auto itr = find_if(were->cbegin(), were->cend(), compare_werewolves(wptr));
 			were->erase(itr);
-			//cout << "Size of vector " << were->size();
-			//system("pause");
+			
 		}
 		else {
-			Vampire* vptr = dynamic_cast<Vampire*>(&enemy);
-			std::vector<Vampire*>* vamp = (*vptr).get_pointer_to_teammates();
+			vampire* vptr = dynamic_cast<vampire*>(&enemy);
+			std::vector<vampire*>* vamp = (*vptr).get_pointer_to_teammates();
 			auto itrr = find_if(vamp->cbegin(), vamp->cend(), compare_vampires(vptr));
 			vamp->erase(itrr);
-			//cout << "Size of vector " << vamp->size();
-			//system("pause");
+		
 		}
-		//Map_entity** temp = &grid[i][j];
-		//delete grid[i][j];
-		grid[i][j] = new Stable_object(i, j, 'e');
-		//grid[i][j]->set_type('e');
-	//F	std::cout << "R.I.P.\n";
-		//system("pause");
-		//*temp = new Stable_object(i, j, 'e');
+		
+		grid[i][j] = new stable_object(i, j, 'e');
+
 	}
 } 
 
-bool Fighter::defend(char position_of_enemy, Map& map) {		//returns true if defends happened
-	Map_entity*** grid = map.get_grid();
+bool fighter::defend(const char& position_of_enemy, map& Map) {		//returns true if defends happened
+	map_entity*** grid = Map.get_grid();
 	//std::cout << "defend\n";
 	//system("pause");
 	switch (position_of_enemy)									//moves to the opposite direction of position of enemy
 	{
 	case 'u':
-		if (map.check_type(i + 1, j, 'e')) {
+		if (Map.check_type(i + 1, j, 'e')) {
 			std::swap(grid[i][j], grid[i + 1][j]);
 			move(2);		//move down
 			return true;
 		}
 		break;
 	case 'd':
-		if(map.check_type(i - 1, j, 'e')){
+		if(Map.check_type(i - 1, j, 'e')){
 			std::swap(grid[i][j], grid[i - 1][j]);
 			move(1);		//move up
 			return true;
 		}
 		break;
 	case 'r':
-		if (map.check_type(i, j - 1, 'e')) {
+		if (Map.check_type(i, j - 1, 'e')) {
 			std::swap(grid[i][j], grid[i][j - 1]);
 			move(3);		//move left
 			return true;
 		}
 		break;
 	case 'l':
-		if (map.check_type(i, j + 1, 'e')) {
+		if (Map.check_type(i, j + 1, 'e')) {
 			std::swap(grid[i][j], grid[i][j + 1]);
 			move(4);		//move right
 			return true;
@@ -127,16 +121,16 @@ bool Fighter::defend(char position_of_enemy, Map& map) {		//returns true if defe
 	return false;
 }
 
-bool Fighter::interact(Fighter& close_fighter, const char& p, Map& map ) {			//returns true if defends happened
+bool fighter::interact(fighter& close_fighter, const char& p, map& Map ) {			//returns true if defends happened
 
-	bool defend_happened = 0;
+	bool defend_happened = false;
 
 	if(type == close_fighter.get_type()) {
-			int health2 = close_fighter.get_health();
+			const int health2 = close_fighter.get_health();
 			if (health == health2 && health == 5) {
 				set_checked();
 				close_fighter.set_checked();
-				return 0;
+				return false;
 			}
 			else {
 /*				std::cout << "Same type\n";
@@ -164,7 +158,7 @@ bool Fighter::interact(Fighter& close_fighter, const char& p, Map& map ) {			//r
 			}
 	}
 	else {						//different types
-		int power2 = close_fighter.get_power();
+		const int power2 = close_fighter.get_power();
 	/*	std::cout << "i of fighter 1 " << i << " ,j of fighter 1 " << j << std::endl;
 		std::cout << "i of fighter 2 " << close_fighter.get_i() << " ,j of fighter 2 " << close_fighter.get_j() << std::endl;
 		std::cout << "Different type\n";
@@ -174,10 +168,11 @@ bool Fighter::interact(Fighter& close_fighter, const char& p, Map& map ) {			//r
 		std::cout << "fighter 2: ";
 		close_fighter.display();
 		std::cout << std::endl;*/
-		int max_power = std::max(power, power2);
+		const int max_power = std::max(power, power2);
 		
 		char opp;		//opposite direction
 		if (max_power == power || (power == power2 && !get_random(0, 1))) {		//power == power2 -> choose randomly who will attack
+			
 			switch(p){
 				case 'u':	opp = 'd';
 							break;		
@@ -188,16 +183,16 @@ bool Fighter::interact(Fighter& close_fighter, const char& p, Map& map ) {			//r
 				case 'l':	opp = 'r';
 							break;
 			}
-		//	defend_happened = close_fighter.defend(opp, map);
+			defend_happened = close_fighter.defend(opp, Map);
 			//defend_moves += defend_happened;
 			if (!defend_happened) {
-				attack(close_fighter, map);
+				attack(close_fighter, Map);
 			}
 		}
 		else if (max_power == power2 || (power == power2) ){
-		//	defend_happened = defend(p, map);
+			defend_happened = defend(p, Map);
 			if (!defend_happened) {
-				close_fighter.attack(*this, map);
+				close_fighter.attack(*this, Map);
 			}
 		}
 	/*	std::cout << "AFTER ";
@@ -209,6 +204,6 @@ bool Fighter::interact(Fighter& close_fighter, const char& p, Map& map ) {			//r
 		std::cout << std::endl;*/
 	}
 	set_checked();	
-	close_fighter.set_checked();		
+	close_fighter.set_checked();
 	return defend_happened;
 }

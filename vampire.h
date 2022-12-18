@@ -3,12 +3,12 @@
 #include <vector>
 #include <iostream>
 
-class Vampire : public Fighter {
-    std::vector<Vampire*>* ptr;
+class vampire : public fighter {
+    std::vector<vampire*>* ptr;
 public:
-    Vampire(int i, int j, char type = 'v');
-    void move(int n);       // n-> possible movements
+    vampire(const int& i, const int& j, const char& type = 'v');
+    void move(const int& n) override;       // n-> possible movements
    // void attack(WereWolves& ememy);
-    void set_pointer_to_teammates(std::vector<Vampire*>& teammates) { ptr = &teammates; };
-    inline std::vector<Vampire*>* get_pointer_to_teammates()const { return ptr;}
+    void set_pointer_to_teammates(std::vector<vampire*>& teammates) { ptr = &teammates; };
+    inline std::vector<vampire*>* get_pointer_to_teammates()const { return ptr;}
 };

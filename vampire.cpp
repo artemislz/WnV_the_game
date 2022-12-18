@@ -1,9 +1,9 @@
 #include "vampire.h"
 
 /*Vampire - Member functions & Constructor*/
-Vampire::Vampire(int i, int j, char type) : Fighter(i, j, type) {}
+vampire::vampire(const int& i, const int& j, const char& type) : fighter(i, j, type) {}
 
-void Vampire::move(int n) {
+void vampire::move(const int& n) {
     switch (n) {
     case 1:         //up
         i--;

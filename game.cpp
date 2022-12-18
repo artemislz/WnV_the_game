@@ -166,11 +166,13 @@ void game::run() {
 	system("cls");
 	while (active) {
 		if (check_for_winner()) {
+			//~map();
 			end();
 			return;
 		}
 		while (!_kbhit()) {
 			if (check_for_winner()) {		//check if a team has been disappeared
+				//~map();
 				end();
 				return;
 			}
@@ -314,6 +316,27 @@ void game::display_info() {
 		std::cout << "|\n";
 		for (int i = 0; i < 20; i++)
 			std::cout << " -";
+
+		/*Display health, power, defence, heal of all fighters*/
+		cout << endl;
+		vector<vampire*> vector_vampires = team_vampires.get_teammates();
+		vector<vampire*>::iterator ptr;
+		cout << "Team vampires info \n";
+		for (ptr = vector_vampires.begin(); ptr < vector_vampires.end(); ptr++){
+			(*ptr)->display();
+			cout << endl;
+		}
+		cout << endl;
+
+		vector<werewolf*> vector_werewolves = team_werewolves.get_teammates();
+		vector<werewolf*>::iterator ptrr;
+		cout << "Team werewolves info \n";
+		for (ptrr = vector_werewolves.begin(); ptrr < vector_werewolves.end(); ptrr++){
+			(*ptrr)->display();
+			cout << endl;
+		}
+		cout << endl;
+
 		char input = _getch();
 		int key = input;
 		while (key != SPACE) {
@@ -362,9 +385,5 @@ void game::end() {
 	else {
 		std::cout << "SO YOU DON'T CARE...\n";
 	}
+	return;
 }
-
-
-
-
-

@@ -10,9 +10,10 @@ int main()
     std::cout << "Time to choose your team...\n" 
          << "Enter V for Vampires and W for Werewolves: \n";
     std::cin >> team;
-    game game(x, y, team);
+    game Game(x, y, team);
     
-    game.run();
-   
+    Game.run();
+    
+  
     return 0;
 }

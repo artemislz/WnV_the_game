@@ -3,6 +3,7 @@
 #include "global.h"
 #include "map_entity.h"
 #include "map.h"
+#include <iostream>
 //#include "avatar.h"
 #include<vector>
 template< class T>
@@ -17,6 +18,7 @@ public:
 	inline int number()const { return teammates.size(); }
 	inline std::vector<T*>& get_teammates() { return teammates; }
 	void set_all_unchecked();
+	~team() { std::cout << "Destructing team"; }
 	// friend void place(Map& map, Team& team);
 };
 
@@ -36,7 +38,7 @@ void team<T>::place(int x, int y, map& Map) {
 		do {
 			xx = get_random(1, x);
 			yy = get_random(1, y);
-		} while (!Map.check_type(xx, yy, 'e'));
+		} while (!Map.check_type(xx, yy, 'e')|| (xx == Map.get_x() / 2 + 1 && yy == Map.get_y() / 2 + 1));
 		T* w = new T(xx, yy);
 		w->set_pointer_to_teammates(teammates);
 		map_entity* m = w;

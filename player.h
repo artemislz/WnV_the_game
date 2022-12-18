@@ -1,5 +1,5 @@
 #pragma once
-
+#include <iostream>
 class map;
 
 class player {
@@ -12,4 +12,5 @@ public:
     friend class Map;  
     void set_input();
     inline int get_input()const { return input;};
+    ~player() { std::cout << "destucting player \n";}
 };

@@ -7,6 +7,7 @@
 #include "werewolf.h"
 #include "vampire.h"
 #include "team.h"
+#include <iostream>
 
 
 class game {
@@ -30,5 +31,5 @@ public:
 	void update();
 	void interactions();
 	bool check_for_winner();        // YES -> END
-	~game() {std::cout << "destruct"; };
+	~game() {std::cout << "destructing game..."; };
 };

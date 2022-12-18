@@ -20,6 +20,6 @@ void magic_filter::change_position(int old_i, int old_j, map& Map) {
 	} while (!Map.check_type(xx, yy, 'e'));
 
 	std::swap(grid[xx][yy], grid[old_i][old_j]);     //swap the old position of avatar with earth
-	Map.get_grid()[xx][yy] = this;
+	grid[xx][yy] = this;
 	//Map.place_to_grid(xx, yy, p);               //object of magic filter
 }

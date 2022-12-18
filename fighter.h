@@ -17,7 +17,7 @@ public:
 	fighter(const int&, const int&, char);
 	void display();
 	inline void lose_heal() { heal--; }
-	inline void add_health() { health++; }
+	void add_health();
 	inline void lose_health() { health--; }
 	void lose_health(const int enemy_pow);
 	inline int get_health() const { return health; }
@@ -30,4 +30,5 @@ public:
 	bool defend(const char& position_of_enemy, map& map);
 	bool interact(fighter& close_fighter, const char& p, map& map);
 	bool compare(fighter* f);
+	virtual ~fighter() { std::cout << "Destructing fighter..."; }
 };

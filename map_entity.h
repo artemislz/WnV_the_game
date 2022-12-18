@@ -1,5 +1,5 @@
 #pragma once
-
+#include <iostream>
 class map_entity {
 protected:
 	int i;
@@ -13,5 +13,6 @@ public:
 	inline void set_type(const char& t) { type = t; }
 	virtual bool is_checked() = 0;
 	//virtual void place(Map& map) = 0;
+	virtual ~map_entity() { std::cout << "map_entity"; }
 };
 

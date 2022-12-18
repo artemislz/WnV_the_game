@@ -4,7 +4,7 @@
 #include "team.h"
 #include "magic_filter.h"
 #include <vector>
-
+#include <iostream>
 class avatar : public entity {
 private:
 	int magic_filters;
@@ -15,7 +15,7 @@ public:
 	inline int get_filters()const { return magic_filters; }
 	template< typename T> void use_magic_filter(std::vector<T*>& teammates);
 	void move(int input, map& map, magic_filter& magic_filter);          // update of the grid after player's movement
-	
+	virtual ~avatar() { std::cout << "Destructing avatar\n"; };
 };
 
 
@@ -24,6 +24,6 @@ void avatar::use_magic_filter(std::vector<T*>& teammates) {
 	magic_filters -= 10;
 	for (auto& teammate : teammates) {
 		if ((*teammate).get_health() != teammate->get_max_health())
-			(*teammate).set_health(5);
+			(*teammate).set_health(teammate->get_max_health());
 	}
 }

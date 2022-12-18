@@ -23,11 +23,11 @@ fighter::fighter(const int& i, const int& j, const char type) : entity(i, j, typ
 }
 
 void fighter::display() {
-	cout << " i : " << i << "j" << j;
-    std::cout << "power: " << power ;
-    std::cout << " ,defence: " << defence;
-    std::cout << " ,heal: " << heal;
-    std::cout << " ,health: " << health;
+	cout << "Coordinates" << " i : " << i << " j : " << j << endl;
+    cout << "power: " << power ;
+    cout << " ,defence: " << defence;
+	cout << " ,heal: " << heal;
+    cout << " ,health: " << health;
 	cout << endl;
 }
 
@@ -38,6 +38,11 @@ void fighter::give_heal(fighter& teammate) {
 		teammate.add_health();
 	}
 	else return;
+}
+
+void fighter::add_health(){
+	if(health == max_health) return;
+	health++;
 }
 
 void fighter::lose_health(int enemy_pow) {
@@ -75,8 +80,8 @@ void fighter::attack(fighter& enemy, map& Map) {
 			vamp->erase(itrr);
 		
 		}
-		
-		grid[i][j] = new stable_object(i, j, 'e');
+		map_entity* earth = new stable_object(i, j, 'e');
+		Map.place_to_grid(i, j, earth);
 
 	}
 } 

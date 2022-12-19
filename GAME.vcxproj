@@ -137,7 +137,7 @@
     <ClCompile Include="game.cpp" />
     <ClCompile Include="magic_filter.cpp" />
     <ClCompile Include="map_entity.cpp" />
-    <ClCompile Include="random.cpp" />
+    <ClCompile Include="global.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="map.cpp" />
     <ClCompile Include="entity.cpp" />

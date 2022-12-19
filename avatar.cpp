@@ -4,89 +4,93 @@
 #include "map.h"
 #include <iostream>
 #include "entity.h"
-
+#include "game.h"
 using namespace std;
 /*Avatar - Member functions & Constructor*/
-avatar::avatar(const int& i, const int& j, const char& team, const char type ) : entity(i, j, type), magic_filters(1) {
+avatar::avatar(const int& i, const int& j, const char& team, const char type ) : entity(i, j, type) {	
 	this->team = team;
+	magic_filters = 1;				// avatar owns 1 magic filter at the start of the game
 }
 
-void avatar::move(int input, map& map, magic_filter& magic_filter) {       // called when player press a button that moves the avatar
-	static int calls = 0;
-	char type;
-	calls++;
-	map_entity*** grid = map.get_grid();
-	//	cout <<"this must be a: " <<  grid[i][j]->get_type();
-		//system("pause");
-		// cout << "before " << i << " " << j << endl;
+bool avatar::move(int input, map& Map) {		// called when player press a button that moves the avatar
+												//input -> key code
+	map_entity*** grid = Map.get_grid();
+
 	switch (input) {
 	case UP:
-		if (map.check_type(i - 1,j)) {
+		if (Map.check_type(i - 1,j)) {					//checks if grid[i-1][j] has type 'e' -> earth or 'm' -> magic_filter
 
-			if (map.check_type(i - 1, j, 'm')) {
+			if (Map.check_type(i - 1, j, 'm')) {
 				map_entity* p = grid[i - 1][j];         //old position of magic filter
 				swap(grid[i - 1][j], grid[i][j]);
 				add_filter();
-				magic_filter.change_position(i, j, map);
+				entity::move(1);						//change of the coordinates i, j			
+				return true;
 			}
 			else {
-				//Map_entity* p = this;
 				swap(grid[i][j], grid[i - 1][j]);
+				entity::move(1);						//changes appropriately the coordinates i, j
 			}
-			entity::move(1);
+			
 		}
 		break;
 
 	case DOWN:
-		if (map.check_type(i + 1, j)) {
+		if (Map.check_type(i + 1, j)) {
 
-			if (map.check_type(i + 1, j, 'm')) {
-				map_entity* p = grid[i + 1][j];         //old position of magic filter
+			if (Map.check_type(i + 1, j, 'm')) {
+				map_entity* p = grid[i + 1][j];			//old position of magic filter
 				swap(grid[i + 1][j], grid[i][j]);
 				add_filter();
-				magic_filter.change_position(i, j, map);
+				entity::move(2);						//changes appropriately the coordinates i, j
+				return true;
 			}
 			else {
-				swap(grid[i][j], grid[i + 1][j]);
+				swap(grid[i][j], grid[i + 1][j]);		
+				entity::move(2);						//changes appropriately the coordinates i, j
 			}
-			entity::move(2);									//move down
+			
 		}
 		break;
 
 	case LEFT:
-		if (map.check_type(i, j - 1)) {
+		if (Map.check_type(i, j - 1)) {
 
-			if (map.check_type(i, j - 1, 'm')) {
+			if (Map.check_type(i, j - 1, 'm')) {
 				map_entity* p = grid[i][j - 1];         //old position of magic filter
 				swap(grid[i][j - 1], grid[i][j]);
 				add_filter();
-				magic_filter.change_position(i, j, map);
+				entity::move(3);						//changes appropriately the coordinates i, j
+				return true;
 			}
 			else {
-				swap(grid[i][j], grid[i][j - 1]);
+				swap(grid[i][j], grid[i][j - 1]);		//changes appropriately the coordinates i, j
+				entity::move(3);
 			}
-
-			entity::move(3);                             //move left	
+			
 		}
 		break;
-	case RIGHT:
-		if (map.check_type(i, j + 1)) {
 
-			if (map.check_type(i, j + 1, 'm')) {
-				map_entity* p = grid[i][j + 1];         //old position of magic filter
+	case RIGHT:
+		if (Map.check_type(i, j + 1)) {
+
+			if (Map.check_type(i, j + 1, 'm')) {
+				map_entity* p = grid[i][j + 1];			//old position of magic filter
 				swap(grid[i][j + 1], grid[i][j]);
 				add_filter();
-				magic_filter.change_position(i, j, map);
+				entity::move(4);						//changes appropriately the coordinates i, j   	
+				return true;
 			}
 			else {
-				swap(grid[i][j], grid[i][j + 1]);
+				swap(grid[i][j], grid[i][j + 1]);		
+				entity::move(4);						//changes appropriately the coordinates i, j
 			}
-			entity::move(4);                             //move right    		
+			                  	
 		}
 		break;
 
 	default:
 		break;
 	}
-
+	return false;
 }

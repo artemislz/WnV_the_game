@@ -1,0 +1,12 @@
+#include "global.h"
+#include <cstdlib>
+#include <string>
+#include <iostream>
+
+using namespace std;
+
+int get_random(const int& a, const int& b)
+{
+	return a + rand() % (b - a + 1);
+}
+

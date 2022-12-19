@@ -22,26 +22,88 @@
 using namespace std;
 
 class player;
+
+void set_player_preferences(int& dim_x, int& dim_y, char& team) {
+	bool repeat;
+	repeat = true;
+	while (repeat) {
+		try {
+			string x;
+			string y;
+			cout << "Enter the dimensions of the map: " << endl;
+			cin >> x;
+			cin >> y;
+	
+			if (x.length() > 3 || y.length() > 3) {
+				throw(ERROR_CHAR_INPUT);
+			}
+			for (int i = 0; i < x.length(); i++) {
+				if (!isdigit(x[i])) {
+					throw(ERROR_CHAR_INPUT);
+				}
+			}
+			for (int i = 0; i < y.length(); i++) {
+				if (!isdigit(y[i])) {
+					throw(ERROR_CHAR_INPUT);
+				}
+			}
+			dim_x = stoi(x);
+			dim_y = stoi(y);
+			if (dim_x < 10 || dim_y < 10 || dim_x > 30 || dim_y > 30) {
+				throw(ERROR_OUT_OF_RANGE);
+			}
+			repeat = false;
+		}
+
+		catch (int n) {
+			switch (n) {
+			case(ERROR_OUT_OF_RANGE):
+				cout << "Dimensions out of range...\n"
+					<< "Reminder x and y must from 10 to 30 "
+					<< "Please try again.\n";
+				break;
+
+			case(ERROR_CHAR_INPUT):
+				cout << "Characters are not allowed...\n"
+					<< "Please try again.\n";
+				break;
+			}
+			repeat = true;
+		}
+	}
+	repeat = true;
+	while (repeat) {
+		try {
+			cout << "Time to choose your team...\n"
+				<< "Enter V for Vampires and W for Werewolves: \n";
+			cin >> team;
+
+			if (team != 'V' && team != 'W') {
+				throw(ERROR_WRONG_TEAM);
+			}
+			repeat = false;
+		}
+		catch (int n) {
+			cout << "The team you entered doesn't match with 'V' or 'W'\n"
+				<< "Please try again.\n";
+			repeat = true;
+		}
+	}
+}
+
 /*Game - Member functions & Constructor*/
-game::game(const int& x, const int& y, const char& team) : active(true), Map(x, y, team), Player(team), Avatar(x / 2 + 1, y/ 2 + 1, team), team_vampires(x, y, Map), team_werewolves(x, y, Map), Magic_filter(5,5), winners_team('0') {
+game::game(const int& x, const int& y, const char& team) : active(true), Map(x, y, team), Player(team), Avatar(x / 2 + 1, y/ 2 + 1, team), team_vampires(Map), team_werewolves(Map), Magic_filter(Map), winners_team('0') {
 	std::cout << "The game is starting..." << endl
 		<< "You are able to move in the map using arrow keys ..." << endl
 		<< "Press space to pause game and X to exit..." << endl
 		<< "Enjoy!\n\n";
+
 	map_entity* p = &Avatar;
 	Map.place_to_grid(Avatar.get_i(), Avatar.get_j(), p);
-	//std::cout << "this should be a: " <<map.get_grid()[x / 2 + 1][y / 2 + 1]->get_type();
-	/*Process of putting randomly the magic filter*/
-	int xx, yy;
-	do {
-		xx = get_random(0, x + 1);
-		yy = get_random(0, y + 1);
-	} while (!Map.check_type(xx, yy, 'e'));
-	Magic_filter.setup(xx, yy);
+
 	map_entity* pp = &Magic_filter;
-	Map.place_to_grid(xx, yy, pp);
-	//const char* win_team = "No winners team";
-	//winners_team = win_team;
+	Map.place_to_grid(Magic_filter.get_i(), Magic_filter.get_j(), pp);
+	
 	system("pause");
 }
 
@@ -98,14 +160,14 @@ void game::update() {			//werewolves & vampires move randomly
 			break;
 		case 6:
 			if (Map.check_type(i - 1, j - 1, 'e')) {
-				                         //goes up left
+															//goes up left
 				swap(grid[i][j], grid[i - 1][j - 1]);
 				(**ptr).move(6);
 			};
 			break;
 		case 7:
 			if (Map.check_type(i + 1, j + 1, 'e')) {
-			                                              //goes down right
+															//goes down right
 				swap(grid[i][j], grid[i + 1][j + 1]);
 				(**ptr).move(7);
 			};
@@ -167,14 +229,12 @@ void game::run() {
 	system("cls");
 	while (active) {
 		if (check_for_winner()) {
-			//~map();
 			active = false;
 			end();
 			return;
 		}
 		while (!_kbhit()) {
 			if (check_for_winner()) {		//check if a team has been disappeared
-				//~map();
 				active = false;
 				end();
 				return;
@@ -210,7 +270,12 @@ void game::run() {
 			//Sleep(400);
 			const int& z = Player.get_input();
 			//Sleep(400);
-			Avatar.move(z, Map, Magic_filter);
+			int old_i = Avatar.get_i();
+			int old_j = Avatar.get_j();
+			bool catched = Avatar.move(z, Map);
+			if(catched == true){
+				Magic_filter.change_position(old_i, old_j, Map);
+			}
 			update();
 			Map.print();
 			Sleep(100);
@@ -228,9 +293,10 @@ void game::interactions() {
 	bool up = 0, down = 0, left = 0, right = 0;
 
 	map_entity*** grid = Map.get_grid();
-
+	
 	for (int i = 1; i < Map.get_x() + 1; i++) {
 		for (int j = 1; j < Map.get_y() + 1; j++) {
+			
 			if (grid[i][j]->is_checked()) 			// if is stable_object/Avatar or fighter who interacted, continue
 				continue;
 			
@@ -258,6 +324,7 @@ void game::interactions() {
 			count = up + down + left + right;		// select randomly to interact with one of the close fighters
 			if (!count) 
 				continue;
+			
 			num = get_random(0, count - 1);
 			char p = positions.at(num);
 			fighter* fptr1 = dynamic_cast<fighter*>(grid[i][j]);
@@ -287,8 +354,10 @@ void game::interactions() {
 	team_vampires.set_all_unchecked();
 	team_werewolves.set_all_unchecked();
 	/*if (defend_moves) {
-		cout << "After a defend that happened\n";
-		map.print();
+		std::cout << "After a defend that happened\n";
+		Map.print();
+		Sleep(100);
+		system("cls");
 	}*/
 }
 
@@ -299,8 +368,8 @@ void game::display_info() {
 		string werewolf_display = "| Number of Werewolves Alive: ";
 		string magic_filter_display = "| Number of Magic Filters you owned: ";
 
-		vampire_display += to_string(team_vampires.number());
-		werewolf_display += to_string(team_werewolves.number());
+		vampire_display += to_string(team_vampires.teammates_alive());
+		werewolf_display += to_string(team_werewolves.teammates_alive());
 		magic_filter_display += to_string(Avatar.get_filters());
 		for (int i = 0; i < 20; i++)
 			std::cout << " -";
@@ -321,27 +390,22 @@ void game::display_info() {
 			std::cout << " -";
 
 		/*Display health, power, defence, heal of all fighters*/
-		cout << endl;
-		vector<vampire*> vector_vampires = team_vampires.get_teammates();
-		vector<vampire*>::iterator ptr;
-		cout << "Team vampires info \n";
-		for (ptr = vector_vampires.begin(); ptr < vector_vampires.end(); ptr++){
-			(*ptr)->display();
-			cout << endl;
-		}
-		cout << endl;
-
-		vector<werewolf*> vector_werewolves = team_werewolves.get_teammates();
-		vector<werewolf*>::iterator ptrr;
-		cout << "Team werewolves info \n";
-		for (ptrr = vector_werewolves.begin(); ptrr < vector_werewolves.end(); ptrr++){
-			(*ptrr)->display();
-			cout << endl;
-		}
-		cout << endl;
 		if (!active) {
+			cout << "\nTeam Vampires info: ";
+			team_vampires.display_team();
+			cout << "\nTeam Werewolves info: ";
+			team_werewolves.display_team();
 			return;
 		}
+		if (Player.get_team() == 'V') {
+			cout << "\nTeam Vampires info: ";
+			team_vampires.display_team();
+		}
+		else {
+			cout << "\nTeam Werewolves info: ";
+			team_werewolves.display_team();	
+		}
+	
 		char input = _getch();
 		int key = input;
 		while (key != SPACE) {
@@ -353,16 +417,12 @@ void game::display_info() {
 }
 
 bool game::check_for_winner() {
-	if (team_vampires.number() == 0 || team_werewolves.number() == 0) {
-		if (team_vampires.number())
+	if (team_vampires.teammates_alive() == 0 || team_werewolves.teammates_alive() == 0) {
+		if (team_vampires.teammates_alive())
 			winners_team = 'V';
-		else if(team_werewolves.number()) {
+		else if(team_werewolves.teammates_alive()) {
 			winners_team = 'W';
 		}
-	//	else {
-	//		cout << "Wrong dimensions...Try again";
-	//	}
-		// system("cls");
 		return true;
 	}
 	return false;
@@ -371,15 +431,18 @@ bool game::check_for_winner() {
 void game::end() {
 	
 	std::cout << "THE  END OF THE GAME...\n";
+	
 	//if (team_vampires.number() != 0 && team_werewolves.number() != 0) {
 	//	std::cout << "NO WINNERS TEAM...";
 	//	return;
 	//}
 	//std::cout << "THE WINNERS TEAM IS: " << winners_team << endl;
-	if (winners_team == Player.get_team())
-		std::cout << "YOU ARE THE WINNER!^o^\n";
-	else {
-		std::cout << "UNLUCKY...+_+\n";
+	if(check_for_winner()){
+		if (winners_team == Player.get_team() && check_for_winner()) 
+			std::cout << "YOU ARE THE WINNER!^o^\n";
+		else {
+			std::cout << "UNLUCKY...+_+\n";
+		}
 	}
 	std::cout << "PRESS 'ENTER' TO SEE MORE INFO...\n";
 	char input = _getch();

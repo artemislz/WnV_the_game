@@ -4,13 +4,12 @@
 #include <ctime>
 #include <cstdlib>
 #include <iostream>
+
 using namespace std;
 /*Map - Member functions & Constructor*/
 map::map(const int& x, const int& y, const char& team) : x(x), y(y), day(true) {
-   
     srand((unsigned int)time(nullptr));
-
-    grid = new map_entity * *[x + 2];    // 2 extra lines for the outline
+    grid = new map_entity * * [x + 2] ;    // 2 extra lines for the outline
     for (int i = 0; i < x + 2; i++)
         grid[i] = new map_entity * [y + 2];
     for (int i = 0; i < x + 2; i++) {
@@ -18,11 +17,10 @@ map::map(const int& x, const int& y, const char& team) : x(x), y(y), day(true) {
             grid[i][j] = nullptr;
         }
     }
-   
+ 
     /*Process of creating the outline of the map*/
     set_outline();
 
-   
     /*Process of putting in random places lakes and trees*/
     int xx, yy;         // for outputs of function get_random in while loops
     const int num = (double)0.04 * (x * y);        //4% of the positions of the grid
@@ -145,8 +143,6 @@ void map::place_to_grid(const int& i, const int& j, map_entity* value)
 }
 
 map::~map() {
-    //print();
-    cout << "Destructing map...\n";
     for (int i = 0; i < x + 2; i++) {
         for (int j = 0; j < y + 2; j++) {
             //cout << grid[i][j]->get_type();

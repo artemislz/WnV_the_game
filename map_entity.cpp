@@ -7,5 +7,3 @@ map_entity::map_entity(const int& i, const int& j, const char& type) {
     this->type = type;
 }
 
-
-

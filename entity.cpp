@@ -1,17 +1,13 @@
-﻿
-#include "entity.h"
-
-
+﻿#include "entity.h"
 
 /*Entity - Member functions & constructors*/
 entity::entity(const int& i, const int& j, const char type) : map_entity(i, j, type) {
-    if (type == 'a')
-        checked = true;
+    if (type == 'a')    
+        checked = true;     //werewolves and vampires shouldn't interact with avatar
     else {
-        checked = false;
+        checked = false;    // werewolves and vampires have to interact
     }
 }
-
 
 void entity::move(const int& n) {
     switch (n) {

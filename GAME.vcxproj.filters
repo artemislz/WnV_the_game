@@ -54,7 +54,7 @@
     <ClCompile Include="compare.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
-    <ClCompile Include="random.cpp">
+    <ClCompile Include="global.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
   </ItemGroup>

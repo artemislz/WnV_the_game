@@ -152,7 +152,7 @@ bool fighter::interact(fighter& close_fighter, const char& p, map& Map ) {			//r
 				else {
 					close_fighter.give_heal(*this);
 				}
-	/**		std::cout << "AFTER ";
+	/*		std::cout << "AFTER ";
 				std::cout << "fighter 1: ";
 				display();
 				std::cout << std::endl;

@@ -1,19 +1,15 @@
 #include "game.h"
+#include "global.h"
+
+using namespace std;
 
 int main()
 {
-    int x , y ;
-    std::cout << "Enter the dimensions of the map: " << std::endl;
-    std::cin >> x >> y;
+    int dim_x, dim_y;
+    char team;
+    set_player_preferences(dim_x, dim_y, team);
+    game Game(dim_x, dim_y, team);
 
-    char team ;
-    std::cout << "Time to choose your team...\n" 
-         << "Enter V for Vampires and W for Werewolves: \n";
-    std::cin >> team;
-    game Game(x, y, team);
-    
     Game.run();
-    
-  
     return 0;
 }

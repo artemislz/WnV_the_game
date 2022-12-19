@@ -24,9 +24,6 @@
     <ClCompile Include="map.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
-    <ClCompile Include="global.cpp">
-      <Filter>Resource Files</Filter>
-    </ClCompile>
     <ClCompile Include="entity.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
@@ -55,6 +52,9 @@
       <Filter>Resource Files</Filter>
     </ClCompile>
     <ClCompile Include="compare.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
+    <ClCompile Include="random.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
   </ItemGroup>

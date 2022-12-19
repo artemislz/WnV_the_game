@@ -7,7 +7,7 @@
 #include "map.h"
 #include "player.h"
 #include "fighter.h"
-#include "Avatar.h"
+#include "avatar.h"
 #include <Windows.h>
 #include "magic_filter.h"
 #include <string>
@@ -17,6 +17,7 @@
 #include <cstdlib>
 #include <conio.h>
 #include "entity.h"
+#include <string>
 
 using namespace std;
 

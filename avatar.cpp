@@ -4,6 +4,7 @@
 #include "map.h"
 #include <iostream>
 #include "entity.h"
+
 using namespace std;
 /*Avatar - Member functions & Constructor*/
 avatar::avatar(const int& i, const int& j, const char& team, const char type ) : entity(i, j, type), magic_filters(1) {

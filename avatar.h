@@ -5,6 +5,7 @@
 #include "magic_filter.h"
 #include <vector>
 #include <iostream>
+
 class avatar : public entity {
 private:
 	int magic_filters;

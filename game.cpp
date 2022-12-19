@@ -167,12 +167,14 @@ void game::run() {
 	while (active) {
 		if (check_for_winner()) {
 			//~map();
+			active = false;
 			end();
 			return;
 		}
 		while (!_kbhit()) {
 			if (check_for_winner()) {		//check if a team has been disappeared
 				//~map();
+				active = false;
 				end();
 				return;
 			}
@@ -194,8 +196,8 @@ void game::run() {
 		else if (Player.get_input() == SPACE)
 			display_info();
 		else if (Player.get_input() == F) {			//use magic_filter
-			if (Avatar.get_filters() >= 10 ) {
-				if(Player.get_team() == 'V' && Map.get_day())
+			if (Avatar.get_filters() >= 10) {
+				if (Player.get_team() == 'V' && Map.get_day())
 					Avatar.use_magic_filter(team_vampires.get_teammates());
 				else if (Player.get_team() == 'W' && !Map.get_day())
 					Avatar.use_magic_filter(team_werewolves.get_teammates());
@@ -203,7 +205,7 @@ void game::run() {
 			//system("pause");
 		}
 		else {
-			
+
 			//Sleep(400);
 			const int& z = Player.get_input();
 			//Sleep(400);
@@ -336,7 +338,9 @@ void game::display_info() {
 			cout << endl;
 		}
 		cout << endl;
-
+		if (!active) {
+			return;
+		}
 		char input = _getch();
 		int key = input;
 		while (key != SPACE) {

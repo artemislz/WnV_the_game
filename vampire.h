@@ -11,4 +11,5 @@ public:
    // void attack(WereWolves& ememy);
     void set_pointer_to_teammates(std::vector<vampire*>& teammates) { ptr = &teammates; };
     inline std::vector<vampire*>* get_pointer_to_teammates()const { return ptr;}
+    virtual ~vampire() { std::cout << "vampire "; }
 };

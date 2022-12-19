@@ -145,14 +145,18 @@ void map::place_to_grid(const int& i, const int& j, map_entity* value)
 }
 
 map::~map() {
+    //print();
     cout << "Destructing map...\n";
     for (int i = 0; i < x + 2; i++) {
         for (int j = 0; j < y + 2; j++) {
+            //cout << grid[i][j]->get_type();
+            if (grid[i][j]->get_type() == 'm' || grid[i][j]->get_type() == 'a') continue;
             delete grid[i][j];
+            //cout << endl;
         }
     }
     for (int i = 0; i < x + 2; i++) {
         delete[] grid[i];
     }
-    delete[] grid;
+    delete grid;
 }

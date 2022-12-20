@@ -3,6 +3,7 @@
 /*Vampire - Member functions & Constructor*/
 vampire::vampire(const int& i, const int& j, const char& type) : fighter(i, j, type) {}
 
+// redefiniton of virtual 'move' function inherited from Entity class
 void vampire::move(const int& n) {
     switch (n) {
     case 1:         //up

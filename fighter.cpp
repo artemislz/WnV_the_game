@@ -33,8 +33,8 @@ void fighter::display() {
 }
 
 void fighter::give_heal(fighter& teammate) {
-	int num = get_random(0, 4);			//give heal or not
-	if (num && heal) {					
+	int num = get_random(0,5);			//give heal or not
+	if (!num && heal) {					
 		this->lose_heal();
 		teammate.add_health();			//if doesn't have heal return
 	}
@@ -54,10 +54,10 @@ void fighter::lose_health(int enemy_pow) {
 		health -= diff;
 	}
 	else if (enemy_pow == defence) {		// in case the enemy who is been attacked has the same defence value with 
-											// the power value of the one who attacks to him choose randomly 
-											// if the health will be diminished
-		int rand = get_random(0, 1);
-		if(rand) health--;
+		int rand = get_random(0, 1);		// the power value of the one who attacks to him choose randomly 
+		if(rand) health--;					// if the health will be diminished		
+											
+		
 	}
 }
 

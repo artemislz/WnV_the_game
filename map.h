@@ -10,7 +10,7 @@ private:
 	bool day;										// false -> night  true -> day
 	map_entity*** grid;								//grid with pointers to map_entity objects
 public:
-	map(const int&, const int&, const char&);		
+	map(const int&, const int&);		
 	void print();									// display map to terminal with appropriate symbols
 	inline int get_x()const { return x; }
 	inline int get_y()const { return y; }

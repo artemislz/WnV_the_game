@@ -31,13 +31,15 @@ class game {
 		game(const int&, const int&, const char&);
 		void end();
 		void pause();                   //calls display_info and returns only if space key is pressed
-		void display_info();
+		void display_info();	
+        void display_game_info();
 		inline map get_map()const { return Map; }
 		inline player get_player()const { return Player; }
 		void run();
 		void update();
 		bool interactions();			// activates the vampires/werewolves interactions(attack/defend/heal) + returns if defence happend
 		bool check_for_winner();        //returns true only if a team has won
+		
 		~game() = default;
 };
 

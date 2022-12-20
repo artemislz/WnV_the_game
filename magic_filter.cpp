@@ -6,7 +6,8 @@
 
 /*Magic Filter - Member Functions & Costructors*/
 magic_filter::magic_filter(map & Map) {
-	/*Process of putting randomly the magic filter*/
+	/* Process of getting random coordinates of the 
+	first position of magic filter */
 	int xx, yy;
 	do {
 		xx = get_random(0, Map.get_x() + 1);
@@ -26,6 +27,6 @@ void magic_filter::change_position(int old_avatar_i, int old_avatar_j, map& Map)
 		yy = get_random(0, Map.get_y() + 1);
 	} while (!Map.check_type(xx, yy, 'e'));
 
-	std::swap(grid[xx][yy], grid[old_avatar_i][old_avatar_j]);     //swap the old position of avatar with earth
-	grid[xx][yy] = this;
+	std::swap(grid[xx][yy], grid[old_avatar_i][old_avatar_j]);		// swap the old position of avatar with earth
+	grid[xx][yy] = this;											// initialize new random position with magic filter
 }

@@ -1,4 +1,4 @@
-#include "game.h"
+﻿#include "game.h"
 #include "global.h"
 #include <iostream>
 #include "map_entity.h"
@@ -34,32 +34,38 @@ void set_player_preferences(int& dim_x, int& dim_y, char& team) {
 		try {
 			string x;
 			string y;
-	
+
+			/*FOR X DIMENSION*/
 			cout << "Enter x : ";
 			cin >> x;
 
 			/* If the input contains a character that's not represent a digit is wrong */
 			for (int i = 0; i < x.length(); i++) {
 				if (!isdigit(x[i])) {
-					if (x[i] == '.')
+					if (x[i] == '.')		// if it's float ask for integer
 						throw(ERROR_FLOAT);
 					throw(ERROR_CHAR_INPUT);
 				}
 			}
-
-			if (x.length() >= 3) {		// If the input has more than 3 digits/characters is surely wrong
-				throw(ERROR_OUT_OF_RANGE);					// in that way an overflow is avoided
+			// If the input has more than 3 digits/characters is surely wrong
+			// in that way an overflow is avoided
+			if (x.length() >= 3) {		
+				throw(ERROR_OUT_OF_RANGE);					
 			}
 
+			/*if the input is 1 or 2 characters that represents a number convert the string to number*/
 			dim_x = stoi(x);
+
+			// by agreement number of werewolves and vampires at the start is x*y/30
+			// and we want at least 3 fighters for each team
+			// also grids that has dimensions over 30 don't fit well at the terminal
 			if (dim_x < 10 || dim_x > 30) 
 				throw(ERROR_OUT_OF_RANGE);
 			
-
+			/*SAME FOR Y DIMENSION*/
 			cout << "Enter y : ";
 			cin >> y;
 
-			
 			for (int i = 0; i < y.length(); i++) {
 				if (!isdigit(y[i])) {	
 					if (y[i] == '.')
@@ -67,23 +73,20 @@ void set_player_preferences(int& dim_x, int& dim_y, char& team) {
 					throw(ERROR_CHAR_INPUT);
 				}
 			}
-			
-			if (y.length() >= 3) {		// If the input has more than 3 digits/characters is surely wrong
-				throw(ERROR_OUT_OF_RANGE);					// in that way an overflow is avoided
-			}
 
-			/*if the input is 1 or 2 characters that represents a number convert the string to number*/
+			if (y.length() >= 3) {		
+				throw(ERROR_OUT_OF_RANGE);					
+			}
 			
 			dim_y = stoi(y);
 
-			// by agreement number of werewolves and vampires at the start is x*y/30
-			// and we want at least 3 fighters for each team
-			// also grids that has dimensions over 30 don't fit well at the terminal
 			if (dim_y > 30 || dim_y < 10 ) {
 				throw(ERROR_OUT_OF_RANGE);
 			}
+
 			/*if the input is valid ask the player to choose his/her team*/
 			repeat = false;
+
 		}
 
 		catch (int n) {
@@ -137,7 +140,7 @@ void set_player_preferences(int& dim_x, int& dim_y, char& team) {
 }
 
 /*Game - Member functions & Constructor*/
-game::game(const int& x, const int& y, const char& team) : active(true), Map(x, y, team), Player(team), Avatar(x / 2 + 1, y/ 2 + 1, team), team_vampires(Map), team_werewolves(Map), Magic_filter(Map), winners_team('0') {
+game::game(const int& x, const int& y, const char& team) : active(true), Map(x, y), Player(team), Avatar(x / 2 + 1, y/ 2 + 1, team), team_vampires(Map), team_werewolves(Map), Magic_filter(Map), winners_team('0') {
 	cout << "			The game is starting... \n \n ";
 	//Sleep(1000);
 	cout << "			During the game, vampires and werewolves are fighting...\n \n";
@@ -310,12 +313,13 @@ void game::update() {
 }
 
 void game::run() {
-
+	/* Print the initialized map before any update*/
 	Map.print();
+	Sleep(80);
 	system("cls");
 
 	while (active) {
-
+		/*check for winner after the update that happened after the player pressed a key*/
 		if (check_for_winner()) {
 			active = false;
 			end();
@@ -325,7 +329,7 @@ void game::run() {
 		/*if player didn't press a button*/
 		while (!_kbhit()) {
 
-			if (check_for_winner()) {		//check for winner while player isn't press any key
+			if (check_for_winner()) {		//check for winner while player doesn't press any key
 				active = false;
 				end();
 				return;
@@ -346,19 +350,18 @@ void game::run() {
 			
 		};
 
-	
 		/*if player pressed a button*/
 		Player.set_input();
 		const int& player_input = Player.get_input();
 
 		switch (player_input) {
-		case X:
+		case X:						//'X' pressed -> game stops 
 			active = false;
 			end();
 			return;
 			break;
 		case SPACE:
-			display_info();
+			pause();				//space pressed -> game paused + info display
 			break;
 		case F:
 			// by agreement avatar can heal his/her team by using 10 magic filters
@@ -372,26 +375,27 @@ void game::run() {
 
 			}
 			break;
-		default:
+		default:				//use of arrow_keys to move avatar
+			//save the old dimensions of avatar in order to swap magic filter with  
+			//the earth in which it will be placed after 
 			int old_i = Avatar.get_i();
 			int old_j = Avatar.get_j();
-			bool catched = Avatar.move(player_input, Map);
+			bool catched = Avatar.move(player_input, Map);				//returns true if avatar catch a magic filter
 			if (catched == true) {
 				Magic_filter.change_position(old_i, old_j, Map);
 			}
 			
 		}
-		update();
+		update();														//werewolve's and vampire's ramndom movement				
 		Map.print();
 		Sleep(50);
 		system("cls");
 
-		if (interactions()) {
-			Map.print();
-			Sleep(50);
-			system("cls");
+		if (interactions()) {											// interactions returns true only if a defend 
+			Map.print();												// have happend between two fighters
+			Sleep(50);													// In defend() it is possible for a fighter to move 
+			system("cls");												// So, print map again
 		}
-		
 
 	}
 	end();
@@ -401,7 +405,7 @@ void game::run() {
 
 bool game::interactions() {
 
-	int count = 0, num = 0, defence_happend = 0;
+	int count = 0, num = 0, defences_counter = 0;
 	bool up = 0, down = 0, left = 0, right = 0;
 
 	map_entity*** grid = Map.get_grid();
@@ -409,12 +413,15 @@ bool game::interactions() {
 	for (int i = 1; i < Map.get_x() + 1; i++) {
 		for (int j = 1; j < Map.get_y() + 1; j++) {
 			
-			if (grid[i][j]->is_checked()) 			// if is stable_object/Avatar or fighter who interacted, continue
+			if (grid[i][j]->is_checked()) 								// if it is stable_object/Avatar or fighter who interacted, continue
 				continue;
 			
+			/* Check up, down, right and left block for existance of fighter*/	
+			// if there is a fighter in the block push position's character to the
+			// vector 
 			vector<char> positions;	
-
-			up = !grid[i - 1][j]->is_checked();
+			
+			up = !grid[i - 1][j]->is_checked();			 	
 			if (up) {
 				positions.push_back('u');
 			}
@@ -433,125 +440,131 @@ bool game::interactions() {
 			if (left) {
 				positions.push_back('l');
 			}
-			count = up + down + left + right;		// select randomly to interact with one of the close fighters
-			if (!count) 
+			count = up + down + left + right;							// count -> the number of possible movements (used for get_random)
+			if (!count)													// if there isn't a fighter close to him continue
 				continue;
-			
+		
+			/* select randomly to interact with one of the close fighters */
 			num = get_random(0, count - 1);
-			char p = positions.at(num);
-			fighter* fptr1 = dynamic_cast<fighter*>(grid[i][j]);
-			fighter* fptr2;
+			char p = positions.at(num);									// choose from vector one position
+			fighter* fptr1 = dynamic_cast<fighter*>(grid[i][j]);		// Convert map_entity pointer to fighter pointer to access 
+			fighter* fptr2;												// member functions 
+
+			/* Interaction with the chosen fighter */
 			switch (p) {
 			case 'u':
 				fptr2 = dynamic_cast<fighter*>(grid[i - 1][j]);
-				defence_happend += fptr1->interact(*fptr2, 'u', Map);
+				defences_counter += fptr1->interact(*fptr2, 'u', Map);
 				break;
 			case 'd':
 				fptr2 = dynamic_cast<fighter*>(grid[i + 1][j]);
-				defence_happend += fptr1->interact(*fptr2, 'd', Map);
+				defences_counter += fptr1->interact(*fptr2, 'd', Map);
 				break;
 			case 'l':
 				fptr2 = dynamic_cast<fighter*>(grid[i][j - 1]);
-				defence_happend += fptr1->interact(*fptr2, 'l', Map);
+				defences_counter += fptr1->interact(*fptr2, 'l', Map);
 				break;
 			case 'r':
 				fptr2 = dynamic_cast<fighter*>(grid[i][j + 1]);
-				defence_happend += fptr1->interact(*fptr2, 'r', Map);
+				defences_counter += fptr1->interact(*fptr2, 'r', Map);
 				break;
 					
 			}	
 		}
 	}
+
+	/* Set checked of all the fighters who interact to false */
 	team_vampires.set_all_unchecked();
 	team_werewolves.set_all_unchecked();
 
-	if (defence_happend)
+	/*returns true if defence happended so that the new grid will be printed*/
+	if (defences_counter)
 		return true;
 	else
 	{
 		return false;
 	}
-
 }
 
+void game::display_game_info(){
 
-void game::display_info() {
+	string vampire_display = "| Number of Vampires Alive: ";
+	string werewolf_display = "| Number of Werewolves Alive: ";
+	string magic_filter_display = "| Number of Magic Filters you owned: ";
 
-		string vampire_display = "| Number of Vampires Alive: ";
-		string werewolf_display = "| Number of Werewolves Alive: ";
-		string magic_filter_display = "| Number of Magic Filters you owned: ";
+	vampire_display += to_string(team_vampires.teammates_alive());
+	werewolf_display += to_string(team_werewolves.teammates_alive());
+	magic_filter_display += to_string(Avatar.get_filters());
 
-		vampire_display += to_string(team_vampires.teammates_alive());
-		werewolf_display += to_string(team_werewolves.teammates_alive());
-		magic_filter_display += to_string(Avatar.get_filters());
-		for (int i = 0; i < 20; i++){
-			if (i == 0) cout << "\t\t\t";
-			std::cout << " -";
-		}
-			
-		std::cout << "\n\t\t\t" << vampire_display;
+	/* up outline of the box */
+	for (int i = 0; i < 20; i++) {
+		if (i == 0) cout << "\t\t\t";
+		std::cout << " -";
+	}
 
-		for (int i = 0, size = 40 - vampire_display.size(); i < size; i++)
-			std::cout << " ";
-		std::cout << "|\n\t\t\t" << werewolf_display;
+	/* Display number of vampires alive */
+	std::cout << "\n\t\t\t" << vampire_display;
+	for (int i = 0, size = 40 - vampire_display.size(); i < size; i++)
+		std::cout << " ";
 
-		for (int i = 0, size = 40 - werewolf_display.size(); i < size; i++)
-			std::cout << " ";
-		std::cout << "|\n\t\t\t" << magic_filter_display;
+	/* Display number of werewolves alive */
+	std::cout << "|\n\t\t\t" << werewolf_display;
+	for (int i = 0, size = 40 - werewolf_display.size(); i < size; i++)
+		std::cout << " ";
 
-		for (int i = 0, size = 40 - magic_filter_display.size(); i < size; i++)
-			std::cout << " ";
-		std::cout << "|\n";
-		for (int i = 0; i < 20; i++){
-			if (i == 0) cout << "\t\t\t";
-			std::cout << " -";
-		}
-		if (!active) {
-			/*Display health, power, defence, heal of all fighters only if the game is ended prematurely with 'X'*/
-			if (!check_for_winner()) {
-				cout << "\n \n \t \t \t \t   Team Vampires info";
-				team_vampires.display_team();
-				cout << "\n\t\t\t\t   Team Werewolves info";
-				team_werewolves.display_team();
-				return;
-			}
-			else {
-				switch(winners_team)
-				{
-				case 'V':
-					cout << "\n\t\t\t\t   Team Werewolves info";
-					team_werewolves.display_team();
-					break;
-				case 'W':
-					cout << "\n \n \t \t \t \t   Team Vampires info";
-					team_vampires.display_team();
-					break;
-				default:
-					break;
-				}
-			}
-			return;
-		}
-		if (Player.get_team() == 'V') {
-			cout << "\n \n \t \t \t \t   Team Vampires info";
-			team_vampires.display_team();
-		}
-		else {
-			cout << "\n\t\t\t\t   Team Werewolves info";
-			team_werewolves.display_team();	
-		}
+	/* Display number of magic filters that Avatar has in his possesion */
+	std::cout << "|\n\t\t\t" << magic_filter_display;
+	for (int i = 0, size = 40 - magic_filter_display.size(); i < size; i++)
+		std::cout << " ";
+
+	std::cout << "|\n";
+
+	/* down outline of the box */
+	for (int i = 0; i < 20; i++) {
+		if (i == 0) cout << "\t\t\t";
+		std::cout << " -";
+	}
+}
+
+void game::display_info() {	
+
+	display_game_info();
+
+	/* Display level of power, defence, heal and health 
+	of all the fighters of player's team that are still alive */
+	cout << "\n \n \t \t \t \t   Your Team's info";	
+	if (Player.get_team() == 'V') {	
+		team_vampires.display_team();
+	}
+	else {
+		team_werewolves.display_team();
+	}
 	
-		char input = _getch();
-		int key = input;
-		while (key != SPACE) {
-			char input = _getch();
-			key = input;
-		}
-		system("cls");
-		return;
 }
+
+void game::pause() {
+
+	/* Display number of fighters alive, number of magic filters 
+	that Avatar has in his possesion and information about  the
+	fighters of team that Avatar supports */
+	
+	display_info();			
+	
+	cout << "\n \t \t \tPress space again to continue...";
+	char input = _getch();
+	int key = input;
+	while (key != SPACE) {
+		char input = _getch();
+		key = input;
+	}
+	system("cls");
+	return;
+}
+
 
 bool game::check_for_winner() {
+	/* if there are no alive fighters in a team, 
+	then the other team wins and the game ends */
 	if (team_vampires.teammates_alive() == 0 || team_werewolves.teammates_alive() == 0) {
 		if (team_vampires.teammates_alive())
 			winners_team = 'V';
@@ -563,30 +576,65 @@ bool game::check_for_winner() {
 	return false;
 }
 
+/*FINAL INFO DISPLAY - RESULTS OF THE GAME*/
 void game::end() {
+
 	
-	std::cout << "THE  END OF THE GAME...\n";
-	
-	//if (team_vampires.number() != 0 && team_werewolves.number() != 0) {
-	//	std::cout << "NO WINNERS TEAM...";
-	//	return;
-	//}
-	//std::cout << "THE WINNERS TEAM IS: " << winners_team << endl;
-	if(check_for_winner()){
-		if (winners_team == Player.get_team() && check_for_winner()) 
-			std::cout << "YOU ARE THE WINNER!^o^\n";
+	std::cout << "\t \t \tTHE  END OF THE GAME...\n";
+
+	/*if there is winner*/
+	if (check_for_winner()) {
+
+		if (Player.get_team() == winners_team) 
+			cout << "\t\t\tYOU ARE THE WINNER ! \n ";
 		else {
-			std::cout << "UNLUCKY...+_+\n";
+			cout << "\n \t \t \tENEMIES WON... \n";
+			cout << "\n \t\t\tMAYBE NEXT TIME... \n";
 		}
+
+		cout << "\t \t \tFINAL SCORE: " << team_vampires.teammates_alive() << " - " << team_werewolves.teammates_alive() << endl;
+
+		std::cout << "\t \t \tPRESS 'ENTER' TO SEE MORE INFO...\n";
+		char input = _getch();
+		int key = input;
+		if (key == ENTER) {
+
+			display_game_info();
+			
+			cout << "\n \n \t \t \tTHE TEAM THAT WON THE BATTLE INFO: \n";
+			if (winners_team == 'V') 
+				team_vampires.display_team();
+			
+			else 
+				team_werewolves.display_team();
+			
+		}
+
+		else 
+			std::cout << "\t \t \tSO YOU DON'T CARE...\n";
+	
 	}
-	std::cout << "PRESS 'ENTER' TO SEE MORE INFO...\n";
-	char input = _getch();
-	int key = input;
-	if (key == ENTER) {
-		display_info();
-	}
+	/*if there is no winner*/
 	else {
-		std::cout << "SO YOU DON'T CARE...\n";
+
+		std::cout << "\t \t \tPRESS 'ENTER' TO SEE MORE INFO...\n";
+		char input = _getch();
+		int key = input;
+
+		if (key == ENTER) {
+
+			display_game_info();
+
+			cout << "\n \n \t \t \t \t   Team Vampires info";
+			team_vampires.display_team();
+
+			cout << "\n\t\t\t\t   Team Werewolves info";
+			team_werewolves.display_team();
+		}
+
+		else 
+			std::cout << "\t \t \tSO YOU DON'T CARE...\n";
 	}
+		
 	return;
 }

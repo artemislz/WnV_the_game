@@ -67,12 +67,13 @@ void map::set_outline() {
 
 void map::print() {
     if (day == true) {
-        cout << "D A Y" << endl;
+        cout << "\t\t\tD A Y" << endl;
     }
     else {
-        cout << "N I G H T" << endl;
+        cout << "\t\t\tN I G H T" << endl;
     }
     for (int i = 0; i < x + 2; i++) {
+        cout << "\t\t\t";
         for (int j = 0; j < y + 2; j++) {
             const char& type = (*grid[i][j]).get_type();
             cout << ' ';

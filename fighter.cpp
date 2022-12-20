@@ -24,15 +24,16 @@ fighter::fighter(const int& i, const int& j, const char type) : entity(i, j, typ
 
 void fighter::display() {
 	//cout << "Coordinates" << " i : " << i << " j : " << j << endl;
+	
     cout << "power: " << power ;
-    cout << ", defence: " << defence;
-	cout << ", heal: " << heal;
-    cout << ", health: " << health;
+    cout << "  defence: " << defence;
+	cout << "  heal: " << heal;
+    cout << "  health: " << health;
 	cout << endl;
 }
 
 void fighter::give_heal(fighter& teammate) {
-	int num = get_random(0, 1);			//give heal or not
+	int num = get_random(0, 4);			//give heal or not
 	if (num && heal) {					
 		this->lose_heal();
 		teammate.add_health();			//if doesn't have heal return

@@ -65,7 +65,7 @@ template< typename T>
 void team<T>::display_team(){
 	std::cout << std::endl;	
 	for (auto & element : teammates){
+		std::cout << "\t\t\t";
 		element->display();
-		std::cout << std::endl;
 	}
 }

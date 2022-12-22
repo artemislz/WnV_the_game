@@ -17,7 +17,7 @@ using namespace std;
 /*Fighter - Member functions & Constructor*/
 fighter::fighter(const int& i, const int& j, const char type) : entity(i, j, type), health(MAX_HEALTH) {
     power = get_random(1, 3);
-    defence = get_random(1, 2);
+    defense = get_random(1, 2);
     heal = get_random(0, 2);
     this->type = type;
 }
@@ -26,7 +26,7 @@ void fighter::display() {
 	//cout << "Coordinates" << " i : " << i << " j : " << j << endl;
 	
     cout << "power: " << power ;
-    cout << "  defence: " << defence;
+    cout << "  defense: " << defense;
 	cout << "  heal: " << heal;
     cout << "  health: " << health;
 	cout << endl;
@@ -49,15 +49,13 @@ void fighter::add_health(){
 void fighter::lose_health(int enemy_pow) {
 	int diff;
 
-	if (enemy_pow >= defence) {
-		diff = enemy_pow - defence;
+	if (enemy_pow > defense) {
+		diff = enemy_pow - defense;
 		health -= diff;
 	}
-	else if (enemy_pow == defence) {		// in case the enemy who is been attacked has the same defence value with 
-		int rand = get_random(0, 1);		// the power value of the one who attacks to him choose randomly 
-		if(rand) health--;					// if the health will be diminished		
-											
-		
+	else if (enemy_pow == defense) {		// in case the enemy who is been attacked has the same  
+		health--;							//defense value with the health will be diminished by 1	
+														
 	}
 }
 
@@ -99,7 +97,7 @@ void fighter::attack(fighter& enemy, map& Map) {	// fighter attacks to the enemy
 
 
 
-bool fighter::defend(const char& position_of_enemy, map& Map) {		//returns true if defence happened
+bool fighter::defend(const char& position_of_enemy, map& Map) {		//returns true if defense happened
 
 	map_entity*** grid = Map.get_grid();
 	
@@ -140,8 +138,8 @@ bool fighter::defend(const char& position_of_enemy, map& Map) {		//returns true 
 }
 
 																					
-bool fighter::interact(fighter& close_fighter, const char& p, map& Map ) {		//returns true if defence happened	
-	bool defence_happened = false;																				
+bool fighter::interact(fighter& close_fighter, const char& p, map& Map ) {		//returns true if defense happened	
+	bool defense_happened = false;																				
 
 	/*same type of fighters*/
 	if(type == close_fighter.get_type()) {						
@@ -200,37 +198,48 @@ bool fighter::interact(fighter& close_fighter, const char& p, map& Map ) {		//re
 		
 		char opp;												//opposite direction
 		if (max_power == power || (power == enemy_power && !get_random(0, 1))) {		//if power == enemy_power -> choose randomly who will attack to
-			
-			switch(p) {
+			if (power != enemy_power) {
+				switch (p) {
 				case 'u':	opp = 'd';
-							break;		
+					break;
 				case 'd':	opp = 'u';
-							break;
+					break;
 				case 'r':	opp = 'l';
-							break;
+					break;
 				case 'l':	opp = 'r';
-							break;
-			}
-			// if the fighter attack to the close enemy, 
-			//close fighter will defend my moving to the opposite direction
-			//because it has the opposite relative position (opp)
+					break;
+				}
+				// if the fighter attack to the close enemy, 
+				//close fighter will defend my moving to the opposite direction
+				//because it has the opposite relative position (opp)
 
-			defence_happened = close_fighter.defend(opp, Map);	
-			
-			//if defend() return false, this means that fighter 
-			//didn't manage to move away from the attacker
-			//So the enemy attacks.	
-			if (!defence_happened) {
+				defense_happened = close_fighter.defend(opp, Map);
+
+				//if defend() return false, this means that fighter 
+				//didn't manage to move away from the attacker
+				//So the enemy attacks.	
+				if (!defense_happened) {
+					attack(close_fighter, Map);
+				}
+			}
+			else {
 				attack(close_fighter, Map);
 			}
+		
 		}
 		// if the close_enemy attack to fighter then 
 		// we have already their relative position (p)
 		else if (max_power == enemy_power || (power == enemy_power) ){
-			defence_happened = defend(p, Map);
-			if (!defence_happened) {
+			if (power != enemy_power) {
+				defense_happened = defend(p, Map);
+				if (!defense_happened) {
+					close_fighter.attack(*this, Map);
+				}
+			}
+			else {
 				close_fighter.attack(*this, Map);
 			}
+			
 		}
 
 		/*cout << "AFTER ";
@@ -245,5 +254,5 @@ bool fighter::interact(fighter& close_fighter, const char& p, map& Map ) {		//re
 	}
 	set_checked();														//mark them as fighters who have interacted with each other
 	close_fighter.set_checked();
-	return defence_happened;
+	return defense_happened;
 }

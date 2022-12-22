@@ -4,10 +4,10 @@
 #include <ctime>
 #include <cstdlib>
 #include <iostream>
-
+#include <Windows.h>
 using namespace std;
 /*Map - Member functions & Constructor*/
-map::map(const int& x, const int& y) : x(x), y(y), day(true) {
+map::map(const int& x, const int& y) : x(x), y(y) {
 
     srand((unsigned int)time(nullptr));
 
@@ -68,11 +68,15 @@ void map::set_outline() {
 }
 
 
-void map::print() {
+void map::print(bool day){ 
+    
+    HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
     if (day == true) {
+        SetConsoleTextAttribute(h, 14);
         cout << "\t\t\tD A Y" << endl;
     }
     else {
+        SetConsoleTextAttribute(h, 1);
         cout << "\t\t\tN I G H T" << endl;
     }
 
@@ -85,30 +89,41 @@ void map::print() {
             cout << ' ';
             switch (type) {
             case 'u':
+               // system("Color 04");
+                SetConsoleTextAttribute(h, 15);
                 cout << '-';
                 break;
             case 's':
+                SetConsoleTextAttribute(h, 15);
                 cout << '|';
                 break;
             case 'e':
+                SetConsoleTextAttribute(h, 0);
                 cout << ' ';
                 break;
             case 'a':
-                cout << "";
+               // system("Color 04");
+                SetConsoleTextAttribute(h, 14);
+                cout << "A";
                 break;
             case 'v':
+                SetConsoleTextAttribute(h, 12);
                 cout << 'v';
                 break;
             case 'w':
+                SetConsoleTextAttribute(h, 9);
                 cout << 'w';
                 break;
             case 'l':
+                SetConsoleTextAttribute(h, 11);
                 cout << '~';
                 break;
             case 't':
+                SetConsoleTextAttribute(h, 10);
                 cout << '*';
                 break;
             case 'm':
+                SetConsoleTextAttribute(h, 13);
                 cout << 'm';
                 break;
             default:
@@ -116,15 +131,6 @@ void map::print() {
             }
         }
         cout << endl;
-    }
-}
-
-void map::change_day() {
-    if (day) {
-        day = false;
-    }
-    else {
-        day = true;
     }
 }
 

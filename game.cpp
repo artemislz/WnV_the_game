@@ -26,6 +26,8 @@ class player;
 void set_player_preferences(int& dim_x, int& dim_y, char& team) {
 	bool repeat;
 	repeat = true;
+	HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(h, 9);
 	cout << "Time to choose the dimensions of the map... " << endl;
 	//Sleep(500);
 	cout << "The dimensions must be from 10 to 30" << endl;
@@ -140,28 +142,8 @@ void set_player_preferences(int& dim_x, int& dim_y, char& team) {
 }
 
 /*Game - Member functions & Constructor*/
-game::game(const int& x, const int& y, const char& team) : active(true), Map(x, y), Player(team), Avatar(x / 2 + 1, y/ 2 + 1, team), team_vampires(Map), team_werewolves(Map), Magic_filter(Map), winners_team('0') {
-	cout << "			The game is starting... \n \n ";
-	//Sleep(1000);
-	cout << "			During the game, vampires and werewolves are fighting...\n \n";
-	//Sleep(1500);
-	cout << "			You are able to move in the map using arrow keys ...\n \n";
-	//Sleep(1500);
-	cout << "			Your job is to collect as many magic filters as you can,\n" 
-			"			in order to heal the team you chose to support!\n \n";
-	//Sleep(2000);
-	cout <<  "			At least 10 magic filters are required. Press 'F' to use them.\n \n";
-	//Sleep(2000);
-	if (team == 'V')
-		cout << "			But remember... You can only use them at day...\n \n";
-	else
-		cout << "			But remember... You can only use them at night...\n \n";
-	//Sleep(2000);
-	cout << "			Press space to pause and see more info about the game\n \n";
-	//Sleep(1500);
-	cout << "			Press 'X' to exit...\n \n";
-	//Sleep(1000);
-	cout << "			Enjoy!\n \n";
+game::game(const int& x, const int& y, const char& team) : day(true), active(true), Map(x, y), Player(team), Avatar(x / 2 + 1, y/ 2 + 1, team), team_vampires(Map), team_werewolves(Map), Magic_filter(Map), winners_team('0') {
+	
 	
 
 	/*place avatar and magic filter after they are consructed to the grid*/
@@ -171,18 +153,11 @@ game::game(const int& x, const int& y, const char& team) : active(true), Map(x, 
 	map_entity* pp = &Magic_filter;
 	Map.place_to_grid(Magic_filter.get_i(), Magic_filter.get_j(), pp);
 	
-	//system("pause");
-	cout << "\t\t\t\tPress any key when you are ready to play...";
-	system("pause > nul");								//source :: https://cboard.cprogramming.com/cplusplus-programming/130086-editing-output-message-system-pause.html
+	
 }
 
 void game::update() {												
-	static int frame = 0;											
-	frame++;													
-	if (frame % 40 == 0) {			// by agreement day changes and night alternate after 40 updates of game frame
-		Map.change_day();			// used static variable so that it its value will be carried through the function calls
-		frame = 0;					// set as 0 after the change in order to avoid overflow
-	}
+	
 	int i, j, p;
 	map_entity*** grid = Map.get_grid();
 
@@ -198,7 +173,7 @@ void game::update() {
 		i = (**ptr).get_i();	// old coordinates
 		j = (**ptr).get_j();
 
-		p = get_random(1, 8);	// random direction
+		p = get_random(0, 8);	// random direction
 
 
 		// if the block that fighters is trying to go to is filled with
@@ -264,9 +239,6 @@ void game::update() {
 				(**ptr).move(8);
 			};
 			break;
-
-		default:
-			break;
 		}
 	}
 
@@ -312,12 +284,48 @@ void game::update() {
 
 }
 
+void game::change_day() {
+	if (day) {
+		day = false;
+	}
+	else {
+		day = true;
+	}
+}
+
 void game::run() {
+	
+	cout << "			The game is starting... \n \n ";
+	//Sleep(1000);
+	cout << "			During the game, vampires and werewolves are fighting...\n \n";
+	//Sleep(1500);
+	cout << "			You are able to move in the map using arrow keys ...\n \n";
+	//Sleep(1500);
+	cout << "			Your job is to collect as many magic filters as you can,\n"
+		"			in order to heal the team you chose to support!\n \n";
+	//Sleep(2000);
+	cout << "			At least 10 magic filters are required. Press 'F' to use them.\n \n";
+	//Sleep(2000);
+	if (Player.get_team() == 'V')
+		cout << "			But remember... You can only use them at day...\n \n";
+	else
+		cout << "			But remember... You can only use them at night...\n \n";
+	//Sleep(2000);
+	cout << "			Press space to pause and see more info about the game\n \n";
+	//Sleep(1500);
+	cout << "			Press 'X' to exit...\n \n";
+	//Sleep(1000);
+	cout << "			Enjoy!\n \n";
+	//system("pause");
+	cout << "\t\t\t\tPress any key when you are ready to play...";
+	system("pause > nul");								//source :: https://cboard.cprogramming.com/cplusplus-programming/130086-editing-output-message-system-pause.html
+
 	/* Print the initialized map before any update*/
-	Map.print();
+	system("cls");
+	Map.print(day);
 	Sleep(80);
 	system("cls");
-
+	static int frame = 1;
 	while (active) {
 		/*check for winner after the update that happened after the player pressed a key*/
 		if (check_for_winner()) {
@@ -325,10 +333,18 @@ void game::run() {
 			end();
 			return;
 		}
+		
 
+		if (frame % 40 == 0) {			// by agreement day changes and night alternate after 40 updates of game frame
+			change_day();			    // used static variable so that it its value will be carried through the function calls
+			frame = 0;					// set as 0 after the change in order to avoid overflow
+		}
 		/*if player didn't press a button*/
 		while (!_kbhit()) {
-
+			if (frame % 40 == 0) {			// by agreement day changes and night alternate after 40 updates of game frame
+				change_day();			    // used static variable so that it its value will be carried through the function calls
+				frame = 0;					// set as 0 after the change in order to avoid overflow
+			}
 			if (check_for_winner()) {		//check for winner while player doesn't press any key
 				active = false;
 				end();
@@ -336,13 +352,15 @@ void game::run() {
 			}
 
 			update();
-			Map.print();
+			Map.print(day);
+			frame++;
 			Sleep(80);
 			system("cls");
 
-			/*if defence happend print the new grid*/
+			/*if defense happend print the new grid*/
 			if (interactions()) {		
-				Map.print();
+				Map.print(day);
+				frame++;
 				Sleep(80);
 				system("cls");
 			}
@@ -367,10 +385,10 @@ void game::run() {
 			// by agreement avatar can heal his/her team by using 10 magic filters
 			if (Avatar.get_filters() >= 10) {			
 				// avatar who supports vampires can heal them only at day
-				if (Player.get_team() == 'V' && Map.get_day())
+				if (Player.get_team() == 'V' && day)
 					Avatar.use_magic_filter(team_vampires.get_teammates());
 				// avatar who supports werewolves can heal them only at night
-				else if (Player.get_team() == 'W' && !Map.get_day())
+				else if (Player.get_team() == 'W' && !day)
 					Avatar.use_magic_filter(team_werewolves.get_teammates());
 
 			}
@@ -387,12 +405,14 @@ void game::run() {
 			
 		}
 		update();														//werewolve's and vampire's ramndom movement				
-		Map.print();
+		Map.print(day);
+		frame++;
 		Sleep(50);
 		system("cls");
 
 		if (interactions()) {											// interactions returns true only if a defend 
-			Map.print();												// have happend between two fighters
+			Map.print(day);												// have happend between two fighters
+			frame++;
 			Sleep(50);													// In defend() it is possible for a fighter to move 
 			system("cls");												// So, print map again
 		}
@@ -405,7 +425,7 @@ void game::run() {
 
 bool game::interactions() {
 
-	int count = 0, num = 0, defences_counter = 0;
+	int count = 0, num = 0, defenses_counter = 0;
 	bool up = 0, down = 0, left = 0, right = 0;
 
 	map_entity*** grid = Map.get_grid();
@@ -454,19 +474,19 @@ bool game::interactions() {
 			switch (p) {
 			case 'u':
 				fptr2 = dynamic_cast<fighter*>(grid[i - 1][j]);
-				defences_counter += fptr1->interact(*fptr2, 'u', Map);
+				defenses_counter += fptr1->interact(*fptr2, 'u', Map);
 				break;
 			case 'd':
 				fptr2 = dynamic_cast<fighter*>(grid[i + 1][j]);
-				defences_counter += fptr1->interact(*fptr2, 'd', Map);
+				defenses_counter += fptr1->interact(*fptr2, 'd', Map);
 				break;
 			case 'l':
 				fptr2 = dynamic_cast<fighter*>(grid[i][j - 1]);
-				defences_counter += fptr1->interact(*fptr2, 'l', Map);
+				defenses_counter += fptr1->interact(*fptr2, 'l', Map);
 				break;
 			case 'r':
 				fptr2 = dynamic_cast<fighter*>(grid[i][j + 1]);
-				defences_counter += fptr1->interact(*fptr2, 'r', Map);
+				defenses_counter += fptr1->interact(*fptr2, 'r', Map);
 				break;
 					
 			}	
@@ -477,8 +497,8 @@ bool game::interactions() {
 	team_vampires.set_all_unchecked();
 	team_werewolves.set_all_unchecked();
 
-	/*returns true if defence happended so that the new grid will be printed*/
-	if (defences_counter)
+	/*returns true if defense happended so that the new grid will be printed*/
+	if (defenses_counter)
 		return true;
 	else
 	{
@@ -487,7 +507,8 @@ bool game::interactions() {
 }
 
 void game::display_game_info(){
-
+	HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(h, 10);
 	string vampire_display = "| Number of Vampires Alive: ";
 	string werewolf_display = "| Number of Werewolves Alive: ";
 	string magic_filter_display = "| Number of Magic Filters you owned: ";
@@ -530,7 +551,7 @@ void game::display_info() {
 
 	display_game_info();
 
-	/* Display level of power, defence, heal and health 
+	/* Display level of power, defense, heal and health 
 	of all the fighters of player's team that are still alive */
 	cout << "\n \n \t \t \t \t   Your Team's info";	
 	if (Player.get_team() == 'V') {	
@@ -580,18 +601,23 @@ bool game::check_for_winner() {
 void game::end() {
 
 	
-	std::cout << "\t \t \tTHE  END OF THE GAME...\n";
+	std::cout << "\t \t \t";
+	HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(h, 160);
+	cout <<	"THE  END OF THE GAME...\n";
 
 	/*if there is winner*/
 	if (check_for_winner()) {
-
+		SetConsoleTextAttribute(h, 10);
 		if (Player.get_team() == winners_team) 
 			cout << "\t\t\tYOU ARE THE WINNER ! \n ";
 		else {
+			SetConsoleTextAttribute(h, 12);
 			cout << "\n \t \t \tENEMIES WON... \n";
-			cout << "\n \t\t\tMAYBE NEXT TIME... \n";
+			SetConsoleTextAttribute(h, 6);
+			cout << "\t \t\tMAYBE NEXT TIME... \n \n";
 		}
-
+		SetConsoleTextAttribute(h, 6);
 		cout << "\t \t \tFINAL SCORE: " << team_vampires.teammates_alive() << " - " << team_werewolves.teammates_alive() << endl;
 
 		std::cout << "\t \t \tPRESS 'ENTER' TO SEE MORE INFO...\n";
@@ -601,7 +627,7 @@ void game::end() {
 
 			display_game_info();
 			
-			cout << "\n \n \t \t \tTHE TEAM THAT WON THE BATTLE INFO: \n";
+			cout << "\n \n \t \t \t THE TEAM THAT WON THE BATTLE INFO: \n";
 			if (winners_team == 'V') 
 				team_vampires.display_team();
 			
@@ -616,7 +642,7 @@ void game::end() {
 	}
 	/*if there is no winner*/
 	else {
-
+		SetConsoleTextAttribute(h, 10);
 		std::cout << "\t \t \tPRESS 'ENTER' TO SEE MORE INFO...\n";
 		char input = _getch();
 		int key = input;

@@ -14,11 +14,13 @@
 #define ERROR_WRONG_TEAM 30
 #define ERROR_FLOAT 40
 
-enum KEY { UP = 72, DOWN = 80, LEFT = 75, RIGHT = 77, X = 88, SPACE = 32, ENTER = 13, F = 70 };
+enum KEY { UP = 72, DOWN = 80, LEFT = 75, RIGHT = 77, X = 88, SPACE = 32, ENTER = 13, F
+	= 70 };
 void set_player_preferences(int&, int&, char&);
 
 class game {
 	private:
+		bool day;										// false -> night  true -> day
 		bool active;					//true-> continue running game, false -> end game 
 		map Map;
 		player Player;
@@ -37,9 +39,9 @@ class game {
 		inline player get_player()const { return Player; }
 		void run();
 		void update();
-		bool interactions();			// activates the vampires/werewolves interactions(attack/defend/heal) + returns if defence happend
+		bool interactions();			// activates the vampires/werewolves interactions(attack/defend/heal) + returns if defense happend
 		bool check_for_winner();        //returns true only if a team has won
-		
+		void change_day();
 		~game() = default;
 };
 

@@ -11,7 +11,7 @@ class fighter : public entity {
 protected:	
 	int health;         // current health
 	int power;          // random [1,3]
-	int defence;        // random [1,2]
+	int defense;        // random [1,2]
 	int heal;           // random [0,2]
 public:
 	fighter(const int&, const int&, char);
@@ -24,7 +24,7 @@ public:
 	inline int get_health() const { return health; }
 	inline void set_health(const int& h) { health = h; }
 	inline int  get_power()const { return power; }
-	bool interact(fighter& close_fighter, const char& p, map& map);		// it returns 'true' only if a defence has occured
+	bool interact(fighter& close_fighter, const char& p, map& map);		// it returns 'true' only if a defense has occured
 																		// p -> relative position of the 2 fighters
 	void give_heal(fighter& teammate);
 	void attack(fighter& enemy, map& map);

@@ -324,7 +324,7 @@ void game::run() {
 	/* Print the initialized map before any update*/
 	system("cls");
 	Map.print(day);
-	Sleep(80);
+	Sleep(100);
 	system("cls");
 	static int frame = 1;
 	while (active) {
@@ -354,14 +354,14 @@ void game::run() {
 			update();
 			Map.print(day);
 			frame++;
-			Sleep(80);
+			Sleep(100);
 			system("cls");
 
 			/*if defense happend print the new grid*/
 			if (interactions()) {		
 				Map.print(day);
 				frame++;
-				Sleep(80);
+				Sleep(100);
 				system("cls");
 			}
 		};
@@ -406,7 +406,7 @@ void game::run() {
 		//system("pause");
 		Map.print(day);
 		frame++;
-		Sleep(80);
+		Sleep(100);
 		system("cls");
 
 		if (interactions()) {											// interactions returns true only if a defend 
@@ -414,7 +414,7 @@ void game::run() {
 			Map.print(day);												// have happend between two fighters
 			//system("pause")
 			frame++;
-			Sleep(80);													// In defend() it is possible for a fighter to move 
+			Sleep(100);													// In defend() it is possible for a fighter to move 
 			system("cls");												// So, print map again
 		}
 	}

@@ -143,7 +143,7 @@ bool fighter::interact(fighter& close_fighter, const char& p, map& Map ) {		//re
 
 	/*same type of fighters*/
 	if(type == close_fighter.get_type()) {						
-			const int enemy_health = close_fighter.get_health();							//give heal to the teammate
+			const int teammate_health = close_fighter.get_health();							//give heal to the teammate
 
 			/*cout << "Same type" << type << " " << close_fighter.get_type() << endl;
 			cout << "fighter 1: " << endl;
@@ -151,14 +151,14 @@ bool fighter::interact(fighter& close_fighter, const char& p, map& Map ) {		//re
 			cout << "fighter 2: " << endl;
 			close_fighter.display();*/
 
-			if (health == enemy_health && health == MAX_HEALTH) {
+			if (health == teammate_health && health == MAX_HEALTH) {
 				set_checked();
 				close_fighter.set_checked();
 				return false;
 			}
 			else {
-				int max_health = std::max(health, enemy_health);
-				if ((max_health == health) || (health == enemy_health)) {
+				int max_health = std::max(health, teammate_health);
+				if ((max_health == health) || (health == teammate_health)) {
 					give_heal(close_fighter);
 				}
 				else {

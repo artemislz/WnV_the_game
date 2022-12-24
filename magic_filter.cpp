@@ -10,8 +10,8 @@ magic_filter::magic_filter(map & Map) {
 	first position of magic filter */
 	int xx, yy;
 	do {
-		xx = get_random(0, Map.get_x() + 1);
-		yy = get_random(0, Map.get_y() + 1);
+		xx = get_random(1, Map.get_x());
+		yy = get_random(1, Map.get_y());
 	} while (!Map.check_type(xx, yy, 'e'));
 	i = xx;
 	j = yy;

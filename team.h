@@ -5,6 +5,8 @@
 #include "map.h"
 #include <iostream>
 
+class map;
+
 /* use of template class because it's the same procedure
 applied on other data types depends on the fighter type
 of team's instances

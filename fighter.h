@@ -19,7 +19,6 @@ public:
 											//display_info() which is called when space is pressed or at the end of the game)
 	inline void lose_heal() { heal--; }
 	void add_health();
-	inline void lose_health() { health--; }				//used in give_heal
 	void lose_health(const int enemy_pow);				//used in attack
 	inline int get_health() const { return health; }
 	inline void set_health(const int& h) { health = h; }

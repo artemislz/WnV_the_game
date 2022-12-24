@@ -29,9 +29,9 @@ void set_player_preferences(int& dim_x, int& dim_y, char& team) {
 	HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleTextAttribute(h, 9);
 	cout << "Time to choose the dimensions of the map... " << endl;
-	//Sleep(500);
+	Sleep(500);
 	cout << "The dimensions must be from 10 to 30" << endl;
-	//Sleep(500);
+	Sleep(500);
 	while (repeat) {
 		try {
 			string x;
@@ -44,11 +44,14 @@ void set_player_preferences(int& dim_x, int& dim_y, char& team) {
 			/* If the input contains a character that's not represent a digit is wrong */
 			for (int i = 0; i < x.length(); i++) {
 				if (!isdigit(x[i])) {
-					if (x[i] == '.')		// if it's float ask for integer
+					if (x[i] == '.' && i != 0 && i != x.length() - 1)		// if it's float ask for integer
 						throw(ERROR_FLOAT);
-					throw(ERROR_CHAR_INPUT);
+					if (i != 0 || x[0] != '-')
+						throw(ERROR_CHAR_INPUT);
 				}
 			}
+			if (x[0] == '-')
+				throw(ERROR_NEG_INPUT);
 			// If the input has more than 3 digits/characters is surely wrong
 			// in that way an overflow is avoided
 			if (x.length() >= 3) {		
@@ -70,11 +73,14 @@ void set_player_preferences(int& dim_x, int& dim_y, char& team) {
 
 			for (int i = 0; i < y.length(); i++) {
 				if (!isdigit(y[i])) {	
-					if (y[i] == '.')
+					if (y[i] == '.' && i != 0 && i != y.length() - 1)
 						throw(ERROR_FLOAT);
-					throw(ERROR_CHAR_INPUT);
+					if(i != 0 || y[0] != '-')
+						throw(ERROR_CHAR_INPUT);
 				}
 			}
+			if (y[0] == '-')
+				throw(ERROR_NEG_INPUT);
 
 			if (y.length() >= 3) {		
 				throw(ERROR_OUT_OF_RANGE);					
@@ -99,7 +105,7 @@ void set_player_preferences(int& dim_x, int& dim_y, char& team) {
 
 			case(ERROR_OUT_OF_RANGE):
 				cout << "Dimension out of range...\n"
-					<< "Reminder: x and y must from 10 to 30 \n"
+					<< "Reminder: x and y must be from 10 to 30 \n"
 					<< "Please try again.\n";
 				break;
 
@@ -112,6 +118,12 @@ void set_player_preferences(int& dim_x, int& dim_y, char& team) {
 				cout << "Only integers are allowed...\n"
 					<< "Please try again.\n";
 				break;
+
+			case(ERROR_NEG_INPUT):
+				cout << "Only positive integers are allowed...\n"
+					<< "Please try again.\n";
+				break;
+			
 			}
 			
 			repeat = true;
@@ -142,17 +154,14 @@ void set_player_preferences(int& dim_x, int& dim_y, char& team) {
 }
 
 /*Game - Member functions & Constructor*/
-game::game(const int& x, const int& y, const char& team) : day(true), active(true), Map(x, y), Player(team), Avatar(x / 2 + 1, y/ 2 + 1, team), team_vampires(Map), team_werewolves(Map), Magic_filter(Map), winners_team('0') {
+game::game(const int& x, const int& y, const char& team) : day(true), active(true), Avatar(x / 2 + 1, y / 2 + 1, team), Magic_filter(Map), Map(x, y), Player(team), team_vampires(Map), team_werewolves(Map), winners_team('0') {
 	
-	
-
 	/*place avatar and magic filter after they are consructed to the grid*/
 	map_entity* p = &Avatar;
 	Map.place_to_grid(Avatar.get_i(), Avatar.get_j(), p);			
 
 	map_entity* pp = &Magic_filter;
 	Map.place_to_grid(Magic_filter.get_i(), Magic_filter.get_j(), pp);
-	
 	
 }
 
@@ -185,56 +194,48 @@ void game::update() {
 			break;
 		case 1:												
 			if (Map.check_type(i - 1, j, 'e')) {			// move up 
-				
 				swap(grid[i][j], grid[i - 1][j]);
 				(**ptr).move(1);
 			};
 			break;
 		case 2:                                             
 			if (Map.check_type(i + 1, j, 'e')) {			// move down 
-				
 				swap(grid[i][j], grid[i + 1][j]);
 				(**ptr).move(2);
 			};
 			break;
 		case 3:												// move left 
 			if (Map.check_type(i, j - 1, 'e')) {
-				
 				swap(grid[i][j], grid[i][j - 1]);
 				(**ptr).move(3);
 			};
 			break;
 		case 4:                                             // move right
 			if (Map.check_type(i, j + 1, 'e')) {
-				
 				swap(grid[i][j], grid[i][j + 1]);
 				(**ptr).move(4);
 			}
 			break;
 		case 5:												// move up-right
 			if (Map.check_type(i - 1, j + 1, 'e')) {          
-				
 				swap(grid[i][j], grid[i - 1][j + 1]);
 				(**ptr).move(5);
 			};
 			break;
 		case 6:												// move up-left
-			if (Map.check_type(i - 1, j - 1, 'e')) {
-															
+			if (Map.check_type(i - 1, j - 1, 'e')) {										
 				swap(grid[i][j], grid[i - 1][j - 1]);
 				(**ptr).move(6);
 			};
 			break;
 		case 7:												// move down-right
-			if (Map.check_type(i + 1, j + 1, 'e')) {
-															
+			if (Map.check_type(i + 1, j + 1, 'e')) {											
 				swap(grid[i][j], grid[i + 1][j + 1]);
 				(**ptr).move(7);
 			};
 			break;
 		case 8:												// move down-left
 			if (Map.check_type(i + 1, j - 1, 'e')) {             
-				
 				swap(grid[i][j], grid[i + 1][j - 1]);
 				(**ptr).move(8);
 			};
@@ -296,25 +297,25 @@ void game::change_day() {
 void game::run() {
 	
 	cout << "			The game is starting... \n \n ";
-	//Sleep(1000);
+	Sleep(1000);
 	cout << "			During the game, vampires and werewolves are fighting...\n \n";
-	//Sleep(1500);
+	Sleep(1500);
 	cout << "			You are able to move in the map using arrow keys ...\n \n";
-	//Sleep(1500);
+	Sleep(2000);
 	cout << "			Your job is to collect as many magic filters as you can,\n"
 		"			in order to heal the team you chose to support!\n \n";
-	//Sleep(2000);
+	Sleep(2500);
 	cout << "			At least 10 magic filters are required. Press 'F' to use them.\n \n";
-	//Sleep(2000);
+	Sleep(2000);
 	if (Player.get_team() == 'V')
 		cout << "			But remember... You can only use them at day...\n \n";
 	else
 		cout << "			But remember... You can only use them at night...\n \n";
-	//Sleep(2000);
+	Sleep(2000);
 	cout << "			Press space to pause and see more info about the game\n \n";
-	//Sleep(1500);
+	Sleep(1500);
 	cout << "			Press 'X' to exit...\n \n";
-	//Sleep(1000);
+	Sleep(1000);
 	cout << "			Enjoy!\n \n";
 	//system("pause");
 	cout << "\t\t\t\tPress any key when you are ready to play...";
@@ -334,9 +335,8 @@ void game::run() {
 			return;
 		}
 		
-
 		if (frame % 40 == 0) {			// by agreement day changes and night alternate after 40 updates of game frame
-			change_day();			    // used static variable so that it its value will be carried through the function calls
+			change_day();			    // used static variable so that it its value will be carried through the function calls	
 			frame = 0;					// set as 0 after the change in order to avoid overflow
 		}
 		/*if player didn't press a button*/
@@ -364,8 +364,6 @@ void game::run() {
 				Sleep(80);
 				system("cls");
 			}
-
-			
 		};
 
 		/*if player pressed a button*/
@@ -404,19 +402,21 @@ void game::run() {
 			}
 			
 		}
-		update();														//werewolve's and vampire's ramndom movement				
+		update();														//werewolve's and vampire's ramndom movement
+		//system("pause");
 		Map.print(day);
 		frame++;
-		Sleep(50);
+		Sleep(80);
 		system("cls");
 
 		if (interactions()) {											// interactions returns true only if a defend 
+			//cout << "After defense\n";
 			Map.print(day);												// have happend between two fighters
+			//system("pause")
 			frame++;
-			Sleep(50);													// In defend() it is possible for a fighter to move 
+			Sleep(80);													// In defend() it is possible for a fighter to move 
 			system("cls");												// So, print map again
 		}
-
 	}
 	end();
 	return;

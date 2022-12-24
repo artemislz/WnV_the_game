@@ -13,6 +13,7 @@
 #define ERROR_OUT_OF_RANGE 20
 #define ERROR_WRONG_TEAM 30
 #define ERROR_FLOAT 40
+#define ERROR_NEG_INPUT 50
 
 enum KEY { UP = 72, DOWN = 80, LEFT = 75, RIGHT = 77, X = 88, SPACE = 32, ENTER = 13, F
 	= 70 };
